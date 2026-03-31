@@ -1,0 +1,40 @@
+{{ block title }}Abschnitt C: Ratschläge{{ endblock }}
+
+{{ block content }}
+<p class="text-muted fst-italic">
+  In diesem Abschnitt geht es darum, welche Ratschläge Sie werdenden Eltern geben würden.
+</p>
+
+{# C1 #}
+{{ formfield 'c1_advice' }}
+
+{# C2: Multi-select checkboxes (max 3) #}
+<div class="mb-4">
+  <p>
+    <b>C2.</b>
+    Welche der folgenden Themen hätten Sie gerne besser verstanden,
+    <em>bevor</em> Ihr erstes Kind geboren wurde?
+  </p>
+  <p class="text-muted">
+    <em>Bitte wählen Sie bis zu 3 Themen aus.</em>
+  </p>
+
+  {{ formfield 'c2_elterngeld' }}
+  {{ formfield 'c2_tax' }}
+  {{ formfield 'c2_pension' }}
+  {{ formfield 'c2_childcare' }}
+  {{ formfield 'c2_career' }}
+  {{ formfield 'c2_insurance' }}
+  {{ formfield 'c2_budget' }}
+  {{ formfield 'c2_savings' }}
+  {{ formfield 'c2_legal' }}
+</div>
+
+{# C3 #}
+{{ formfield 'c3_plan_importance' }}
+
+{# C3b #}
+{{ formfield 'c3b_return_tip' }}
+
+{{ next_button }}
+{{ endblock }}

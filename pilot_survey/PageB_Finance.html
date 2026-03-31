@@ -1,0 +1,238 @@
+{{ block title }}Abschnitt B: Finanzielle Überraschungen{{ endblock }}
+
+{{ block content }}
+<p class="text-muted fst-italic">
+  Nun möchten wir erfahren, welche finanziellen Überraschungen die Elternschaft
+  für Sie bereitgehalten hat.
+</p>
+
+{# B1 #}
+{{ formfield 'b1_biggest_surprise' }}
+
+{# ── B2: Click-to-Rank ─────────────────────────────────────────── #}
+<div class="mb-4">
+  <p>
+    <b>B2.</b>
+    Im Folgenden sind finanzielle Themen aufgeführt, die Eltern überraschen können.
+    Bitte wählen Sie die <strong>drei Themen</strong>, die Sie persönlich am meisten überrascht haben.
+  </p>
+  <p class="text-muted">
+    <em>Klicken Sie nacheinander auf Ihre drei wichtigsten Themen.
+    Der erste Klick = Rang 1 (am meisten überrascht), der zweite = Rang 2, der dritte = Rang 3.
+    Klicken Sie erneut, um die Auswahl aufzuheben.</em>
+  </p>
+
+  {# Hidden oTree form fields — JS fills these #}
+  <div style="display:none">
+    {{ formfield 'b2_rank_income_drop' }}
+    {{ formfield 'b2_rank_tax_work' }}
+    {{ formfield 'b2_rank_pension' }}
+    {{ formfield 'b2_rank_childcare_cost' }}
+    {{ formfield 'b2_rank_career' }}
+    {{ formfield 'b2_rank_daily_costs' }}
+    {{ formfield 'b2_rank_insurance' }}
+    {{ formfield 'b2_rank_elterngeld' }}
+    {{ formfield 'b2_rank_prepared' }}
+    {{ formfield 'b2_rank_other' }}
+  </div>
+
+  <div id="b2-rank-list" class="rank-list">
+    <div class="rank-item" data-field="b2_rank_income_drop">
+      <span class="rank-badge"></span>
+      <span class="rank-label">Der Einkommensrückgang während der Elternzeit</span>
+    </div>
+    <div class="rank-item" data-field="b2_rank_tax_work">
+      <span class="rank-badge"></span>
+      <span class="rank-label">Der Einfluss von Steuern und Sozialleistungen darauf, ob sich Mehrarbeit lohnt</span>
+    </div>
+    <div class="rank-item" data-field="b2_rank_pension">
+      <span class="rank-badge"></span>
+      <span class="rank-label">Die Auswirkung von Teilzeitarbeit auf meine spätere Rente</span>
+    </div>
+    <div class="rank-item" data-field="b2_rank_childcare_cost">
+      <span class="rank-badge"></span>
+      <span class="rank-label">Die Kosten und Verfügbarkeit von Kinderbetreuung</span>
+    </div>
+    <div class="rank-item" data-field="b2_rank_career">
+      <span class="rank-badge"></span>
+      <span class="rank-label">Der Einfluss eines Kindes auf meinen beruflichen Werdegang und mein Gehalt</span>
+    </div>
+    <div class="rank-item" data-field="b2_rank_daily_costs">
+      <span class="rank-badge"></span>
+      <span class="rank-label">Die alltäglichen Kosten mit Kind (Ausstattung, Aktivitäten, Essen)</span>
+    </div>
+    <div class="rank-item" data-field="b2_rank_insurance">
+      <span class="rank-badge"></span>
+      <span class="rank-label">Änderungen bei Versicherungen und Gesundheitsversorgung für die Familie</span>
+    </div>
+    <div class="rank-item" data-field="b2_rank_elterngeld">
+      <span class="rank-badge"></span>
+      <span class="rank-label">Wie Elterngeld und ElterngeldPlus in der Praxis tatsächlich funktionieren</span>
+    </div>
+    <div class="rank-item" data-field="b2_rank_prepared">
+      <span class="rank-badge"></span>
+      <span class="rank-label">Nichts davon hat mich überrascht – ich war gut vorbereitet</span>
+    </div>
+  </div>
+
+  {# "Sonstiges" with inline text field #}
+  <div class="rank-other-row mt-2">
+    <div class="rank-item" data-field="b2_rank_other" id="b2-other-item">
+      <span class="rank-badge"></span>
+      <span class="rank-label">Sonstiges:</span>
+    </div>
+    <div class="mt-1 ms-4">
+      {{ formfield 'b2_other_text' }}
+    </div>
+  </div>
+</div>
+
+{# B3 #}
+{{ formfield 'b3_preparedness' }}
+
+{# B4 #}
+{{ formfield 'b4_planning_horizon' }}
+
+{# B4b #}
+{{ formfield 'b4b_regret' }}
+
+{{ next_button }}
+
+{# ── Styles ──────────────────────────────────────────────────────── #}
+<style>
+  .rank-list, .rank-other-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .rank-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+    background: #fff;
+  }
+  .rank-item:hover {
+    border-color: #adb5bd;
+    background: #f8f9fa;
+  }
+  .rank-item.selected {
+    border-color: #0d6efd;
+    background: #e7f1ff;
+  }
+  .rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #6c757d;
+    font-weight: 700;
+    font-size: 15px;
+    transition: all 0.15s ease;
+  }
+  .rank-item.selected .rank-badge {
+    background: #0d6efd;
+    color: #fff;
+  }
+  .rank-label {
+    flex: 1;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+</style>
+
+{# ── Script ──────────────────────────────────────────────────────── #}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // ── Click-to-rank logic (same as PageA_Work) ──────────────────
+  function initRankGroup(containerId, otherContainerId) {
+    const items = [
+      ...document.querySelectorAll('#' + containerId + ' .rank-item'),
+    ];
+    if (otherContainerId) {
+      const otherItem = document.querySelector('#' + otherContainerId + ' .rank-item');
+      if (otherItem) items.push(otherItem);
+    }
+
+    let ranked = [];
+
+    // Restore pre-filled values (after validation error)
+    items.forEach(function (el) {
+      const field = el.dataset.field;
+      const val = getHiddenValue(field);
+      if (val) ranked[val - 1] = field;
+    });
+    ranked = ranked.filter(Boolean);
+    renderAll();
+
+    items.forEach(function (el) {
+      el.addEventListener('click', function () {
+        const field = el.dataset.field;
+        const idx = ranked.indexOf(field);
+        if (idx !== -1) {
+          ranked.splice(idx, 1);
+        } else if (ranked.length < 3) {
+          ranked.push(field);
+        }
+        renderAll();
+      });
+    });
+
+    function renderAll() {
+      items.forEach(function (el) {
+        const field = el.dataset.field;
+        el.classList.remove('selected');
+        el.querySelector('.rank-badge').textContent = '';
+        clearHiddenValue(field);
+      });
+      ranked.forEach(function (field, i) {
+        const el = items.find(function (e) { return e.dataset.field === field; });
+        if (!el) return;
+        el.classList.add('selected');
+        el.querySelector('.rank-badge').textContent = (i + 1);
+        setHiddenValue(field, i + 1);
+      });
+    }
+  }
+
+  function getHiddenValue(fieldName) {
+    const checked = document.querySelector('input[name="' + fieldName + '"]:checked');
+    if (checked) return parseInt(checked.value);
+    const sel = document.querySelector('select[name="' + fieldName + '"]');
+    if (sel && sel.value) return parseInt(sel.value);
+    return null;
+  }
+  function setHiddenValue(fieldName, val) {
+    const radios = document.querySelectorAll('input[name="' + fieldName + '"]');
+    if (radios.length) {
+      radios.forEach(function (r) { r.checked = (parseInt(r.value) === val); });
+      return;
+    }
+    const sel = document.querySelector('select[name="' + fieldName + '"]');
+    if (sel) sel.value = val;
+  }
+  function clearHiddenValue(fieldName) {
+    const radios = document.querySelectorAll('input[name="' + fieldName + '"]');
+    if (radios.length) {
+      radios.forEach(function (r) { r.checked = false; });
+      return;
+    }
+    const sel = document.querySelector('select[name="' + fieldName + '"]');
+    if (sel) sel.value = '';
+  }
+
+  // ── Initialize B2 ────────────────────────────────────────────
+  initRankGroup('b2-rank-list', 'b2-other-item');
+});
+</script>
+{{ endblock }}

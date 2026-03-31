@@ -1,0 +1,16 @@
+{{ block title }}Abschnitt D: Wissenscheck{{ endblock }}
+
+{{ block content }}
+<p class="text-muted fst-italic">
+  Zum Abschluss zwei kurze Wissensfragen.
+  Wenn Sie sich nicht sicher sind, ist das völlig in Ordnung – wählen Sie einfach „Weiß ich nicht".
+</p>
+
+{# D1 #}
+{{ formfield 'd1_pension_knowledge' }}
+
+{# D2 #}
+{{ formfield 'd2_splitting_knowledge' }}
+
+{{ next_button }}
+{{ endblock }}

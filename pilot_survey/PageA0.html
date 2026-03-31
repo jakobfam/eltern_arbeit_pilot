@@ -1,0 +1,52 @@
+{{ block title }}Abschnitt A0: Über Sie{{ endblock }}
+
+{{ block content }}
+<p class="text-muted fst-italic">
+  Zu Beginn ein paar kurze Fragen zu Ihrem Hintergrund.
+  Diese helfen uns zu verstehen, wen wir befragen.
+</p>
+
+{{ formfields }}
+
+{{ next_button }}
+
+{# JavaScript: show A0.3b only when a work-related activity is selected #}
+<script>
+  // Activity codes that imply current or past employment (all except 5=homemaker, 7=unemployed-not-seeking)
+  const workCodes = [1, 2, 3, 4, 6, 8, 9];
+
+  function toggleSector() {
+    // Find the selected radio button for a0_3_activity
+    const selected = document.querySelector('input[name="a0_3_activity"]:checked');
+    const code = selected ? parseInt(selected.value) : null;
+    const sectorBlock = document.getElementById('sector-block');
+    if (sectorBlock) {
+      sectorBlock.style.display = (code && workCodes.includes(code)) ? '' : 'none';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    // Wrap sector fields in a div so we can show/hide them together
+    const sectorFields = document.querySelectorAll(
+      '[id*="a0_3b_sector"], [id*="a0_3b_sector_other"], label[for*="a0_3b_sector"]'
+    );
+    // oTree wraps each field in a .controls div; find the form-group parents
+    const toWrap = [];
+    sectorFields.forEach(el => {
+      let parent = el.closest('.mb-3') || el.closest('.form-group') || el.parentElement;
+      if (parent && !toWrap.includes(parent)) toWrap.push(parent);
+    });
+    if (toWrap.length) {
+      const wrapper = document.createElement('div');
+      wrapper.id = 'sector-block';
+      toWrap[0].parentNode.insertBefore(wrapper, toWrap[0]);
+      toWrap.forEach(el => wrapper.appendChild(el));
+    }
+
+    toggleSector();
+    document.querySelectorAll('input[name="a0_3_activity"]').forEach(
+      r => r.addEventListener('change', toggleSector)
+    );
+  });
+</script>
+{{ endblock }}

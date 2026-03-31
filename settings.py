@@ -21,7 +21,12 @@ LANGUAGE_CODE = 'de'
 PARTICIPANT_FIELDS = []
 SESSION_FIELDS = []
 
-ROOMS = []
+ROOMS = [
+    dict(
+        name='pilot',
+        display_name='Pilotstudie – Eltern & Arbeit',
+    ),
+]
 
 ADMIN_USERNAME = 'admin'
 ADMIN_PASSWORD = environ.get('OTREE_ADMIN_PASSWORD')

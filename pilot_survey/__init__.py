@@ -136,7 +136,7 @@ class Player(BasePlayer):
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
     a2_rank_nodifficulty = models.IntegerField(
-        label='Ich hatte keine nennenswerten Schwierigkeiten beim Wiedereinstieg',
+        label='Insgesamt hatte ich keine größeren Schwierigkeiten beim Wiedereinstieg',
         choices=[[1, '1'], [2, '2'], [3, '3']],
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
@@ -231,7 +231,7 @@ class Player(BasePlayer):
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
     b2_rank_prepared = models.IntegerField(
-        label='Nichts davon hat mich überrascht – ich war gut vorbereitet',
+        label='Insgesamt hat mich davon nichts besonders überrascht',
         choices=[[1, '1'], [2, '2'], [3, '3']],
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
@@ -432,17 +432,19 @@ class PageA_Work(Page):
 
     @staticmethod
     def error_message(player, values):
-        # Validate A2: exactly 3 items ranked, each rank (1,2,3) used at most once
+        # Validate A2: 1–3 items ranked, each rank used at most once
         a2_fields = [
             'a2_rank_childcare', 'a2_rank_taxbenefit', 'a2_rank_employer',
             'a2_rank_partner', 'a2_rank_confidence', 'a2_rank_recovery',
             'a2_rank_preference', 'a2_rank_nodifficulty', 'a2_rank_other',
         ]
         ranks = [values.get(f) for f in a2_fields if values.get(f) is not None]
-        if len(ranks) != 3:
-            return 'Bitte ordnen Sie bei Frage A2 genau drei Faktoren (Ränge 1, 2, 3).'
-        if len(set(ranks)) != 3:
-            return 'Bitte vergeben Sie bei Frage A2 jeden Rang (1, 2, 3) nur einmal.'
+        if len(ranks) < 1:
+            return 'Bitte wählen Sie bei Frage A2 mindestens einen Faktor aus.'
+        if len(ranks) > 3:
+            return 'Bitte wählen Sie bei Frage A2 höchstens drei Faktoren aus.'
+        if len(set(ranks)) != len(ranks):
+            return 'Bitte vergeben Sie bei Frage A2 jeden Rang nur einmal.'
 
 
 class PageB_Finance(Page):
@@ -461,7 +463,7 @@ class PageB_Finance(Page):
 
     @staticmethod
     def error_message(player, values):
-        # Validate B2: exactly 3 items ranked, each rank used at most once
+        # Validate B2: 1–3 items ranked, each rank used at most once
         b2_fields = [
             'b2_rank_income_drop', 'b2_rank_tax_work', 'b2_rank_pension',
             'b2_rank_childcare_cost', 'b2_rank_career', 'b2_rank_daily_costs',
@@ -469,10 +471,12 @@ class PageB_Finance(Page):
             'b2_rank_other',
         ]
         ranks = [values.get(f) for f in b2_fields if values.get(f) is not None]
-        if len(ranks) != 3:
-            return 'Bitte ordnen Sie bei Frage B2 genau drei Themen (Ränge 1, 2, 3).'
-        if len(set(ranks)) != 3:
-            return 'Bitte vergeben Sie bei Frage B2 jeden Rang (1, 2, 3) nur einmal.'
+        if len(ranks) < 1:
+            return 'Bitte wählen Sie bei Frage B2 mindestens ein Thema aus.'
+        if len(ranks) > 3:
+            return 'Bitte wählen Sie bei Frage B2 höchstens drei Themen aus.'
+        if len(set(ranks)) != len(ranks):
+            return 'Bitte vergeben Sie bei Frage B2 jeden Rang nur einmal.'
 
 
 class PageC_Advice(Page):

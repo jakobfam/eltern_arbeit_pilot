@@ -88,11 +88,11 @@ class Player(BasePlayer):
     )
 
     a0_4_thoughts_before = models.LongStringField(
-        label ='Was waren die <b>dre wichtigsten Themen</b> über die sie sich <b>vor</b> der Geburt Gedanken gemacht haben?'
+        label ='Was waren die <b>drei wichtigsten Themen</b> über die sie sich <b>vor</b> der Geburt Gedanken gemacht haben?'
     )
 
     a0_5_thoughts_wish = models.LongStringField(
-        label ='Was waren die <b>dre wichtigsten Themen</b> über die sie sich <b>gewünscht hätten</b>, dass Sie sich vor der Geburt Gedanken gemacht haben?'
+        label ='Was waren die <b>drei wichtigsten Themen</b> über die sie sich <b>gewünscht hätten</b>, dass Sie sich vor der Geburt Gedanken gemacht hätten?'
     )
 
 

@@ -87,11 +87,11 @@ class Player(BasePlayer):
         blank=True,
     )
 
-    a0_4_thoughts_before = model.LongStringField(
+    a0_4_thoughts_before = models.LongStringField(
         label ='Was waren die <b>dre wichtigsten Themen</b> über die sie sich <b>vor</b> der Geburt Gedanken gemacht haben?'
     )
 
-    a0_5_thoughts_wish = model.LongStringField(
+    a0_5_thoughts_wish = models.LongStringField(
         label ='Was waren die <b>dre wichtigsten Themen</b> über die sie sich <b>gewünscht hätten</b>, dass Sie sich vor der Geburt Gedanken gemacht haben?'
     )
 

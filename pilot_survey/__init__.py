@@ -358,15 +358,15 @@ class Player(BasePlayer):
 
     d1_pension_knowledge = models.IntegerField(
         label=(
-            '<b>D1.</b> Angenommen, eine Mutter arbeitet nach der Geburt ihres ersten Kindes '
-            '10 Jahre lang Teilzeit (20 Stunden/Woche) statt Vollzeit. '
-            'Was ist die bedeutendste langfristige finanzielle Folge dieser Entscheidung?'
+            '<b>D1.</b> Angenommen, eine Frau verdient Vollzeit 3.000 € brutto im Monat. '
+            'Sie arbeitet nach der Geburt ihres ersten Kindes 10 Jahre lang Teilzeit (20 Stunden/Woche). '
+            'Um wie viel Euro pro Monat wird ihre gesetzliche Rente dadurch ungefähr geringer sein?'
         ),
         choices=[
-            [1, 'Geringeres Nettoeinkommen in diesen 10 Jahren'],
-            [2, 'Weniger Möglichkeiten zur beruflichen Weiterentwicklung'],
-            [3, 'Deutlich geringere Rentenansprüche im Ruhestand'],
-            [4, 'Höhere Steuerlast für den Haushalt'],
+            [1, 'Unter 50 € pro Monat'],
+            [2, '50 – 100 € pro Monat'],
+            [3, '150 – 250 € pro Monat'],
+            [4, '300 – 500 € pro Monat'],
             [5, 'Weiß ich nicht / bin nicht sicher'],
         ],
         widget=widgets.RadioSelect,

@@ -1,0 +1,164 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{parskip}
+
+\hypersetup{colorlinks=true, linkcolor=blue!60!black, citecolor=blue!60!black, urlcolor=blue!60!black}
+
+\title{\textbf{Study Concept: Financial Education Before Parenthood}\\[0.3em]
+\large What Should Expectant Parents Know?\\Pilot Design and Main Experiment}
+\author{Draft -- April 2026}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+% ----------------------------------------------------------------
+\section{Motivation}
+
+The transition to parenthood is one of the most consequential financial decisions in a woman's life. Research on the child penalty (Kleven et al., 2019) documents large and persistent earnings losses for mothers, driven primarily by reductions in working hours and occupational downgrading. Costa-Ram\'on et al.\ (2024) show that \emph{inattention} to the future contributes to suboptimal labor supply decisions after childbirth.
+
+We build on this literature but take a different angle. Our hypothesis is not that women fail to \emph{think} about the financial consequences of parenthood, but that their information and planning focus is systematically skewed toward \textbf{short-term} outcomes (parental leave benefits, household budget in year one) while \textbf{long-term} consequences (pension losses from part-time work, tax interaction effects, career trajectory costs) remain poorly understood. This is not an attention problem---it is a \emph{knowledge gap with a systematic short-term bias}.
+
+Crucially, we have access to women \emph{before} the key decisions are made. Through a cooperation with Keleya, a pregnancy app used widely in Germany, we can reach expectant mothers during pregnancy---the precise window in which plans about parental leave duration, return-to-work timing, and working hours are formed.
+
+% ----------------------------------------------------------------
+\section{Research Question}
+
+Can targeted financial information about the \emph{long-term} consequences of parenthood---delivered before childbirth---shift beliefs, plans, and ultimately labor market behavior of mothers?
+
+% ----------------------------------------------------------------
+\section{Study Design}
+
+\subsection{Sample and Access}
+
+Through Keleya, we have access to approximately:
+\begin{itemize}[nosep]
+    \item \textbf{800 pregnant women} (pre-birth)---the main experimental sample
+    \item \textbf{1{,}600 recent mothers} (post-birth)---for baseline calibration and potential second experiment
+\end{itemize}
+
+\subsection{Experimental Arms (Pre-Birth Sample)}
+
+Pregnant women are randomly assigned to one of three conditions:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lp{10cm}@{}}
+\toprule
+\textbf{Arm} & \textbf{Content} \\
+\midrule
+Control & Baseline survey only (no information provided) \\[0.5em]
+Short-term Info & Information that expectant parents typically seek: parental leave benefit calculation (Elterngeld), maternity protection periods, first-year household budget planning \\[0.5em]
+Long-term Info & Child penalty in concrete numbers, pension effect of 10 years part-time work, tax class interaction effects on work incentives (Ehegattensplitting), long-run career costs of reduced hours \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The comparison between Long-term and Short-term Info is the key identification: both arms receive financial education of comparable length and quality, but with different \emph{time horizons}. This isolates the effect of the information content from the effect of receiving any information at all.
+
+\subsection{Primary Outcomes (Measured Immediately Post-Treatment)}
+
+\begin{enumerate}[nosep]
+    \item \textbf{Beliefs:} Estimated pension loss from 10 years of part-time work; estimated income loss over a decade; perceived financial consequences of different working-hour scenarios
+    \item \textbf{Plans:} Planned timing of return to work; planned weekly hours; planned parental leave split with partner
+    \item \textbf{Knowledge:} Factual questions on pension mechanics, tax splitting effects
+\end{enumerate}
+
+\subsection{Secondary Outcomes (Follow-up at 6--12 Months Post-Birth)}
+
+\begin{enumerate}[nosep]
+    \item Actual return-to-work timing and working hours
+    \item Actual parental leave split with partner
+    \item Retrospective satisfaction with the decision
+\end{enumerate}
+
+Follow-up is feasible through Keleya's continued engagement with users after birth.
+
+\subsection{Role of Recent Mothers (n\,=\,1{,}600)}
+
+Two possible uses:
+\begin{enumerate}[nosep]
+    \item \textbf{Descriptive baseline:} Revealed-preference data on what actually surprised mothers, which factors mattered most, how large the expectation--reality gap is. This calibrates the treatment content and motivates the paper.
+    \item \textbf{Second experiment:} Randomized treatment among mothers still in parental leave who face the return-to-work decision. This provides a second decision margin and a separate paper or robustness check.
+\end{enumerate}
+
+% ----------------------------------------------------------------
+\section{Contribution and Positioning}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}p{5cm}p{4cm}p{4.5cm}@{}}
+\toprule
+& \textbf{Costa-Ram\'on et al.} & \textbf{This paper} \\
+\midrule
+Mechanism & Inattention to future & Knowledge gap with short-term bias \\
+Intervention & Salience (thinking about future) & Financial education (specific content) \\
+Timing & Post-birth (retrospective) & Pre-birth (prospective) \\
+Comparison & Attention vs.\ no attention & Long-term info vs.\ short-term info \\
+Policy implication & Nudge mothers to think ahead & Provide specific knowledge at the right time \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ----------------------------------------------------------------
+\section{Role of the Pilot Study}
+
+The pilot survey (conducted with experienced mothers via oTree) serves three functions:
+
+\subsection{Calibrating Treatment Content}
+
+Questions A2 and B2 ask mothers to rank the factors that most affected their return to work and the financial topics that most surprised them. The ranking data directly determines which long-term topics to include in the treatment:
+
+\begin{itemize}[nosep]
+    \item If pension effects rank highly as surprising $\rightarrow$ include pension calculator in Long-term Info
+    \item If tax/benefit interactions rank highly $\rightarrow$ include Ehegattensplitting explainer
+    \item If childcare costs dominate $\rightarrow$ this is a short-term topic and belongs in the control arm
+\end{itemize}
+
+\subsection{Validating the Knowledge Gap}
+
+Section D tests factual knowledge (pension loss estimation, tax splitting). If pilot respondents---who have \emph{already experienced} parenthood---still answer incorrectly, the knowledge gap is confirmed and the case for pre-birth education is strong. If they answer correctly, the gap may be smaller than assumed, and the treatment must target different content.
+
+\subsection{Measuring the Expectation--Reality Gap}
+
+Question A4 (expected vs.\ actual return timing) and B3/B4 (preparedness and planning horizon) quantify how large the mismatch between expectations and reality is. This gap is the motivating fact for the paper's introduction and determines whether the short-term bias hypothesis holds empirically.
+
+% ----------------------------------------------------------------
+\section{What Is Needed for a Top-5 Paper}
+
+\begin{enumerate}
+    \item \textbf{Clean identification:} RCT with randomization within Keleya's user base. The three-arm design (Control / Short-term / Long-term) allows for clean causal claims.
+    \item \textbf{Behavioral outcomes:} The follow-up data on actual working hours and parental leave split moves the paper beyond stated preferences.
+    \item \textbf{Policy relevance:} Pre-birth financial education as a scalable, low-cost policy tool. Germany's infrastructure (Elterngeld, Keleya penetration) makes this immediately implementable.
+    \item \textbf{Heterogeneity analysis:} Does the treatment work differently for low- vs.\ high-income women? First-time vs.\ experienced mothers? Single- vs.\ dual-earner households? This determines who benefits most from the intervention.
+    \item \textbf{Mechanism evidence:} The pilot's belief and knowledge data pin down \emph{why} the treatment works---not just attention, but specific knowledge about specific long-term consequences.
+\end{enumerate}
+
+% ----------------------------------------------------------------
+\section{Timeline}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Phase} & \textbf{Timing} \\
+\midrule
+Pilot survey (experienced mothers) & Spring 2026 \\
+Treatment content development (based on pilot) & Summer 2026 \\
+Pre-registration (AEA RCT Registry) & Late summer 2026 \\
+Main experiment via Keleya (pre-birth sample) & Autumn 2026 \\
+Follow-up survey (6--12 months post-birth) & Spring--Autumn 2027 \\
+Analysis and paper draft & Late 2027 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}

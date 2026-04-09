@@ -87,6 +87,15 @@ class Player(BasePlayer):
         blank=True,
     )
 
+    a0_4_thoughts_before = model.LongStringField(
+        label ='Was waren die <b>dre wichtigsten Themen</b> über die sie sich <b>vor</b> der Geburt Gedanken gemacht haben?'
+    )
+
+    a0_5_thoughts_wish = model.LongStringField(
+        label ='Was waren die <b>dre wichtigsten Themen</b> über die sie sich <b>gewünscht hätten</b>, dass Sie sich vor der Geburt Gedanken gemacht haben?'
+    )
+
+
     # ── Section A: Return to Work ──────────────────────────────────────
 
     a1_work_experience = models.LongStringField(
@@ -406,6 +415,8 @@ class PageA0(Page):
         'a0_3_activity_other',
         'a0_3b_sector',
         'a0_3b_sector_other',
+        'a0_4_thoughts_before',
+        'a0_5_thoughts_wish'
     ]
 
 

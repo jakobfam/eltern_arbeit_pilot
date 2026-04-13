@@ -403,6 +403,30 @@ class Player(BasePlayer):
         widget=widgets.RadioSelect,
     )
 
+    # B5: Complexity — deliberate simplification
+    b5_simplify = models.IntegerField(
+        label=(
+            '<b>B5.</b> Rund um die Elternschaft gibt es viele Themen gleichzeitig zu bedenken '
+            '(Finanzen, Karriere, Betreuung, Partnerschaft, eigene Gesundheit …). '
+            'Haben Sie bewusst bestimmte Aspekte bei Ihren Entscheidungen ausgeblendet, '
+            'um die Situation überschaubarer zu machen?'
+        ),
+        choices=[
+            [1, 'Ja, ich habe mich bewusst auf wenige Bereiche konzentriert und andere erstmal ausgeklammert'],
+            [2, 'Teilweise – manches habe ich auf später verschoben, ohne aktiv darüber nachzudenken'],
+            [3, 'Nein, ich habe versucht, alle Bereiche gleichzeitig zu berücksichtigen'],
+        ],
+        widget=widgets.RadioSelect,
+    )
+
+    b5b_dropped = models.LongStringField(
+        label=(
+            '<b>B5b.</b> Falls Sie bestimmte Aspekte ausgeblendet haben: '
+            'Welche waren das? (z.\u202fB. Rente, Steueroptimierung, Karriereplanung, Versicherungen …)'
+        ),
+        blank=True,
+    )
+
     # ── Section C: Advice ─────────────────────────────────────────────
 
     c1_advice = models.LongStringField(
@@ -619,8 +643,9 @@ class PageB_Finance(Page):
         'b2_rank_childcare_cost', 'b2_rank_career', 'b2_rank_daily_costs',
         'b2_rank_insurance', 'b2_rank_elterngeld', 'b2_rank_prepared',
         'b2_other_text', 'b2_rank_other',
-        # B3, B4, B4b
+        # B3, B4, B4b, B5
         'b3_preparedness', 'b4_planning_horizon', 'b4b_regret',
+        'b5_simplify', 'b5b_dropped',
     ]
 
     @staticmethod

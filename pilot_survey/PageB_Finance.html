@@ -95,7 +95,34 @@
 {# B4b #}
 {{ formfield 'b4b_regret' }}
 
+{# B5: Complexity — deliberate simplification #}
+{{ formfield 'b5_simplify' }}
+
+{# B5b: Which dimensions were dropped — show only when B5 = 1 or 2 #}
+<div id="b5b-block">
+  {{ formfield 'b5b_dropped' }}
+</div>
+
 {{ next_button }}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  function toggleB5b() {
+    const selected = document.querySelector('input[name="b5_simplify"]:checked');
+    const val = selected ? parseInt(selected.value) : null;
+    const b5bBlock = document.getElementById('b5b-block');
+    if (b5bBlock) {
+      // Show follow-up only when "Ja" (1) or "Teilweise" (2)
+      b5bBlock.style.display = (val === 1 || val === 2) ? '' : 'none';
+    }
+  }
+
+  toggleB5b();
+  document.querySelectorAll('input[name="b5_simplify"]').forEach(
+    r => r.addEventListener('change', toggleB5b)
+  );
+});
+</script>
 
 {# ── Styles ──────────────────────────────────────────────────────── #}
 <style>

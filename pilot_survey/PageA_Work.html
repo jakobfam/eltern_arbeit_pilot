@@ -7,241 +7,39 @@
   wir möchten von Ihren Erfahrungen lernen.
 </p>
 
-{# A1 #}
-{{ formfield 'a1_work_experience' }}
+{# A1 — expectation vs. reality #}
+{{ formfield 'a1_expectation' }}
 
-{# ── A2: Click-to-Rank ─────────────────────────────────────────── #}
-<div class="mb-4">
-  <p>
-    <b>A2.</b>
-    Welche der folgenden Faktoren haben Ihren Wiedereinstieg am meisten erschwert?
-    Klicken Sie auf <strong>bis zu drei Faktoren</strong> in der Reihenfolge ihrer Bedeutung
-    (1 = am bedeutsamsten). Klicken Sie erneut, um eine Auswahl aufzuheben.
-  </p>
-
-  {# Hidden oTree form fields — JS fills these #}
-  <div style="display:none">
-    {{ formfield 'a2_rank_childcare' }}
-    {{ formfield 'a2_rank_taxbenefit' }}
-    {{ formfield 'a2_rank_employer' }}
-    {{ formfield 'a2_rank_partner' }}
-    {{ formfield 'a2_rank_confidence' }}
-    {{ formfield 'a2_rank_recovery' }}
-    {{ formfield 'a2_rank_preference' }}
-    {{ formfield 'a2_rank_nodifficulty' }}
-    {{ formfield 'a2_rank_other' }}
-  </div>
-
-  <div id="a2-rank-list" class="rank-list">
-    <div class="rank-item" data-field="a2_rank_childcare">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Kinderbetreuung war nicht verfügbar, zu teuer oder passte nicht zu meinen Arbeitszeiten</span>
-    </div>
-    <div class="rank-item" data-field="a2_rank_taxbenefit">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Mehr zu arbeiten hätte sich finanziell kaum gelohnt (wegen Steuern und wegfallender Leistungen)</span>
-    </div>
-    <div class="rank-item" data-field="a2_rank_employer">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Mein Arbeitgeber bot nicht die Flexibilität oder Arbeitszeiten, die ich brauchte</span>
-    </div>
-    <div class="rank-item" data-field="a2_rank_partner">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Die Arbeitssituation meines Partners erschwerte eine gleichmäßige Aufteilung der Kinderbetreuung</span>
-    </div>
-    <div class="rank-item" data-field="a2_rank_confidence">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Nach der Auszeit fehlte mir berufliches Selbstvertrauen</span>
-    </div>
-    <div class="rank-item" data-field="a2_rank_recovery">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Die körperliche oder seelische Erholung nach der Geburt dauerte länger als erwartet</span>
-    </div>
-    <div class="rank-item" data-field="a2_rank_preference">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Ich wollte mehr Zeit mit meinem Kind verbringen und habe mich bewusst gegen eine (frühere) Rückkehr entschieden</span>
-    </div>
-    <div class="rank-item" data-field="a2_rank_nodifficulty">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Insgesamt hatte ich keine größeren Schwierigkeiten beim Wiedereinstieg</span>
-    </div>
-  </div>
-
-  {# "Sonstiges" with inline text field #}
-  <div class="rank-other-row mt-2">
-    <div class="rank-item" data-field="a2_rank_other" id="a2-other-item">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Sonstiges:</span>
-    </div>
-    <div class="mt-1 ms-4">
-      {{ formfield 'a2_other_text' }}
-    </div>
-  </div>
+{# A1b — reason if different than expected (optional) #}
+<div id="a1b-block">
+  {{ formfield 'a1b_reason' }}
 </div>
 
-{# A3: conditional — hidden via JS for homemaker (5) and unemployed-not-seeking (7) #}
-<div id="a3-block">
-  {{ formfield 'a3_wishes' }}
+{# A2: Overall experience Likert — hidden when A1=5 (never planned, never returned) #}
+<div id="a2-block">
+  {{ formfield 'a2_return_experience' }}
 </div>
-
-{# A4 #}
-{{ formfield 'a4_expectation' }}
-{{ formfield 'a4_reason' }}
 
 {{ next_button }}
 
-{# ── Styles ──────────────────────────────────────────────────────── #}
-<style>
-  .rank-list, .rank-other-row {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .rank-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    border: 2px solid #dee2e6;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    user-select: none;
-    background: #fff;
-  }
-  .rank-item:hover {
-    border-color: #adb5bd;
-    background: #f8f9fa;
-  }
-  .rank-item.selected {
-    border-color: #0d6efd;
-    background: #e7f1ff;
-  }
-  .rank-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    border-radius: 50%;
-    background: #e9ecef;
-    color: #6c757d;
-    font-weight: 700;
-    font-size: 15px;
-    transition: all 0.15s ease;
-  }
-  .rank-item.selected .rank-badge {
-    background: #0d6efd;
-    color: #fff;
-  }
-  .rank-label {
-    flex: 1;
-    font-size: 0.95rem;
-    line-height: 1.4;
-  }
-</style>
-
-{# ── Script ──────────────────────────────────────────────────────── #}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-
-  // ── Click-to-rank logic (reusable) ────────────────────────────
-  function initRankGroup(containerId, otherContainerId) {
-    const items = [
-      ...document.querySelectorAll('#' + containerId + ' .rank-item'),
-    ];
-    if (otherContainerId) {
-      const otherItem = document.querySelector('#' + otherContainerId + ' .rank-item');
-      if (otherItem) items.push(otherItem);
-    }
-
-    // Track ranking order: array of field names in selection order
-    let ranked = [];
-
-    // On page load, restore any pre-filled values (e.g. after validation error)
-    items.forEach(function (el) {
-      const field = el.dataset.field;
-      const val = getHiddenValue(field);
-      if (val) {
-        ranked[val - 1] = field; // place at correct index
-      }
-    });
-    // Clean sparse array
-    ranked = ranked.filter(Boolean);
-    renderAll();
-
-    items.forEach(function (el) {
-      el.addEventListener('click', function () {
-        const field = el.dataset.field;
-        const idx = ranked.indexOf(field);
-        if (idx !== -1) {
-          // Already selected → remove and re-rank those after it
-          ranked.splice(idx, 1);
-        } else if (ranked.length < 3) {
-          ranked.push(field);
-        }
-        renderAll();
-      });
-    });
-
-    function renderAll() {
-      // Clear all hidden fields and visual state
-      items.forEach(function (el) {
-        const field = el.dataset.field;
-        el.classList.remove('selected');
-        el.querySelector('.rank-badge').textContent = '';
-        clearHiddenValue(field);
-      });
-      // Set ranked items
-      ranked.forEach(function (field, i) {
-        const el = items.find(function (e) { return e.dataset.field === field; });
-        if (!el) return;
-        el.classList.add('selected');
-        el.querySelector('.rank-badge').textContent = (i + 1);
-        setHiddenValue(field, i + 1);
-      });
-    }
-  }
-
-  // ── Hidden-field helpers (work with oTree's radio / select) ───
-  function getHiddenValue(fieldName) {
-    // Try radio buttons first
-    const checked = document.querySelector('input[name="' + fieldName + '"]:checked');
-    if (checked) return parseInt(checked.value);
-    // Try select
-    const sel = document.querySelector('select[name="' + fieldName + '"]');
-    if (sel && sel.value) return parseInt(sel.value);
-    return null;
-  }
-  function setHiddenValue(fieldName, val) {
-    // Radio buttons
-    const radios = document.querySelectorAll('input[name="' + fieldName + '"]');
-    if (radios.length) {
-      radios.forEach(function (r) { r.checked = (parseInt(r.value) === val); });
-      return;
-    }
-    // Select
-    const sel = document.querySelector('select[name="' + fieldName + '"]');
-    if (sel) sel.value = val;
-  }
-  function clearHiddenValue(fieldName) {
-    const radios = document.querySelectorAll('input[name="' + fieldName + '"]');
-    if (radios.length) {
-      radios.forEach(function (r) { r.checked = false; });
-      return;
-    }
-    const sel = document.querySelector('select[name="' + fieldName + '"]');
-    if (sel) sel.value = '';
-  }
-
-  // ── Initialize A2 ────────────────────────────────────────────
-  initRankGroup('a2-rank-list', 'a2-other-item');
-
-  // ── A3 conditional visibility ────────────────────────────────
   const activity = {{ activity }};
-  const a3 = document.getElementById('a3-block');
-  if (a3) a3.style.display = (activity === 5 || activity === 7) ? 'none' : '';
+
+  function toggleA2() {
+    const selected = document.querySelector('input[name="a1_expectation"]:checked');
+    const val = selected ? parseInt(selected.value) : null;
+    const a2Block = document.getElementById('a2-block');
+    // Hide A2 if respondent never planned to return and hasn't (option 5)
+    if (a2Block) {
+      a2Block.style.display = (val === 5) ? 'none' : '';
+    }
+  }
+
+  toggleA2();
+  document.querySelectorAll('input[name="a1_expectation"]').forEach(
+    r => r.addEventListener('change', toggleA2)
+  );
 });
 </script>
 {{ endblock }}

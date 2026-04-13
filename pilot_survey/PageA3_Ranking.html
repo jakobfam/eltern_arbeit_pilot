@@ -1,99 +1,81 @@
-{{ block title }}Abschnitt B: Finanzielle Überraschungen{{ endblock }}
+{{ block title }}Abschnitt A: Faktoren bei der Rückkehr{{ endblock }}
 
 {{ block content }}
-<p class="text-muted fst-italic">
-  Nun möchten wir erfahren, welche finanziellen Überraschungen die Elternschaft
-  für Sie bereitgehalten hat.
-</p>
 
-{# B1 #}
-{{ formfield 'b1_biggest_surprise' }}
-
-{# B1b: better or worse than expected #}
-{{ formfield 'b1b_financial_experience' }}
-
-{# ── B2: Click-to-Rank ─────────────────────────────────────────── #}
+{# ── A3: Click-to-Rank ─────────────────────────────────────────── #}
 <div class="mb-4">
   <p>
-    <b>B2.</b>
-    Welche der folgenden finanziellen Themen haben Sie am meisten <strong>unterschätzt</strong>?
-    Klicken Sie auf <strong>bis zu drei Themen</strong> in der Reihenfolge
-    (1 = am meisten unterschätzt). Klicken Sie erneut, um eine Auswahl aufzuheben.
+    <b>A3.</b>
+    Wenn Sie an Ihre Rückkehr in den Beruf denken (oder daran, warum Sie nicht zurückgekehrt sind) —
+    welche der folgenden Punkte spielten dabei die größte Rolle?
+    Klicken Sie auf <strong>bis zu drei Faktoren</strong> in der Reihenfolge ihrer Bedeutung
+    (1 = am bedeutsamsten). Klicken Sie erneut, um eine Auswahl aufzuheben.
   </p>
 
   {# Hidden oTree form fields — JS fills these #}
   <div style="display:none">
-    {{ formfield 'b2_rank_income_drop' }}
-    {{ formfield 'b2_rank_tax_work' }}
-    {{ formfield 'b2_rank_pension' }}
-    {{ formfield 'b2_rank_childcare_cost' }}
-    {{ formfield 'b2_rank_career' }}
-    {{ formfield 'b2_rank_daily_costs' }}
-    {{ formfield 'b2_rank_insurance' }}
-    {{ formfield 'b2_rank_elterngeld' }}
-    {{ formfield 'b2_rank_prepared' }}
-    {{ formfield 'b2_rank_other' }}
+    {{ formfield 'a3_rank_childcare' }}
+    {{ formfield 'a3_rank_taxbenefit' }}
+    {{ formfield 'a3_rank_employer' }}
+    {{ formfield 'a3_rank_partner' }}
+    {{ formfield 'a3_rank_social' }}
+    {{ formfield 'a3_rank_confidence' }}
+    {{ formfield 'a3_rank_recovery' }}
+    {{ formfield 'a3_rank_preference' }}
+    {{ formfield 'a3_rank_nodifficulty' }}
+    {{ formfield 'a3_rank_other' }}
   </div>
 
-  <div id="b2-rank-list" class="rank-list">
-    <div class="rank-item" data-field="b2_rank_income_drop">
+  <div id="a3-rank-list" class="rank-list">
+    <div class="rank-item" data-field="a3_rank_childcare">
       <span class="rank-badge"></span>
-      <span class="rank-label">Der Einkommensrückgang während der Elternzeit</span>
+      <span class="rank-label">Kinderbetreuung war nicht verfügbar, zu teuer oder passte nicht zu meinen Arbeitszeiten</span>
     </div>
-    <div class="rank-item" data-field="b2_rank_tax_work">
+    <div class="rank-item" data-field="a3_rank_taxbenefit">
       <span class="rank-badge"></span>
-      <span class="rank-label">Der Einfluss von Steuern und Sozialleistungen darauf, ob sich Mehrarbeit lohnt</span>
+      <span class="rank-label">Mehr zu arbeiten hätte sich finanziell kaum gelohnt (wegen Steuern und wegfallender Leistungen)</span>
     </div>
-    <div class="rank-item" data-field="b2_rank_pension">
+    <div class="rank-item" data-field="a3_rank_employer">
       <span class="rank-badge"></span>
-      <span class="rank-label">Die Auswirkung von Teilzeitarbeit auf meine spätere Rente</span>
+      <span class="rank-label">Mein Arbeitgeber bot nicht die Flexibilität oder Arbeitszeiten, die ich brauchte</span>
     </div>
-    <div class="rank-item" data-field="b2_rank_childcare_cost">
+    <div class="rank-item" data-field="a3_rank_partner">
       <span class="rank-badge"></span>
-      <span class="rank-label">Die Kosten und Verfügbarkeit von Kinderbetreuung</span>
+      <span class="rank-label">Die Arbeitssituation meines Partners erschwerte eine gleichmäßige Aufteilung der Kinderbetreuung</span>
     </div>
-    <div class="rank-item" data-field="b2_rank_career">
+    <div class="rank-item" data-field="a3_rank_social">
       <span class="rank-badge"></span>
-      <span class="rank-label">Der Einfluss auf meinen beruflichen Werdegang und mein Gehalt</span>
+      <span class="rank-label">Erwartungen aus meinem Umfeld (Familie, Freunde, Gesellschaft) an meine Rolle als Mutter</span>
     </div>
-    <div class="rank-item" data-field="b2_rank_daily_costs">
+    <div class="rank-item" data-field="a3_rank_confidence">
       <span class="rank-badge"></span>
-      <span class="rank-label">Die alltäglichen Kosten mit Kind (Ausstattung, Aktivitäten, Essen)</span>
+      <span class="rank-label">Nach der Auszeit fehlte mir berufliches Selbstvertrauen</span>
     </div>
-    <div class="rank-item" data-field="b2_rank_insurance">
+    <div class="rank-item" data-field="a3_rank_recovery">
       <span class="rank-badge"></span>
-      <span class="rank-label">Änderungen bei Versicherungen und Gesundheitsversorgung für die Familie</span>
+      <span class="rank-label">Die körperliche oder seelische Erholung nach der Geburt dauerte länger als erwartet</span>
     </div>
-    <div class="rank-item" data-field="b2_rank_elterngeld">
+    <div class="rank-item" data-field="a3_rank_preference">
       <span class="rank-badge"></span>
-      <span class="rank-label">Wie Elterngeld und ElterngeldPlus in der Praxis tatsächlich funktionieren</span>
+      <span class="rank-label">Ich wollte mehr Zeit mit meinem Kind verbringen und habe mich bewusst gegen eine (frühere) Rückkehr entschieden</span>
     </div>
-    <div class="rank-item" data-field="b2_rank_prepared">
+    <div class="rank-item" data-field="a3_rank_nodifficulty">
       <span class="rank-badge"></span>
-      <span class="rank-label">Insgesamt hat mich finanziell nichts besonders überrascht</span>
+      <span class="rank-label">Keiner dieser Punkte hat eine wesentliche Rolle gespielt</span>
     </div>
   </div>
 
   {# "Sonstiges" with inline text field #}
   <div class="rank-other-row mt-2">
-    <div class="rank-item" data-field="b2_rank_other" id="b2-other-item">
+    <div class="rank-item" data-field="a3_rank_other" id="a3-other-item">
       <span class="rank-badge"></span>
       <span class="rank-label">Sonstiges:</span>
     </div>
     <div class="mt-1 ms-4">
-      {{ formfield 'b2_other_text' }}
+      {{ formfield 'a3_other_text' }}
     </div>
   </div>
 </div>
-
-{# B3 #}
-{{ formfield 'b3_preparedness' }}
-
-{# B4 #}
-{{ formfield 'b4_planning_horizon' }}
-
-{# B4b #}
-{{ formfield 'b4b_regret' }}
 
 {{ next_button }}
 
@@ -228,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (sel) sel.value = '';
   }
 
-  initRankGroup('b2-rank-list', 'b2-other-item');
+  initRankGroup('a3-rank-list', 'a3-other-item');
 });
 </script>
 {{ endblock }}

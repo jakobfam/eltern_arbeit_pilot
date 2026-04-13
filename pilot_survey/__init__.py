@@ -3,7 +3,8 @@ from otree.api import *
 doc = """
 Pilotstudie: Was sollten werdende Eltern wissen?
 A survey for mothers in Germany on financial experiences of parenthood.
-Pages: Intro → A0 (demographics) → A (work) → B (finances) → C (advice) → D (knowledge) → Results
+Pages: Intro → A0 (demographics) → A0b (worries ranking) → A1 (work)
+       → A2 (work factors ranking) → B (finances) → C (advice) → D (knowledge) → Results
 """
 
 
@@ -65,7 +66,6 @@ class Player(BasePlayer):
         blank=True,
     )
 
-    # Conditional on any current or past paid employment (shown via JS in template)
     a0_3b_sector = models.IntegerField(
         label='<b>A0.3b.</b> In welchem Bereich sind oder waren Sie erwerbstätig?',
         choices=[
@@ -88,90 +88,109 @@ class Player(BasePlayer):
     )
 
     a0_4_thoughts_before = models.LongStringField(
-        label ='Was waren die <b>drei wichtigsten Themen</b> über die sie sich <b>vor</b> der Geburt Gedanken gemacht haben?'
-    )
-
-    a0_5_thoughts_wish = models.LongStringField(
-        label ='Was waren die <b>drei wichtigsten Themen</b> über die sie sich <b>gewünscht hätten</b>, dass Sie sich vor der Geburt Gedanken gemacht hätten?'
-    )
-
-
-    # ── Section A: Return to Work ──────────────────────────────────────
-
-    a1_work_experience = models.LongStringField(
         label=(
-            '<b>A1.</b> Denken Sie an die Zeit nach der Geburt Ihres ersten Kindes: '
-            'Wie hat sich die Elternschaft auf Ihr Berufsleben ausgewirkt? '
-            'Was hat sich verändert, welche Herausforderungen gab es, und wie haben Sie entschieden, '
-            'ob, wann und wie viel Sie arbeiten?'
+            '<b>A0.4.</b> Was waren die <b>drei wichtigsten Themen</b>, '
+            'über die Sie sich <b>vor</b> der Geburt Gedanken gemacht haben?'
         ),
     )
 
-    # A2: Ranking question — each item receives a rank of 1, 2, or 3 (or blank).
-    # Participants must assign each rank at most once; validated in error_message.
-    a2_rank_childcare = models.IntegerField(
-        label='Kinderbetreuung war nicht verfügbar, zu teuer oder passte nicht zu meinen Arbeitszeiten',
+    a0_5_thoughts_wish = models.LongStringField(
+        label=(
+            '<b>A0.5.</b> Was waren die <b>drei wichtigsten Themen</b>, '
+            'von denen Sie sich <b>wünschen</b>, Sie hätten sich vor der Geburt '
+            'damit beschäftigt?'
+        ),
+    )
+
+    # ── Section A0b: Structured worry ranking ─────────────────────────
+
+    a0b_rank_health = models.IntegerField(
+        label='Gesundheit von mir und meinem Kind',
         choices=[[1, '1'], [2, '2'], [3, '3']],
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
-    a2_rank_taxbenefit = models.IntegerField(
-        label='Mehr zu arbeiten hätte sich finanziell kaum gelohnt (wegen Steuern und wegfallender Leistungen)',
+    a0b_rank_birth = models.IntegerField(
+        label='Die Geburt selbst',
         choices=[[1, '1'], [2, '2'], [3, '3']],
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
-    a2_rank_employer = models.IntegerField(
-        label='Mein Arbeitgeber bot nicht die Flexibilität oder Arbeitszeiten, die ich brauchte',
+    a0b_rank_good_mother = models.IntegerField(
+        label='Ob ich eine gute Mutter sein werde',
         choices=[[1, '1'], [2, '2'], [3, '3']],
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
-    a2_rank_partner = models.IntegerField(
-        label='Die Arbeitssituation meines Partners erschwerte eine gleichmäßige Aufteilung der Kinderbetreuung',
+    a0b_rank_overwhelm = models.IntegerField(
+        label='Überforderung im Alltag mit Kind (Schlafmangel, alles unter einen Hut bekommen)',
         choices=[[1, '1'], [2, '2'], [3, '3']],
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
-    a2_rank_confidence = models.IntegerField(
-        label='Nach der Auszeit fehlte mir berufliches Selbstvertrauen',
+    a0b_rank_identity = models.IntegerField(
+        label='Meine eigene Identität und Unabhängigkeit nicht zu verlieren',
         choices=[[1, '1'], [2, '2'], [3, '3']],
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
-    a2_rank_recovery = models.IntegerField(
-        label='Die körperliche oder seelische Erholung nach der Geburt dauerte länger als erwartet',
+    a0b_rank_mental_health = models.IntegerField(
+        label='Psychische Gesundheit (z.\u202fB. postpartale Depression, Erschöpfung)',
         choices=[[1, '1'], [2, '2'], [3, '3']],
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
-    a2_rank_preference = models.IntegerField(
-        label='Ich wollte mehr Zeit mit meinem Kind verbringen und habe mich bewusst gegen eine (frühere) Rückkehr entschieden',
+    a0b_rank_relationship = models.IntegerField(
+        label='Auswirkungen auf meine Partnerschaft',
         choices=[[1, '1'], [2, '2'], [3, '3']],
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
-    a2_rank_nodifficulty = models.IntegerField(
-        label='Insgesamt hatte ich keine größeren Schwierigkeiten beim Wiedereinstieg',
+    a0b_rank_childcare = models.IntegerField(
+        label='Kinderbetreuung organisieren',
         choices=[[1, '1'], [2, '2'], [3, '3']],
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
-    a2_other_text = models.StringField(
+    a0b_rank_career = models.IntegerField(
+        label='Meine berufliche Entwicklung und Karriere',
+        choices=[[1, '1'], [2, '2'], [3, '3']],
+        blank=True, widget=widgets.RadioSelectHorizontal,
+    )
+    a0b_rank_finances_short = models.IntegerField(
+        label='Finanzielle Situation während der Elternzeit (Elterngeld, laufende Kosten)',
+        choices=[[1, '1'], [2, '2'], [3, '3']],
+        blank=True, widget=widgets.RadioSelectHorizontal,
+    )
+    a0b_rank_finances_long = models.IntegerField(
+        label='Langfristige finanzielle Absicherung (Rente, Vermögensaufbau)',
+        choices=[[1, '1'], [2, '2'], [3, '3']],
+        blank=True, widget=widgets.RadioSelectHorizontal,
+    )
+    a0b_rank_division = models.IntegerField(
+        label='Aufteilung von Erwerbs- und Sorgearbeit mit meinem Partner',
+        choices=[[1, '1'], [2, '2'], [3, '3']],
+        blank=True, widget=widgets.RadioSelectHorizontal,
+    )
+    a0b_rank_social = models.IntegerField(
+        label='Erwartungen aus meinem Umfeld (Familie, Freunde, Gesellschaft)',
+        choices=[[1, '1'], [2, '2'], [3, '3']],
+        blank=True, widget=widgets.RadioSelectHorizontal,
+    )
+    a0b_rank_housing = models.IntegerField(
+        label='Wohnsituation (Platz, Umzug, Wohnkosten)',
+        choices=[[1, '1'], [2, '2'], [3, '3']],
+        blank=True, widget=widgets.RadioSelectHorizontal,
+    )
+    a0b_other_text = models.StringField(
         label='Sonstiges (bitte angeben):',
         blank=True,
     )
-    a2_rank_other = models.IntegerField(
+    a0b_rank_other = models.IntegerField(
         label='Rang für „Sonstiges"',
         choices=[[1, '1'], [2, '2'], [3, '3']],
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
 
-    # Conditional: shown only when A0.3 is not homemaker (5) or not-seeking-unemployed (7)
-    a3_wishes = models.LongStringField(
-        label=(
-            '<b>A3.</b> Was hätten Sie sich beim Wiedereinstieg anders gewünscht – '
-            'egal ob er schon hinter Ihnen liegt oder noch bevorsteht? '
-            'Das kann etwas Eigenes sein, etwas vom Arbeitgeber oder etwas am System.'
-        ),
-        blank=True,
-    )
 
-    a4_expectation = models.IntegerField(
+    # ── Section A: Return to Work ──────────────────────────────────────
+
+    a1_expectation = models.IntegerField(
         label=(
-            '<b>A4.</b> Wie hat sich Ihr Berufsleben nach der Geburt im Vergleich zu Ihren Erwartungen entwickelt?'
+            '<b>A1.</b> Wie hat sich Ihr Berufsleben nach der Geburt im Vergleich '
+            'zu Ihren Erwartungen entwickelt?'
         ),
         choices=[
             [1, 'Ungefähr so, wie ich es erwartet hatte'],
@@ -184,21 +203,111 @@ class Player(BasePlayer):
         widget=widgets.RadioSelect,
     )
 
-    a4_reason = models.LongStringField(
-        label='Falls Ihre Situation anders verlaufen ist als erwartet: Was war der Hauptgrund?',
+    a1b_reason = models.LongStringField(
+        label='<b>A1b.</b> Falls Ihre Situation anders verlaufen ist als erwartet: Was war der Hauptgrund?',
         blank=True,
+    )
+
+    # A2: Overall experience Likert — conditional: hidden when A1=5 (never planned to return)
+    a2_return_experience = models.IntegerField(
+        label=(
+            '<b>A2.</b> Unabhängig davon, ob Sie bereits in den Beruf zurückgekehrt sind '
+            'oder nicht — wie empfinden oder empfanden Sie den Prozess rund um den '
+            'beruflichen Wiedereinstieg insgesamt?'
+        ),
+        choices=[
+            [1, 'Sehr einfach'],
+            [2, 'Eher einfach'],
+            [3, 'Teils teils'],
+            [4, 'Eher schwierig'],
+            [5, 'Sehr schwierig'],
+        ],
+        widget=widgets.RadioSelectHorizontal,
+        blank=True,
+    )
+
+    # A3: Ranking question — factors that played the biggest role in return to work
+    a3_rank_childcare = models.IntegerField(
+        label='Kinderbetreuung war nicht verfügbar, zu teuer oder passte nicht zu meinen Arbeitszeiten',
+        choices=[[1, '1'], [2, '2'], [3, '3']],
+        blank=True, widget=widgets.RadioSelectHorizontal,
+    )
+    a3_rank_taxbenefit = models.IntegerField(
+        label='Mehr zu arbeiten hätte sich finanziell kaum gelohnt (wegen Steuern und wegfallender Leistungen)',
+        choices=[[1, '1'], [2, '2'], [3, '3']],
+        blank=True, widget=widgets.RadioSelectHorizontal,
+    )
+    a3_rank_employer = models.IntegerField(
+        label='Mein Arbeitgeber bot nicht die Flexibilität oder Arbeitszeiten, die ich brauchte',
+        choices=[[1, '1'], [2, '2'], [3, '3']],
+        blank=True, widget=widgets.RadioSelectHorizontal,
+    )
+    a3_rank_partner = models.IntegerField(
+        label='Die Arbeitssituation meines Partners erschwerte eine gleichmäßige Aufteilung der Kinderbetreuung',
+        choices=[[1, '1'], [2, '2'], [3, '3']],
+        blank=True, widget=widgets.RadioSelectHorizontal,
+    )
+    a3_rank_social = models.IntegerField(
+        label='Erwartungen aus meinem Umfeld (Familie, Freunde, Gesellschaft) an meine Rolle als Mutter',
+        choices=[[1, '1'], [2, '2'], [3, '3']],
+        blank=True, widget=widgets.RadioSelectHorizontal,
+    )
+    a3_rank_confidence = models.IntegerField(
+        label='Nach der Auszeit fehlte mir berufliches Selbstvertrauen',
+        choices=[[1, '1'], [2, '2'], [3, '3']],
+        blank=True, widget=widgets.RadioSelectHorizontal,
+    )
+    a3_rank_recovery = models.IntegerField(
+        label='Die körperliche oder seelische Erholung nach der Geburt dauerte länger als erwartet',
+        choices=[[1, '1'], [2, '2'], [3, '3']],
+        blank=True, widget=widgets.RadioSelectHorizontal,
+    )
+    a3_rank_preference = models.IntegerField(
+        label='Ich wollte mehr Zeit mit meinem Kind verbringen und habe mich bewusst gegen eine (frühere) Rückkehr entschieden',
+        choices=[[1, '1'], [2, '2'], [3, '3']],
+        blank=True, widget=widgets.RadioSelectHorizontal,
+    )
+    a3_rank_nodifficulty = models.IntegerField(
+        label='Keiner dieser Punkte hat eine wesentliche Rolle gespielt',
+        choices=[[1, '1'], [2, '2'], [3, '3']],
+        blank=True, widget=widgets.RadioSelectHorizontal,
+    )
+    a3_other_text = models.StringField(
+        label='Sonstiges (bitte angeben):',
+        blank=True,
+    )
+    a3_rank_other = models.IntegerField(
+        label='Rang für „Sonstiges"',
+        choices=[[1, '1'], [2, '2'], [3, '3']],
+        blank=True, widget=widgets.RadioSelectHorizontal,
     )
 
     # ── Section B: Financial Surprises ────────────────────────────────
 
     b1_biggest_surprise = models.LongStringField(
         label=(
-            '<b>B1.</b> Was war die größte finanzielle Überraschung für Sie, nachdem Sie Mutter geworden sind? '
+            '<b>B1.</b> Was war die größte finanzielle Überraschung für Sie, '
+            'nachdem Sie Mutter geworden sind? '
             'Das kann etwas Positives oder Negatives sein – alles, was Sie nicht erwartet haben.'
         ),
     )
 
-    # B2: Ranking question — same pattern as A2
+    b1b_financial_experience = models.IntegerField(
+        label=(
+            '<b>B1b.</b> Sind Sie mit den finanziellen Veränderungen durch die Elternschaft '
+            'insgesamt besser oder schlechter zurechtgekommen als erwartet?'
+        ),
+        choices=[
+            [1, 'Viel besser als erwartet'],
+            [2, 'Etwas besser als erwartet'],
+            [3, 'Ungefähr wie erwartet'],
+            [4, 'Etwas schlechter als erwartet'],
+            [5, 'Viel schlechter als erwartet'],
+        ],
+        widget=widgets.RadioSelectHorizontal,
+    )
+
+    # B2: Ranking question — "most underestimated / didn't see coming"
     b2_rank_income_drop = models.IntegerField(
         label='Der Einkommensrückgang während der Elternzeit',
         choices=[[1, '1'], [2, '2'], [3, '3']],
@@ -220,7 +329,7 @@ class Player(BasePlayer):
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
     b2_rank_career = models.IntegerField(
-        label='Der Einfluss eines Kindes auf meinen beruflichen Werdegang und mein Gehalt',
+        label='Der Einfluss auf meinen beruflichen Werdegang und mein Gehalt',
         choices=[[1, '1'], [2, '2'], [3, '3']],
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
@@ -240,7 +349,7 @@ class Player(BasePlayer):
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
     b2_rank_prepared = models.IntegerField(
-        label='Insgesamt hat mich davon nichts besonders überrascht',
+        label='Insgesamt hat mich finanziell nichts besonders überrascht',
         choices=[[1, '1'], [2, '2'], [3, '3']],
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
@@ -303,7 +412,6 @@ class Player(BasePlayer):
         ),
     )
 
-    # C2: Multi-select (1–3) — implemented as 9 BooleanFields rendered as checkboxes
     c2_elterngeld = models.BooleanField(
         label='Wie Elterngeld und ElterngeldPlus funktionieren (Beträge, Dauer, Antragstellung)',
         widget=widgets.CheckboxInput, blank=True, initial=False,
@@ -357,8 +465,8 @@ class Player(BasePlayer):
 
     c3b_return_tip = models.LongStringField(
         label=(
-            '<b>C3b.</b> Wenn Sie Ihrer Freundin einen Tipp zur Planung ihrer Rückkehr in den Beruf geben könnten, '
-            'was wäre das?'
+            '<b>C3b.</b> Wenn Sie Ihrer Freundin einen Tipp zur Planung ihrer Rückkehr '
+            'in den Beruf geben könnten, was wäre das?'
         ),
         blank=True,
     )
@@ -383,7 +491,9 @@ class Player(BasePlayer):
 
     d2_splitting_knowledge = models.IntegerField(
         label=(
-            '<b>D2.</b> Für welche Art von Paar bringt das Ehegattensplitting '
+            '<b>D2.</b> Beim Ehegattensplitting werden die Einkommen beider Ehepartner '
+            'zusammengerechnet und gemeinsam besteuert. '
+            'Für welche Art von Paar bringt das Ehegattensplitting '
             'den größten Steuervorteil?'
         ),
         choices=[
@@ -391,6 +501,7 @@ class Player(BasePlayer):
             [2, 'Zwei Partner, bei denen einer deutlich mehr verdient als der andere'],
             [3, 'Der Vorteil ist unabhängig von der Einkommensverteilung gleich'],
             [4, 'Weiß ich nicht / bin nicht sicher'],
+            [5, 'Ich weiß nicht, was Ehegattensplitting ist'],
         ],
         widget=widgets.RadioSelect,
     )
@@ -406,7 +517,7 @@ class Intro(Page):
 
 
 class PageA0(Page):
-    """Section A0: Demographics."""
+    """Section A0: Demographics + open-text pre-birth thoughts."""
     form_model = 'player'
     form_fields = [
         'a0_1_birth_year',
@@ -416,46 +527,85 @@ class PageA0(Page):
         'a0_3b_sector',
         'a0_3b_sector_other',
         'a0_4_thoughts_before',
-        'a0_5_thoughts_wish'
+        'a0_5_thoughts_wish',
     ]
 
 
-class PageA_Work(Page):
-    """Section A: Return to work — includes ranking A2 and conditional A3."""
+class PageA0b_Sorgen(Page):
+    """Structured worry ranking — which topics worried you most before birth?"""
     form_model = 'player'
     form_fields = [
-        'a1_work_experience',
-        # A2 ranking items
-        'a2_rank_childcare', 'a2_rank_taxbenefit', 'a2_rank_employer',
-        'a2_rank_partner', 'a2_rank_confidence', 'a2_rank_recovery',
-        'a2_rank_preference', 'a2_rank_nodifficulty',
-        'a2_other_text', 'a2_rank_other',
-        # A3 (conditional — blank=True, JS hides it for homemaker/not-seeking)
-        'a3_wishes',
-        # A4
-        'a4_expectation', 'a4_reason',
+        'a0b_rank_health', 'a0b_rank_birth',
+        'a0b_rank_good_mother', 'a0b_rank_overwhelm',
+        'a0b_rank_identity', 'a0b_rank_mental_health',
+        'a0b_rank_relationship', 'a0b_rank_childcare', 'a0b_rank_career',
+        'a0b_rank_finances_short', 'a0b_rank_finances_long',
+        'a0b_rank_division', 'a0b_rank_social', 'a0b_rank_housing',
+        'a0b_other_text', 'a0b_rank_other',
+    ]
+
+    @staticmethod
+    def error_message(player, values):
+        a0b_fields = [
+            'a0b_rank_health', 'a0b_rank_birth',
+            'a0b_rank_good_mother', 'a0b_rank_overwhelm',
+            'a0b_rank_identity', 'a0b_rank_mental_health',
+            'a0b_rank_relationship', 'a0b_rank_childcare', 'a0b_rank_career',
+            'a0b_rank_finances_short', 'a0b_rank_finances_long',
+            'a0b_rank_division', 'a0b_rank_social', 'a0b_rank_housing',
+            'a0b_rank_other',
+        ]
+        ranks = [values.get(f) for f in a0b_fields if values.get(f) is not None]
+        if len(ranks) < 1:
+            return 'Bitte wählen Sie mindestens ein Thema aus.'
+        if len(ranks) > 3:
+            return 'Bitte wählen Sie höchstens drei Themen aus.'
+        if len(set(ranks)) != len(ranks):
+            return 'Bitte vergeben Sie jeden Rang nur einmal.'
+
+
+class PageA_Work(Page):
+    """Section A page 1: A1 (expectation), A2 (experience Likert, conditional)."""
+    form_model = 'player'
+    form_fields = [
+        'a1_expectation', 'a1b_reason',
+        'a2_return_experience',
     ]
 
     @staticmethod
     def vars_for_template(player):
-        # Pass activity code so the template can show/hide A3 via JavaScript
+        return dict(activity=player.a0_3_activity)
+
+
+class PageA3_Ranking(Page):
+    """Section A page 2: A3 ranking of factors."""
+    form_model = 'player'
+    form_fields = [
+        'a3_rank_childcare', 'a3_rank_taxbenefit', 'a3_rank_employer',
+        'a3_rank_partner', 'a3_rank_social', 'a3_rank_confidence',
+        'a3_rank_recovery', 'a3_rank_preference', 'a3_rank_nodifficulty',
+        'a3_other_text', 'a3_rank_other',
+    ]
+
+    @staticmethod
+    def vars_for_template(player):
         return dict(activity=player.a0_3_activity)
 
     @staticmethod
     def error_message(player, values):
-        # Validate A2: 1–3 items ranked, each rank used at most once
-        a2_fields = [
-            'a2_rank_childcare', 'a2_rank_taxbenefit', 'a2_rank_employer',
-            'a2_rank_partner', 'a2_rank_confidence', 'a2_rank_recovery',
-            'a2_rank_preference', 'a2_rank_nodifficulty', 'a2_rank_other',
+        a3_fields = [
+            'a3_rank_childcare', 'a3_rank_taxbenefit', 'a3_rank_employer',
+            'a3_rank_partner', 'a3_rank_social', 'a3_rank_confidence',
+            'a3_rank_recovery', 'a3_rank_preference', 'a3_rank_nodifficulty',
+            'a3_rank_other',
         ]
-        ranks = [values.get(f) for f in a2_fields if values.get(f) is not None]
+        ranks = [values.get(f) for f in a3_fields if values.get(f) is not None]
         if len(ranks) < 1:
-            return 'Bitte wählen Sie bei Frage A2 mindestens einen Faktor aus.'
+            return 'Bitte wählen Sie bei Frage A3 mindestens einen Faktor aus.'
         if len(ranks) > 3:
-            return 'Bitte wählen Sie bei Frage A2 höchstens drei Faktoren aus.'
+            return 'Bitte wählen Sie bei Frage A3 höchstens drei Faktoren aus.'
         if len(set(ranks)) != len(ranks):
-            return 'Bitte vergeben Sie bei Frage A2 jeden Rang nur einmal.'
+            return 'Bitte vergeben Sie bei Frage A3 jeden Rang nur einmal.'
 
 
 class PageB_Finance(Page):
@@ -463,6 +613,7 @@ class PageB_Finance(Page):
     form_model = 'player'
     form_fields = [
         'b1_biggest_surprise',
+        'b1b_financial_experience',
         # B2 ranking items
         'b2_rank_income_drop', 'b2_rank_tax_work', 'b2_rank_pension',
         'b2_rank_childcare_cost', 'b2_rank_career', 'b2_rank_daily_costs',
@@ -474,7 +625,6 @@ class PageB_Finance(Page):
 
     @staticmethod
     def error_message(player, values):
-        # Validate B2: 1–3 items ranked, each rank used at most once
         b2_fields = [
             'b2_rank_income_drop', 'b2_rank_tax_work', 'b2_rank_pension',
             'b2_rank_childcare_cost', 'b2_rank_career', 'b2_rank_daily_costs',
@@ -495,16 +645,13 @@ class PageC_Advice(Page):
     form_model = 'player'
     form_fields = [
         'c1_advice',
-        # C2 checkboxes (up to 3)
         'c2_elterngeld', 'c2_tax', 'c2_pension', 'c2_childcare', 'c2_career',
         'c2_insurance', 'c2_budget', 'c2_savings', 'c2_legal',
-        # C3, C3b
         'c3_plan_importance', 'c3b_return_tip',
     ]
 
     @staticmethod
     def error_message(player, values):
-        # Validate C2: at most 3 topics selected
         c2_fields = [
             'c2_elterngeld', 'c2_tax', 'c2_pension', 'c2_childcare', 'c2_career',
             'c2_insurance', 'c2_budget', 'c2_savings', 'c2_legal',
@@ -530,7 +677,9 @@ class Results(Page):
 page_sequence = [
     Intro,
     PageA0,
+    PageA0b_Sorgen,
     PageA_Work,
+    PageA3_Ranking,
     PageB_Finance,
     PageC_Advice,
     PageD_Knowledge,

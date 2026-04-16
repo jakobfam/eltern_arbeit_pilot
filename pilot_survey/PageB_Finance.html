@@ -1,17 +1,6 @@
 {{ block title }}Abschnitt B: Finanzielle Überraschungen{{ endblock }}
 
 {{ block content }}
-<p class="text-muted fst-italic">
-  Nun möchten wir erfahren, welche finanziellen Überraschungen die Elternschaft
-  für Sie bereitgehalten hat.
-</p>
-
-{# B1 #}
-{{ formfield 'b1_biggest_surprise' }}
-
-{# B1b: better or worse than expected #}
-{{ formfield 'b1b_financial_experience' }}
-
 {# ── B2: Click-to-Rank ─────────────────────────────────────────── #}
 <div class="mb-4">
   <p>
@@ -92,9 +81,6 @@
 {# B4 #}
 {{ formfield 'b4_planning_horizon' }}
 
-{# B4b #}
-{{ formfield 'b4b_regret' }}
-
 {# B5: Complexity — deliberate simplification #}
 {{ formfield 'b5_simplify' }}
 
@@ -112,8 +98,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const val = selected ? parseInt(selected.value) : null;
     const b5bBlock = document.getElementById('b5b-block');
     if (b5bBlock) {
-      // Show follow-up only when "Ja" (1) or "Teilweise" (2)
-      b5bBlock.style.display = (val === 1 || val === 2) ? '' : 'none';
+      // Show follow-up when "Ja" (1), "Teilweise" (2), or "Erst später aufgefallen" (4)
+      b5bBlock.style.display = (val === 1 || val === 2 || val === 4) ? '' : 'none';
     }
   }
 

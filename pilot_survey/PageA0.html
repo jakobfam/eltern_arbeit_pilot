@@ -6,7 +6,24 @@
   Diese helfen uns zu verstehen, wen wir befragen.
 </p>
 
-{{ formfields }}
+{# Main demographics fields #}
+{{ formfield 'a0_1_birth_year' }}
+{{ formfield 'a0_2_income' }}
+{{ formfield 'a0_3_activity' }}
+{{ formfield 'a0_3_activity_other' }}
+{{ formfield 'a0_3b_sector' }}
+{{ formfield 'a0_3b_sector_other' }}
+<div class="mb-3">
+  {{ formfield 'a0_5_thoughts_wish' }}
+</div>
+
+{# Attention check — visibly labeled as such #}
+{{ formfield 'attention_check_1' }}
+
+{# Bot detection honeypot — hidden from humans via CSS, bots may fill it in #}
+<div aria-hidden="true" style="position:absolute; left:-10000px; top:auto; width:1px; height:1px; overflow:hidden;">
+  {{ formfield 'hidden_field' }}
+</div>
 
 {{ next_button }}
 
@@ -16,7 +33,6 @@
   const workCodes = [1, 2, 3, 4, 6, 8, 9];
 
   function toggleSector() {
-    // Find the selected radio button for a0_3_activity
     const selected = document.querySelector('input[name="a0_3_activity"]:checked');
     const code = selected ? parseInt(selected.value) : null;
     const sectorBlock = document.getElementById('sector-block');
@@ -26,11 +42,9 @@
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    // Wrap sector fields in a div so we can show/hide them together
     const sectorFields = document.querySelectorAll(
       '[id*="a0_3b_sector"], [id*="a0_3b_sector_other"], label[for*="a0_3b_sector"]'
     );
-    // oTree wraps each field in a .controls div; find the form-group parents
     const toWrap = [];
     sectorFields.forEach(el => {
       let parent = el.closest('.mb-3') || el.closest('.form-group') || el.parentElement;

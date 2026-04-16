@@ -6,6 +6,11 @@ SESSION_CONFIGS = [
         display_name='Pilotstudie – Was sollten werdende Eltern wissen?',
         app_sequence=['pilot_survey'],
         num_demo_participants=1,
+        prolific=True,
+        # Prolific completion URLs — replace these with the actual URLs from the Prolific study setup
+        link_completed='https://app.prolific.com/submissions/complete?cc=REPLACE_WITH_COMPLETED_CODE',
+        link_no_consent='https://app.prolific.com/submissions/complete?cc=REPLACE_WITH_NO_CONSENT_CODE',
+        link_no_attention='https://app.prolific.com/submissions/complete?cc=REPLACE_WITH_NO_ATTENTION_CODE',
     ),
 ]
 

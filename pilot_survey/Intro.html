@@ -1,29 +1,71 @@
-{{ block title }}Herzlich willkommen{{ endblock }}
+{% block title %}
+    Herzlich Willkommen!
+{% endblock %}
 
-{{ block content }}
-<div class="card mb-4">
-  <div class="card-body">
-    <h4>Pilotstudie – Wichtige Aspekte für werdende Eltern</h4>
-    <p class="text-muted fst-italic">
-      Von den Erfahrungen von Müttern lernen
-    </p>
-    <hr>
+{% block content %}
     <p>
-      <strong>Zweck.</strong> Wir wollen besser verstehen, wie Eltern über spezifische Aspekte des Elternwerdens nachdenken. Um sicherzustellen, dass wir hier das abdecken,
-      was wirklich wichtig ist, befragen wir Mütter, die diese Erfahrung bereits gemacht haben.
-      Ihre Erfahrung ist die wertvollste Quelle, die wir haben.
-      Uns ist klar, das wir bestimmte Aspekte in dieser Umfrage nicht mit abdecken können. Wir sind hier lediglich an einem Teil der Gesamtsituation interessiert.
+        Diese Umfrage ist Teil eines aktuellen Forschungsprojekts der Goethe-Universität und Johannes Gutenberg-Universität
+        zum Thema <b>finanzielle und berufliche Erfahrungen rund um die Elternschaft</b>.
+        Wir danken Ihnen, dass Sie unsere Forschung unterstützen. Um möglichst aussagekräftige Ergebnisse erzielen zu können,
+        möchten wir Sie bitten, die Fragen in dieser Umfrage <b>allein zu beantworten</b> und sich nicht mit anderen Personen abzusprechen.
     </p>
-    <p>
-      <strong>Was wir fragen.</strong> Wir möchten von Ihren persönlichen Erfahrungen hören:
-      wie der Übergang zur Elternschaft verlaufen ist, was Sie überrascht hat und
-      was Sie gerne vorher gewusst hätten. Es gibt keine richtigen oder falschen Antworten.
-      Einige Fragen beziehen sich auch auf bestimmte Regelungen –
-      wenn Sie unsicher sind, sagen Sie das bitte einfach. 
-    </p>
-    <p><strong>Dauer.</strong> Etwa 15 Minuten.</p>
-  </div>
-</div>
 
-{{ next_button }}
-{{ endblock }}
+    <p>
+        <b>Wer ist verantwortlich für die Studie?</b>
+    </p>
+    <p>
+        Verantwortlich für die Durchführung der Studie ist das Frankfurter Labor für Experimentelle Wirtschaftsforschung
+        (FLEX), Goethe-Universität, Theodor-W.-Adorno-Platz 4, 60323 Frankfurt am Main.
+    </p>
+
+    <p>
+        <b>Welchen Zwecken dient diese Studie?</b>
+    </p>
+    <p>
+        Ziel dieser Studie ist es, besser zu verstehen, welche Themen werdende und frischgebackene Eltern beschäftigen,
+        was sie überrascht hat und was sie gerne vorher gewusst hätten. Ihre Erfahrung hilft uns, Informationsangebote für
+        werdende Eltern gezielter und relevanter zu gestalten. Wie bei ökonomischen Studien üblich,
+        erfolgt vorab keine umfassende Aufklärung über den gesamten Forschungshintergrund. Sämtliche relevanten Informationen
+        werden Ihnen während bzw. nach der Studie zur Verfügung gestellt.
+    </p>
+
+    <p>
+        <b>Was geschieht mit meinen Daten?</b>
+    </p>
+    <p>
+        Alle beteiligten Mitarbeiter und Wissenschaftler arbeiten selbstverständlich nach den Vorschriften der Datenschutz-Grundverordnung,
+        dem Bundesdatenschutzgesetz und den einschlägigen Landesdatenschutzgesetzen. Ihre Daten werden unmittelbar nach der Erhebung pseudonymisiert gespeichert
+        und anschließend statistisch ausgewertet. Aus den Ergebnissen lassen sich anschließend keine Rückschlüsse auf Sie als Person ziehen.
+    </p>
+
+    <p>
+        <b>Einwilligungserklärung</b>
+    </p>
+    <p>
+        Hiermit willige ich in die Verarbeitung meiner personenbezogenen Daten für das Forschungsvorhaben ein. Die Einwilligung kann ich jederzeit widerrufen.
+    </p>
+    <p>
+        Mit meiner Einwilligung erkläre ich, dass ich
+    </p>
+    <ul style='list-style-type: circle;'>
+        <li>mindestens 18 Jahre alt bin</li>
+        <li>freiwillig an dieser Umfrage teilnehme</li>
+        <li>die Hinweise zur Verwendung meiner Daten und zu meinen Rechten zur Kenntnis genommen habe.</li>
+    </ul>
+
+    <p>
+        Bitte beachten Sie, dass eine erfolgreiche Teilnahme an dieser Studie nur möglich ist, wenn Sie dieser Studie Ihre Aufmerksamkeit widmen.
+        Zu diesem Zweck gibt es zwei Fragen, die Ihre Aufmerksamkeit testen, und welche explizit als solche gekennzeichnet sind.
+        Wenn Sie Fragen zu dieser Studie haben oder auf technische Probleme stoßen, wenden Sie sich bitte über den von Prolific bereitgestellten Chat an das Forschungsteam.
+        Sollten Sie nach Abschluss der Studie Fragen zu dieser Forschung haben, einschließlich Fragen zu Ihrer Vergütung für die Teilnahme,
+        können Sie das Forschungsteam ebenfalls über Prolific kontaktieren.
+    </p>
+
+    <p><b>Dauer.</b> Etwa 15 Minuten.</p>
+
+    <p>
+        {{ formfield "consent" }}
+    </p>
+
+    {{ next_button }}
+{% endblock %}

@@ -1,0 +1,33 @@
+{{ block title }}Abschnitt B: Finanzielle Erfahrungen{{ endblock }}
+
+{{ block content }}
+<p class="text-muted fst-italic">
+  Nun möchten wir erfahren, welche finanziellen Überraschungen die Elternschaft
+  für Sie bereitgehalten hat.
+</p>
+
+{# B1 #}
+{{ formfield 'b1_biggest_surprise' }}
+
+{# B1b: better or worse than expected #}
+{{ formfield 'b1b_financial_experience' }}
+
+{# B1c: Financial measures taken #}
+<div class="mb-4">
+  <label class="form-label">
+    <b>B1c.</b> Welche der folgenden Maßnahmen haben Sie im Zusammenhang
+    mit der Familiengründung getroffen? <span class="text-muted">(Mehrfachauswahl möglich)</span>
+  </label>
+  <div class="ms-2">
+    {{ formfield 'b1c_own_account' }}
+    {{ formfield 'b1c_contract' }}
+    {{ formfield 'b1c_grundbuch' }}
+    {{ formfield 'b1c_overview' }}
+    {{ formfield 'b1c_retirement' }}
+    {{ formfield 'b1c_care_compensation' }}
+    {{ formfield 'b1c_none' }}
+  </div>
+</div>
+
+{{ next_button }}
+{{ endblock }}

@@ -8,9 +8,9 @@ SESSION_CONFIGS = [
         num_demo_participants=1,
         prolific=True,
         # Prolific completion URLs — replace these with the actual URLs from the Prolific study setup
-        link_completed='https://app.prolific.com/submissions/complete?cc=REPLACE_WITH_COMPLETED_CODE',
-        link_no_consent='https://app.prolific.com/submissions/complete?cc=REPLACE_WITH_NO_CONSENT_CODE',
-        link_no_attention='https://app.prolific.com/submissions/complete?cc=REPLACE_WITH_NO_ATTENTION_CODE',
+        link_completed='https://app.prolific.com/submissions/complete?cc=C1N5RAH6',
+        link_no_consent='https://app.prolific.com/submissions/complete?cc=C11JQHIK',
+        link_no_attention='https://app.prolific.com/submissions/complete?cc=C1P0U9NC',
     ),
 ]
 
@@ -33,7 +33,7 @@ ROOMS = [
     ),
 ]
 
-ADMIN_USERNAME = 'admin'
+ADMIN_USERNAME = 'hjkbkjn'
 ADMIN_PASSWORD = environ.get('OTREE_ADMIN_PASSWORD')
 
 DEMO_PAGE_INTRO_HTML = ''

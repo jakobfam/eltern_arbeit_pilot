@@ -1,19 +1,43 @@
-{{ block title }}Abschnitt D: Wissenscheck{{ endblock }}
+{{ block styles }}
+<link rel="stylesheet" href="{{ static 'global/theme.css' }}">
+{{ endblock }}
+
+{{ block title }}Wissenscheck{{ endblock }}
 
 {{ block content }}
-<p class="text-muted fst-italic">
-  Zum Abschluss zwei kurze Wissensfragen.
-  Wenn Sie sich nicht sicher sind, ist das völlig in Ordnung – wählen Sie einfach „Weiß ich nicht".
-</p>
+<div class="page-content-card">
+  <p class="section-intro">
+    Zum Abschluss zwei kurze Wissensfragen.
+    Wenn Sie sich nicht sicher sind, ist das völlig in Ordnung – wählen Sie einfach „Weiß ich nicht".
+  </p>
 
-{# D1 #}
-{{ formfield 'd1_pension_knowledge' }}
+  {{ formfield 'd1_pension_knowledge' }}
 
-{# D2 — label already contains the inline explanation #}
-{{ formfield 'd2_splitting_knowledge' }}
+  {{ formfield 'd2_splitting_knowledge' }}
 
-{# Attention check #}
-{{ formfield 'attention_check_2' }}
+  {{ formfield 'attention_check_2' }}
+</div>
 
 {{ next_button }}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+  body { font-family: 'Nunito', sans-serif !important; background-color: #FAF5F0 !important; color: #2D2A2E; }
+  .page-content-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(107,58,110,0.06); padding: 32px 28px; margin-bottom: 24px; }
+  .section-intro { color: #7A7078; font-style: italic; font-size: 0.93rem; line-height: 1.55; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid #E8DFE0; }
+  .btn-primary, .otree-btn-next, button[type="submit"] {
+    background-color: #6B3A6E !important; border: none !important; border-radius: 999px !important;
+    color: #fff !important; font-family: 'Nunito', sans-serif !important; font-weight: 700 !important;
+    font-size: 1rem !important; padding: 12px 40px !important; transition: all 0.2s ease !important;
+  }
+  .btn-primary:hover, .otree-btn-next:hover, button[type="submit"]:hover { background-color: #8B5E8E !important; }
+  .form-control, input[type="text"], input[type="number"], textarea, select {
+    border: 1.5px solid #DDD4D6 !important; border-radius: 12px !important;
+    font-family: 'Nunito', sans-serif !important; padding: 10px 14px !important; font-size: 0.95rem !important;
+  }
+  .form-control:focus, input:focus, textarea:focus, select:focus { border-color: #6B3A6E !important; box-shadow: 0 0 0 3px rgba(107,58,110,0.12) !important; }
+  .form-check-input:checked { background-color: #6B3A6E !important; border-color: #6B3A6E !important; }
+  .form-check-input:focus { box-shadow: 0 0 0 3px rgba(107,58,110,0.15) !important; }
+  label, .form-label { font-weight: 600; font-family: 'Nunito', sans-serif !important; }
+</style>
 {{ endblock }}

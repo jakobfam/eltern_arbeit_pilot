@@ -1,71 +1,73 @@
+{% load otree static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'global/theme.css' %}">
+{% endblock %}
+
 {% block title %}
     Herzlich Willkommen!
 {% endblock %}
 
 {% block content %}
-    <p>
-        Diese Umfrage ist Teil eines aktuellen Forschungsprojekts der Goethe-Universität und Johannes Gutenberg-Universität
-        zum Thema <b>finanzielle und berufliche Erfahrungen rund um die Elternschaft</b>.
-        Wir danken Ihnen, dass Sie unsere Forschung unterstützen. Um möglichst aussagekräftige Ergebnisse erzielen zu können,
-        möchten wir Sie bitten, die Fragen in dieser Umfrage <b>allein zu beantworten</b> und sich nicht mit anderen Personen abzusprechen.
+<div class="consent-card">
+    <p style="font-size: 1.05rem; line-height: 1.7;">
+        Diese Umfrage ist Teil eines Forschungsprojekts der
+        <strong>Goethe-Universität</strong> und <strong>SAFE Leibniz Institut</strong>
+        zum Thema Erfahrungen rund um die Elternschaft.
     </p>
 
-    <p>
-        <b>Wer ist verantwortlich für die Studie?</b>
-    </p>
-    <p>
-        Verantwortlich für die Durchführung der Studie ist das Frankfurter Labor für Experimentelle Wirtschaftsforschung
-        (FLEX), Goethe-Universität, Theodor-W.-Adorno-Platz 4, 60323 Frankfurt am Main.
+    <div class="consent-summary">
+        <p style="margin-bottom: 10px; font-weight: 700; color: var(--clr-primary);">
+            Auf einen Blick
+        </p>
+        <ul>
+            <li>Dauer: ca. <strong>15 Minuten</strong></li>
+            <li>Ihre Daten werden pseudonymisiert und DSGVO-konform verarbeitet</li>
+            <li>Es gibt zwei gekennzeichnete Aufmerksamkeitsfragen</li>
+            <li>Bitte beantworten Sie die Fragen <strong>allein</strong></li>
+        </ul>
+    </div>
+
+    <p style="font-size: 0.92rem; color: var(--clr-text-muted); line-height: 1.6;">
+        Verantwortlich: Frankfurter Labor für Experimentelle Wirtschaftsforschung (FLEX),
+        Goethe-Universität Frankfurt.
+        <a href="{% static 'Datenschutzhinweis_Goethe.pdf' %}" target="_blank" class="consent-details-link">
+            Vollständige Datenschutzhinweise lesen (PDF)
+        </a>
     </p>
 
-    <p>
-        <b>Welchen Zwecken dient diese Studie?</b>
-    </p>
-    <p>
-        Ziel dieser Studie ist es, besser zu verstehen, welche Themen werdende und frischgebackene Eltern beschäftigen,
-        was sie überrascht hat und was sie gerne vorher gewusst hätten. Ihre Erfahrung hilft uns, Informationsangebote für
-        werdende Eltern gezielter und relevanter zu gestalten. Wie bei ökonomischen Studien üblich,
-        erfolgt vorab keine umfassende Aufklärung über den gesamten Forschungshintergrund. Sämtliche relevanten Informationen
-        werden Ihnen während bzw. nach der Studie zur Verfügung gestellt.
+    <p style="margin-top: 24px; font-weight: 600;">
+        Mit Ihrer Einwilligung erklären Sie, dass Sie mindestens 18 Jahre alt sind,
+        freiwillig teilnehmen und die Hinweise zur Datenverwendung zur Kenntnis genommen haben.
     </p>
 
-    <p>
-        <b>Was geschieht mit meinen Daten?</b>
-    </p>
-    <p>
-        Alle beteiligten Mitarbeiter und Wissenschaftler arbeiten selbstverständlich nach den Vorschriften der Datenschutz-Grundverordnung,
-        dem Bundesdatenschutzgesetz und den einschlägigen Landesdatenschutzgesetzen. Ihre Daten werden unmittelbar nach der Erhebung pseudonymisiert gespeichert
-        und anschließend statistisch ausgewertet. Aus den Ergebnissen lassen sich anschließend keine Rückschlüsse auf Sie als Person ziehen.
-    </p>
-
-    <p>
-        <b>Einwilligungserklärung</b>
-    </p>
-    <p>
-        Hiermit willige ich in die Verarbeitung meiner personenbezogenen Daten für das Forschungsvorhaben ein. Die Einwilligung kann ich jederzeit widerrufen.
-    </p>
-    <p>
-        Mit meiner Einwilligung erkläre ich, dass ich
-    </p>
-    <ul style='list-style-type: circle;'>
-        <li>mindestens 18 Jahre alt bin</li>
-        <li>freiwillig an dieser Umfrage teilnehme</li>
-        <li>die Hinweise zur Verwendung meiner Daten und zu meinen Rechten zur Kenntnis genommen habe.</li>
-    </ul>
-
-    <p>
-        Bitte beachten Sie, dass eine erfolgreiche Teilnahme an dieser Studie nur möglich ist, wenn Sie dieser Studie Ihre Aufmerksamkeit widmen.
-        Zu diesem Zweck gibt es zwei Fragen, die Ihre Aufmerksamkeit testen, und welche explizit als solche gekennzeichnet sind.
-        Wenn Sie Fragen zu dieser Studie haben oder auf technische Probleme stoßen, wenden Sie sich bitte über den von Prolific bereitgestellten Chat an das Forschungsteam.
-        Sollten Sie nach Abschluss der Studie Fragen zu dieser Forschung haben, einschließlich Fragen zu Ihrer Vergütung für die Teilnahme,
-        können Sie das Forschungsteam ebenfalls über Prolific kontaktieren.
-    </p>
-
-    <p><b>Dauer.</b> Etwa 15 Minuten.</p>
-
-    <p>
+    <div style="margin-top: 20px;">
         {{ formfield "consent" }}
-    </p>
+    </div>
+</div>
 
+<div style="margin-top: 24px;">
     {{ next_button }}
+</div>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+  body { font-family: 'Nunito', sans-serif !important; background-color: #FAF5F0 !important; color: #2D2A2E; }
+  .consent-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(107,58,110,0.06); padding: 36px 32px; }
+  .consent-summary { background: #FBF7FB; border-radius: 12px; padding: 20px 24px; margin: 20px 0; border-left: 4px solid #D4A0D8; }
+  .consent-summary ul { list-style: none; padding: 0; margin: 0; }
+  .consent-summary ul li { padding: 6px 0 6px 24px; position: relative; line-height: 1.5; }
+  .consent-summary ul li::before { content: "\2713"; position: absolute; left: 0; color: #6B3A6E; font-weight: 700; }
+  .consent-details-link { color: #6B3A6E; text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
+  .consent-details-link:hover { color: #8B5E8E; }
+  .btn-primary, .otree-btn-next, button[type="submit"] {
+    background-color: #6B3A6E !important; border: none !important; border-radius: 999px !important;
+    color: #fff !important; font-family: 'Nunito', sans-serif !important; font-weight: 700 !important;
+    font-size: 1rem !important; padding: 12px 40px !important; transition: all 0.2s ease !important;
+  }
+  .btn-primary:hover, .otree-btn-next:hover, button[type="submit"]:hover { background-color: #8B5E8E !important; }
+  .form-check-input:checked { background-color: #6B3A6E !important; border-color: #6B3A6E !important; }
+  .form-check-input:focus { box-shadow: 0 0 0 3px rgba(107,58,110,0.15) !important; }
+  label, .form-label { font-weight: 600; font-family: 'Nunito', sans-serif !important; }
+</style>
 {% endblock %}

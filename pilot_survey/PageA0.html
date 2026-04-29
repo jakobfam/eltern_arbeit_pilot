@@ -1,35 +1,59 @@
-{{ block title }}Abschnitt A0: Über Sie{{ endblock }}
+{{ block styles }}
+<link rel="stylesheet" href="{{ static 'global/theme.css' }}">
+{{ endblock }}
+
+{{ block title }}Über Sie{{ endblock }}
 
 {{ block content }}
-<p class="text-muted fst-italic">
-  Zu Beginn ein paar kurze Fragen zu Ihrem Hintergrund.
-  Diese helfen uns zu verstehen, wen wir befragen.
-</p>
+<div class="page-content-card">
+  <p class="section-intro">
+    Zu Beginn ein paar kurze Fragen zu Ihrem Hintergrund.
+    Diese helfen uns zu verstehen, wen wir befragen.
+  </p>
 
-{# Main demographics fields #}
-{{ formfield 'a0_1_birth_year' }}
-{{ formfield 'a0_2_income' }}
-{{ formfield 'a0_3_activity' }}
-{{ formfield 'a0_3_activity_other' }}
-{{ formfield 'a0_3b_sector' }}
-{{ formfield 'a0_3b_sector_other' }}
-<div class="mb-3">
-  {{ formfield 'a0_5_thoughts_wish' }}
-</div>
+  {{ formfield 'a0_1_birth_year' }}
+  {{ formfield 'a0_2_income' }}
+  {{ formfield 'a0_3_activity' }}
+  {{ formfield 'a0_3_activity_other' }}
+  {{ formfield 'a0_3b_sector' }}
+  {{ formfield 'a0_3b_sector_other' }}
+  <div class="mb-3">
+    {{ formfield 'a0_5_thoughts_wish' }}
+  </div>
 
-{# Attention check — visibly labeled as such #}
-{{ formfield 'attention_check_1' }}
+  {# Attention check — visibly labeled as such #}
+  {{ formfield 'attention_check_1' }}
 
-{# Bot detection honeypot — hidden from humans via CSS, bots may fill it in #}
-<div aria-hidden="true" style="position:absolute; left:-10000px; top:auto; width:1px; height:1px; overflow:hidden;">
-  {{ formfield 'hidden_field' }}
+  {# Bot detection honeypot — hidden from humans via CSS, bots may fill it in #}
+  <div aria-hidden="true" style="position:absolute; left:-10000px; top:auto; width:1px; height:1px; overflow:hidden;">
+    {{ formfield 'hidden_field' }}
+  </div>
 </div>
 
 {{ next_button }}
 
-{# JavaScript: show A0.3b only when a work-related activity is selected #}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+  body { font-family: 'Nunito', sans-serif !important; background-color: #FAF5F0 !important; color: #2D2A2E; }
+  .page-content-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(107,58,110,0.06); padding: 32px 28px; margin-bottom: 24px; }
+  .section-intro { color: #7A7078; font-style: italic; font-size: 0.93rem; line-height: 1.55; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid #E8DFE0; }
+  .btn-primary, .otree-btn-next, button[type="submit"] {
+    background-color: #6B3A6E !important; border: none !important; border-radius: 999px !important;
+    color: #fff !important; font-family: 'Nunito', sans-serif !important; font-weight: 700 !important;
+    font-size: 1rem !important; padding: 12px 40px !important; transition: all 0.2s ease !important;
+  }
+  .btn-primary:hover, .otree-btn-next:hover, button[type="submit"]:hover { background-color: #8B5E8E !important; }
+  .form-control, input[type="text"], input[type="number"], textarea, select {
+    border: 1.5px solid #DDD4D6 !important; border-radius: 12px !important;
+    font-family: 'Nunito', sans-serif !important; padding: 10px 14px !important; font-size: 0.95rem !important;
+  }
+  .form-control:focus, input:focus, textarea:focus, select:focus { border-color: #6B3A6E !important; box-shadow: 0 0 0 3px rgba(107,58,110,0.12) !important; }
+  .form-check-input:checked { background-color: #6B3A6E !important; border-color: #6B3A6E !important; }
+  .form-check-input:focus { box-shadow: 0 0 0 3px rgba(107,58,110,0.15) !important; }
+  label, .form-label { font-weight: 600; font-family: 'Nunito', sans-serif !important; }
+</style>
+
 <script>
-  // Activity codes that imply current or past employment (all except 5=homemaker, 7=unemployed-not-seeking)
   const workCodes = [1, 2, 3, 4, 6, 8, 9];
 
   function toggleSector() {

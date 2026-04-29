@@ -1,165 +1,148 @@
+{{ block styles }}
+<link rel="stylesheet" href="{{ static 'global/theme.css' }}">
+{{ endblock }}
+
 {{ block title }}Ihre Gedanken vor der Geburt{{ endblock }}
 
 {{ block content }}
-<p class="text-muted fst-italic">
-  Sie haben gerade beschrieben, worüber Sie sich vor der Geburt Gedanken gemacht haben.
-  Nun möchten wir das etwas genauer einordnen.
-</p>
-
-{# ── A0b: Click-to-Rank Sorgen ───────────────────────────────────── #}
-<div class="mb-4">
-  <p>
-    <b>A0b.</b>
-    Welche der folgenden Themen haben Ihnen vor der Geburt die meisten Sorgen bereitet?
-    Klicken Sie auf <strong>bis zu drei Themen</strong> in der Reihenfolge ihrer Bedeutung
-    (1 = größte Sorge). Klicken Sie erneut, um eine Auswahl aufzuheben.
+<div class="page-content-card">
+  <p class="section-intro">
+    Sie haben gerade beschrieben, worüber Sie sich vor der Geburt Gedanken gemacht haben.
+    Nun möchten wir das etwas genauer einordnen.
   </p>
 
-  {# Hidden oTree form fields — JS fills these #}
-  <div style="display:none">
-    {{ formfield 'a0b_rank_health' }}
-    {{ formfield 'a0b_rank_birth' }}
-    {{ formfield 'a0b_rank_good_mother' }}
-    {{ formfield 'a0b_rank_overwhelm' }}
-    {{ formfield 'a0b_rank_identity' }}
-    {{ formfield 'a0b_rank_mental_health' }}
-    {{ formfield 'a0b_rank_relationship' }}
-    {{ formfield 'a0b_rank_childcare' }}
-    {{ formfield 'a0b_rank_career' }}
-    {{ formfield 'a0b_rank_finances_short' }}
-    {{ formfield 'a0b_rank_finances_long' }}
-    {{ formfield 'a0b_rank_division' }}
-    {{ formfield 'a0b_rank_social' }}
-    {{ formfield 'a0b_rank_housing' }}
-    {{ formfield 'a0b_rank_other' }}
-  </div>
+  <div class="mb-4">
+    <p>
+      <span class="question-label">A0b.</span>
+      Welche der folgenden Themen haben Ihnen vor der Geburt die meisten Sorgen bereitet?
+      Klicken Sie auf <strong>bis zu drei Themen</strong> in der Reihenfolge ihrer Bedeutung
+      (1 = größte Sorge). Klicken Sie erneut, um eine Auswahl aufzuheben.
+    </p>
 
-  <div id="a0b-rank-list" class="rank-list">
-    <div class="rank-item" data-field="a0b_rank_health">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Gesundheit von mir und meinem Kind</span>
+    <div style="display:none">
+      {{ formfield 'a0b_rank_health' }}
+      {{ formfield 'a0b_rank_birth' }}
+      {{ formfield 'a0b_rank_good_mother' }}
+      {{ formfield 'a0b_rank_overwhelm' }}
+      {{ formfield 'a0b_rank_identity' }}
+      {{ formfield 'a0b_rank_mental_health' }}
+      {{ formfield 'a0b_rank_relationship' }}
+      {{ formfield 'a0b_rank_childcare' }}
+      {{ formfield 'a0b_rank_career' }}
+      {{ formfield 'a0b_rank_finances_short' }}
+      {{ formfield 'a0b_rank_finances_long' }}
+      {{ formfield 'a0b_rank_division' }}
+      {{ formfield 'a0b_rank_social' }}
+      {{ formfield 'a0b_rank_housing' }}
+      {{ formfield 'a0b_rank_other' }}
     </div>
-    <div class="rank-item" data-field="a0b_rank_birth">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Die Geburt selbst</span>
-    </div>
-    <div class="rank-item" data-field="a0b_rank_good_mother">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Ob ich eine gute Mutter sein werde</span>
-    </div>
-    <div class="rank-item" data-field="a0b_rank_overwhelm">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Überforderung im Alltag mit Kind (Schlafmangel, alles unter einen Hut bekommen)</span>
-    </div>
-    <div class="rank-item" data-field="a0b_rank_identity">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Meine eigene Identität und Unabhängigkeit nicht zu verlieren</span>
-    </div>
-    <div class="rank-item" data-field="a0b_rank_mental_health">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Psychische Gesundheit (z.&thinsp;B. postpartale Depression, Erschöpfung)</span>
-    </div>
-    <div class="rank-item" data-field="a0b_rank_relationship">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Auswirkungen auf meine Partnerschaft</span>
-    </div>
-    <div class="rank-item" data-field="a0b_rank_childcare">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Kinderbetreuung organisieren</span>
-    </div>
-    <div class="rank-item" data-field="a0b_rank_career">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Meine berufliche Entwicklung und Karriere</span>
-    </div>
-    <div class="rank-item" data-field="a0b_rank_finances_short">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Finanzielle Situation während der Elternzeit (Elterngeld, laufende Kosten)</span>
-    </div>
-    <div class="rank-item" data-field="a0b_rank_finances_long">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Langfristige finanzielle Absicherung (Rente, Vermögensaufbau)</span>
-    </div>
-    <div class="rank-item" data-field="a0b_rank_division">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Aufteilung von Erwerbs- und Sorgearbeit mit meinem Partner</span>
-    </div>
-    <div class="rank-item" data-field="a0b_rank_social">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Erwartungen aus meinem Umfeld (Familie, Freunde, Gesellschaft)</span>
-    </div>
-    <div class="rank-item" data-field="a0b_rank_housing">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Wohnsituation (Platz, Umzug, Wohnkosten)</span>
-    </div>
-  </div>
 
-  {# "Sonstiges" with inline text field #}
-  <div class="rank-other-row mt-2">
-    <div class="rank-item" data-field="a0b_rank_other" id="a0b-other-item">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Sonstiges:</span>
+    <div id="a0b-rank-list" class="rank-list">
+      <div class="rank-item" data-field="a0b_rank_health">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Gesundheit von mir und meinem Kind</span>
+      </div>
+      <div class="rank-item" data-field="a0b_rank_birth">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Die Geburt selbst</span>
+      </div>
+      <div class="rank-item" data-field="a0b_rank_good_mother">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Ob ich eine gute Mutter sein werde</span>
+      </div>
+      <div class="rank-item" data-field="a0b_rank_overwhelm">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Überforderung im Alltag mit Kind (Schlafmangel, alles unter einen Hut bekommen)</span>
+      </div>
+      <div class="rank-item" data-field="a0b_rank_identity">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Meine eigene Identität und Unabhängigkeit nicht zu verlieren</span>
+      </div>
+      <div class="rank-item" data-field="a0b_rank_mental_health">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Psychische Gesundheit (z.&thinsp;B. postpartale Depression, Erschöpfung)</span>
+      </div>
+      <div class="rank-item" data-field="a0b_rank_relationship">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Auswirkungen auf meine Partnerschaft</span>
+      </div>
+      <div class="rank-item" data-field="a0b_rank_childcare">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Kinderbetreuung organisieren</span>
+      </div>
+      <div class="rank-item" data-field="a0b_rank_career">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Meine berufliche Entwicklung und Karriere</span>
+      </div>
+      <div class="rank-item" data-field="a0b_rank_finances_short">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Finanzielle Situation während der Elternzeit (Elterngeld, laufende Kosten)</span>
+      </div>
+      <div class="rank-item" data-field="a0b_rank_finances_long">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Langfristige finanzielle Absicherung (Rente, Vermögensaufbau)</span>
+      </div>
+      <div class="rank-item" data-field="a0b_rank_division">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Aufteilung von Erwerbs- und Sorgearbeit mit meinem Partner</span>
+      </div>
+      <div class="rank-item" data-field="a0b_rank_social">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Erwartungen aus meinem Umfeld (Familie, Freunde, Gesellschaft)</span>
+      </div>
+      <div class="rank-item" data-field="a0b_rank_housing">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Wohnsituation (Platz, Umzug, Wohnkosten)</span>
+      </div>
     </div>
-    <div class="mt-1 ms-4">
-      {{ formfield 'a0b_other_text' }}
+
+    <div class="rank-other-row mt-2">
+      <div class="rank-item" data-field="a0b_rank_other" id="a0b-other-item">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Sonstiges:</span>
+      </div>
+      <div class="mt-1 ms-4">
+        {{ formfield 'a0b_other_text' }}
+      </div>
     </div>
   </div>
 </div>
 
 {{ next_button }}
 
-{# ── Styles ──────────────────────────────────────────────────────── #}
 <style>
-  .rank-list, .rank-other-row {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+  body { font-family: 'Nunito', sans-serif !important; background-color: #FAF5F0 !important; color: #2D2A2E; }
+  .page-content-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(107,58,110,0.06); padding: 32px 28px; margin-bottom: 24px; }
+  .section-intro { color: #7A7078; font-style: italic; font-size: 0.93rem; line-height: 1.55; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid #E8DFE0; }
+  .question-label { color: #6B3A6E; font-weight: 700; }
+  .rank-list, .rank-other-row { display: flex; flex-direction: column; gap: 4px; }
   .rank-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    border: 2px solid #dee2e6;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    user-select: none;
-    background: #fff;
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 14px; border: 2px solid #E8DFE0; border-radius: 10px;
+    cursor: pointer; transition: all 0.2s ease; user-select: none;
+    background: #FBF7FB; box-shadow: 0 1px 4px rgba(107,58,110,0.05);
   }
-  .rank-item:hover {
-    border-color: #adb5bd;
-    background: #f8f9fa;
-  }
-  .rank-item.selected {
-    border-color: #0d6efd;
-    background: #e7f1ff;
-  }
+  .rank-item:hover { border-color: #D4A0D8; background: #F3EAF4; box-shadow: 0 3px 12px rgba(107,58,110,0.10); transform: translateY(-1px); }
+  .rank-item.selected { border-color: #6B3A6E; background: #EDE3EF; box-shadow: 0 3px 12px rgba(107,58,110,0.12); }
   .rank-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    border-radius: 50%;
-    background: #e9ecef;
-    color: #6c757d;
-    font-weight: 700;
-    font-size: 15px;
-    transition: all 0.15s ease;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; min-width: 28px; border-radius: 50%;
+    background: #F0E6F1; color: #9B7E9D; font-weight: 700; font-size: 13px;
+    transition: all 0.2s ease;
   }
-  .rank-item.selected .rank-badge {
-    background: #0d6efd;
-    color: #fff;
+  .rank-item.selected .rank-badge { background: #6B3A6E; color: #fff; }
+  .rank-label { flex: 1; font-size: 0.85rem; line-height: 1.35; color: #2D2A2E; }
+  .btn-primary, .otree-btn-next, button[type="submit"] {
+    background-color: #6B3A6E !important; border: none !important; border-radius: 999px !important;
+    color: #fff !important; font-family: 'Nunito', sans-serif !important; font-weight: 700 !important;
+    font-size: 1rem !important; padding: 12px 40px !important; transition: all 0.2s ease !important;
   }
-  .rank-label {
-    flex: 1;
-    font-size: 0.95rem;
-    line-height: 1.4;
-  }
+  .btn-primary:hover, .otree-btn-next:hover, button[type="submit"]:hover { background-color: #8B5E8E !important; }
+  .form-control, textarea { border: 1.5px solid #DDD4D6 !important; border-radius: 12px !important; font-family: 'Nunito', sans-serif !important; }
+  .form-control:focus, textarea:focus { border-color: #6B3A6E !important; box-shadow: 0 0 0 3px rgba(107,58,110,0.12) !important; }
 </style>
 
-{# ── Script ──────────────────────────────────────────────────────── #}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 

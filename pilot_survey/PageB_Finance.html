@@ -1,95 +1,129 @@
-{{ block title }}Abschnitt B: Finanzielle Überraschungen{{ endblock }}
+{{ block styles }}
+<link rel="stylesheet" href="{{ static 'global/theme.css' }}">
+{{ endblock }}
+
+{{ block title }}Finanzielle Überraschungen{{ endblock }}
 
 {{ block content }}
-{# ── B2: Click-to-Rank ─────────────────────────────────────────── #}
-<div class="mb-4">
-  <p>
-    <b>B2.</b>
-    Welche der folgenden finanziellen Themen haben Sie am meisten <strong>unterschätzt</strong>?
-    Klicken Sie auf <strong>bis zu drei Themen</strong> in der Reihenfolge
-    (1 = am meisten unterschätzt). Klicken Sie erneut, um eine Auswahl aufzuheben.
-  </p>
+<div class="page-content-card">
+  <div class="mb-4">
+    <p>
+      <span class="question-label">B2.</span>
+      Welche der folgenden finanziellen Themen haben Sie am meisten <strong>unterschätzt</strong>?
+      Klicken Sie auf <strong>bis zu drei Themen</strong> in der Reihenfolge
+      (1 = am meisten unterschätzt). Klicken Sie erneut, um eine Auswahl aufzuheben.
+    </p>
 
-  {# Hidden oTree form fields — JS fills these #}
-  <div style="display:none">
-    {{ formfield 'b2_rank_income_drop' }}
-    {{ formfield 'b2_rank_tax_work' }}
-    {{ formfield 'b2_rank_pension' }}
-    {{ formfield 'b2_rank_childcare_cost' }}
-    {{ formfield 'b2_rank_career' }}
-    {{ formfield 'b2_rank_daily_costs' }}
-    {{ formfield 'b2_rank_insurance' }}
-    {{ formfield 'b2_rank_elterngeld' }}
-    {{ formfield 'b2_rank_prepared' }}
-    {{ formfield 'b2_rank_other' }}
+    <div style="display:none">
+      {{ formfield 'b2_rank_income_drop' }}
+      {{ formfield 'b2_rank_tax_work' }}
+      {{ formfield 'b2_rank_pension' }}
+      {{ formfield 'b2_rank_childcare_cost' }}
+      {{ formfield 'b2_rank_career' }}
+      {{ formfield 'b2_rank_daily_costs' }}
+      {{ formfield 'b2_rank_insurance' }}
+      {{ formfield 'b2_rank_elterngeld' }}
+      {{ formfield 'b2_rank_prepared' }}
+      {{ formfield 'b2_rank_other' }}
+    </div>
+
+    <div id="b2-rank-list" class="rank-list">
+      <div class="rank-item" data-field="b2_rank_income_drop">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Der Einkommensrückgang während der Elternzeit</span>
+      </div>
+      <div class="rank-item" data-field="b2_rank_tax_work">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Der Einfluss von Steuern und Sozialleistungen darauf, ob sich Mehrarbeit lohnt</span>
+      </div>
+      <div class="rank-item" data-field="b2_rank_pension">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Die Auswirkung von Teilzeitarbeit auf meine spätere Rente</span>
+      </div>
+      <div class="rank-item" data-field="b2_rank_childcare_cost">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Die Kosten und Verfügbarkeit von Kinderbetreuung</span>
+      </div>
+      <div class="rank-item" data-field="b2_rank_career">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Der Einfluss auf meinen beruflichen Werdegang und mein Gehalt</span>
+      </div>
+      <div class="rank-item" data-field="b2_rank_daily_costs">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Die alltäglichen Kosten mit Kind (Ausstattung, Aktivitäten, Essen)</span>
+      </div>
+      <div class="rank-item" data-field="b2_rank_insurance">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Änderungen bei Versicherungen und Gesundheitsversorgung für die Familie</span>
+      </div>
+      <div class="rank-item" data-field="b2_rank_elterngeld">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Wie Elterngeld und ElterngeldPlus in der Praxis tatsächlich funktionieren</span>
+      </div>
+      <div class="rank-item" data-field="b2_rank_prepared">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Insgesamt hat mich finanziell nichts besonders überrascht</span>
+      </div>
+    </div>
+
+    <div class="rank-other-row mt-2">
+      <div class="rank-item" data-field="b2_rank_other" id="b2-other-item">
+        <span class="rank-badge"></span>
+        <span class="rank-label">Sonstiges:</span>
+      </div>
+      <div class="mt-1 ms-4">
+        {{ formfield 'b2_other_text' }}
+      </div>
+    </div>
   </div>
 
-  <div id="b2-rank-list" class="rank-list">
-    <div class="rank-item" data-field="b2_rank_income_drop">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Der Einkommensrückgang während der Elternzeit</span>
-    </div>
-    <div class="rank-item" data-field="b2_rank_tax_work">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Der Einfluss von Steuern und Sozialleistungen darauf, ob sich Mehrarbeit lohnt</span>
-    </div>
-    <div class="rank-item" data-field="b2_rank_pension">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Die Auswirkung von Teilzeitarbeit auf meine spätere Rente</span>
-    </div>
-    <div class="rank-item" data-field="b2_rank_childcare_cost">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Die Kosten und Verfügbarkeit von Kinderbetreuung</span>
-    </div>
-    <div class="rank-item" data-field="b2_rank_career">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Der Einfluss auf meinen beruflichen Werdegang und mein Gehalt</span>
-    </div>
-    <div class="rank-item" data-field="b2_rank_daily_costs">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Die alltäglichen Kosten mit Kind (Ausstattung, Aktivitäten, Essen)</span>
-    </div>
-    <div class="rank-item" data-field="b2_rank_insurance">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Änderungen bei Versicherungen und Gesundheitsversorgung für die Familie</span>
-    </div>
-    <div class="rank-item" data-field="b2_rank_elterngeld">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Wie Elterngeld und ElterngeldPlus in der Praxis tatsächlich funktionieren</span>
-    </div>
-    <div class="rank-item" data-field="b2_rank_prepared">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Insgesamt hat mich finanziell nichts besonders überrascht</span>
-    </div>
+  {{ formfield 'b3_preparedness' }}
+  {{ formfield 'b4_planning_horizon' }}
+  {{ formfield 'b5_simplify' }}
+
+  <div id="b5b-block">
+    {{ formfield 'b5b_dropped' }}
   </div>
-
-  {# "Sonstiges" with inline text field #}
-  <div class="rank-other-row mt-2">
-    <div class="rank-item" data-field="b2_rank_other" id="b2-other-item">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Sonstiges:</span>
-    </div>
-    <div class="mt-1 ms-4">
-      {{ formfield 'b2_other_text' }}
-    </div>
-  </div>
-</div>
-
-{# B3 #}
-{{ formfield 'b3_preparedness' }}
-
-{# B4 #}
-{{ formfield 'b4_planning_horizon' }}
-
-{# B5: Complexity — deliberate simplification #}
-{{ formfield 'b5_simplify' }}
-
-{# B5b: Which dimensions were dropped — show only when B5 = 1 or 2 #}
-<div id="b5b-block">
-  {{ formfield 'b5b_dropped' }}
 </div>
 
 {{ next_button }}
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+  body { font-family: 'Nunito', sans-serif !important; background-color: #FAF5F0 !important; color: #2D2A2E; }
+  .page-content-card { background: #fff; border-radius: 16px; box-shadow: 0 2px 12px rgba(107,58,110,0.06); padding: 32px 28px; margin-bottom: 24px; }
+  .question-label { color: #6B3A6E; font-weight: 700; }
+  .rank-list, .rank-other-row { display: flex; flex-direction: column; gap: 4px; }
+  .rank-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 14px; border: 2px solid #E8DFE0; border-radius: 10px;
+    cursor: pointer; transition: all 0.2s ease; user-select: none;
+    background: #FBF7FB; box-shadow: 0 1px 4px rgba(107,58,110,0.05);
+  }
+  .rank-item:hover { border-color: #D4A0D8; background: #F3EAF4; box-shadow: 0 3px 12px rgba(107,58,110,0.10); transform: translateY(-1px); }
+  .rank-item.selected { border-color: #6B3A6E; background: #EDE3EF; box-shadow: 0 3px 12px rgba(107,58,110,0.12); }
+  .rank-badge {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; min-width: 28px; border-radius: 50%;
+    background: #F0E6F1; color: #9B7E9D; font-weight: 700; font-size: 13px;
+    transition: all 0.2s ease;
+  }
+  .rank-item.selected .rank-badge { background: #6B3A6E; color: #fff; }
+  .rank-label { flex: 1; font-size: 0.85rem; line-height: 1.35; color: #2D2A2E; }
+  .btn-primary, .otree-btn-next, button[type="submit"] {
+    background-color: #6B3A6E !important; border: none !important; border-radius: 999px !important;
+    color: #fff !important; font-family: 'Nunito', sans-serif !important; font-weight: 700 !important;
+    font-size: 1rem !important; padding: 12px 40px !important; transition: all 0.2s ease !important;
+  }
+  .btn-primary:hover, .otree-btn-next:hover, button[type="submit"]:hover { background-color: #8B5E8E !important; }
+  .form-control, input[type="text"], input[type="number"], textarea, select {
+    border: 1.5px solid #DDD4D6 !important; border-radius: 12px !important;
+    font-family: 'Nunito', sans-serif !important; padding: 10px 14px !important; font-size: 0.95rem !important;
+  }
+  .form-control:focus, input:focus, textarea:focus, select:focus { border-color: #6B3A6E !important; box-shadow: 0 0 0 3px rgba(107,58,110,0.12) !important; }
+  .form-check-input:checked { background-color: #6B3A6E !important; border-color: #6B3A6E !important; }
+  label, .form-label { font-weight: 600; font-family: 'Nunito', sans-serif !important; }
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -98,7 +132,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const val = selected ? parseInt(selected.value) : null;
     const b5bBlock = document.getElementById('b5b-block');
     if (b5bBlock) {
-      // Show follow-up when "Ja" (1), "Teilweise" (2), or "Erst später aufgefallen" (4)
       b5bBlock.style.display = (val === 1 || val === 2 || val === 4) ? '' : 'none';
     }
   }
@@ -110,59 +143,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-{# ── Styles ──────────────────────────────────────────────────────── #}
-<style>
-  .rank-list, .rank-other-row {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .rank-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    border: 2px solid #dee2e6;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    user-select: none;
-    background: #fff;
-  }
-  .rank-item:hover {
-    border-color: #adb5bd;
-    background: #f8f9fa;
-  }
-  .rank-item.selected {
-    border-color: #0d6efd;
-    background: #e7f1ff;
-  }
-  .rank-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    border-radius: 50%;
-    background: #e9ecef;
-    color: #6c757d;
-    font-weight: 700;
-    font-size: 15px;
-    transition: all 0.15s ease;
-  }
-  .rank-item.selected .rank-badge {
-    background: #0d6efd;
-    color: #fff;
-  }
-  .rank-label {
-    flex: 1;
-    font-size: 0.95rem;
-    line-height: 1.4;
-  }
-</style>
-
-{# ── Script ──────────────────────────────────────────────────────── #}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 

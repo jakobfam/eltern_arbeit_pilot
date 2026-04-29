@@ -338,7 +338,7 @@ class Player(BasePlayer):
             [4, 'Etwas schlechter als erwartet'],
             [5, 'Viel schlechter als erwartet'],
         ],
-        widget=widgets.RadioSelectHorizontal,
+        widget=widgets.RadioSelect,
     )
 
     # B1c: Financial measures taken
@@ -439,7 +439,7 @@ class Player(BasePlayer):
             [4, 'Gut vorbereitet'],
             [5, 'Sehr gut vorbereitet'],
         ],
-        widget=widgets.RadioSelectHorizontal,
+        widget=widgets.RadioSelect,
     )
 
     b4_planning_horizon = models.IntegerField(

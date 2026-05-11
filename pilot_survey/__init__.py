@@ -39,7 +39,7 @@ class Player(BasePlayer):
     attention = models.BooleanField(default=True)
     attention_check_1 = models.IntegerField(
         label=(
-            '<b>A0.5.</b> Diese Frage testet Ihre Aufmerksamkeit. '
+            '<b>A0.9.</b> Diese Frage testet Ihre Aufmerksamkeit. '
             'Bitte wählen Sie die Antwort „FAZ" aus. '
             'Von welchem Medium beziehen Sie Ihre Nachrichten?'
         ),
@@ -74,8 +74,41 @@ class Player(BasePlayer):
         max=2026,
     )
 
-    a0_2_income = models.IntegerField(
-        label='<b>A0.2.</b> Wie hoch ist das ungefähre jährliche Bruttoeinkommen Ihres Haushalts?',
+    a0_age = models.IntegerField(
+        label='<b>A0.2.</b> Wie alt sind Sie? (Jahre)',
+        min=20,
+        max=55,
+    )
+
+    a0_num_children = models.IntegerField(
+        label='<b>A0.3.</b> Wie viele Kinder haben Sie?',
+        min=1,
+        max=14,
+    )
+
+    a0_other_children_ages = models.StringField(
+        label='Wie alt sind Ihre weiteren Kinder? (Alter durch Komma getrennt)',
+        blank=True,
+    )
+
+    a0_relationship = models.IntegerField(
+        label='<b>A0.4.</b> Wie ist Ihr aktueller Beziehungsstatus?',
+        choices=[
+            [1, 'Single'],
+            [2, 'In einer Beziehung'],
+            [3, 'Verheiratet'],
+            [4, 'Sonstiges'],
+        ],
+        widget=widgets.RadioSelect,
+    )
+
+    a0_relationship_other = models.StringField(
+        label='Falls „Sonstiges": bitte angeben',
+        blank=True,
+    )
+
+    a0_personal_income = models.IntegerField(
+        label='<b>A0.5.</b> Wie hoch ist Ihr ungefähres jährliches Bruttoeinkommen?',
         choices=[
             [1, 'Unter 30.000 €'],
             [2, '30.000 € – 50.000 €'],
@@ -87,8 +120,22 @@ class Player(BasePlayer):
         widget=widgets.RadioSelect,
     )
 
+    a0_household_income = models.IntegerField(
+        label='<b>A0.6.</b> Wie hoch ist das ungefähre jährliche Bruttoeinkommen Ihres Haushalts?',
+        choices=[
+            [1, 'Unter 30.000 €'],
+            [2, '30.000 € – 50.000 €'],
+            [3, '50.000 € – 80.000 €'],
+            [4, '80.000 € – 120.000 €'],
+            [5, 'Über 120.000 €'],
+            [6, 'Möchte ich nicht angeben'],
+        ],
+        widget=widgets.RadioSelect,
+        blank=True,
+    )
+
     a0_3_activity = models.IntegerField(
-        label='<b>A0.3.</b> Was ist Ihre aktuelle Haupttätigkeit?',
+        label='<b>A0.7.</b> Was ist Ihre aktuelle Haupttätigkeit?',
         choices=[
             [1, 'Vollzeitbeschäftigt'],
             [2, 'Teilzeitbeschäftigt'],
@@ -109,7 +156,7 @@ class Player(BasePlayer):
     )
 
     a0_3b_sector = models.IntegerField(
-        label='<b>A0.3b.</b> In welchem Bereich sind oder waren Sie erwerbstätig?',
+        label='<b>A0.7b.</b> In welchem Bereich sind oder waren Sie erwerbstätig?',
         choices=[
             [1, 'Land- und Forstwirtschaft, Bergbau, Energie-/Wasserversorgung'],
             [2, 'Produzierendes Gewerbe / Industrie (Verarbeitung, Bau)'],
@@ -135,7 +182,7 @@ class Player(BasePlayer):
 
     a0_5_thoughts_wish = models.LongStringField(
         label=(
-            '<b>A0.4.</b> Was sind die <b>drei wichtigsten Themen</b>, '
+            '<b>A0.8.</b> Was sind die <b>drei wichtigsten Themen</b>, '
             'von denen Sie sich <b>wünschen</b>, Sie hätten sich vor der Geburt '
             'damit beschäftigt?'
         ),
@@ -371,9 +418,192 @@ class Player(BasePlayer):
         blank=True, widget=widgets.CheckboxInput,
     )
 
+    # ── Financial conflict & decision power ──────────────────────────
+    b_decision_power = models.IntegerField(
+        label=(
+            '<b>B1d.</b> Inwieweit stimmen Sie folgender Aussage zu: '
+            '„Wer mehr verdient, hat in der Beziehung mehr Einfluss auf finanzielle Entscheidungen."'
+        ),
+        choices=[
+            [1, 'Stimme überhaupt nicht zu'],
+            [2, 'Stimme eher nicht zu'],
+            [3, 'Teils teils'],
+            [4, 'Stimme eher zu'],
+            [5, 'Stimme voll zu'],
+        ],
+        widget=widgets.RadioSelectHorizontal,
+    )
+
+    b_conflict_frequency = models.IntegerField(
+        label=(
+            '<b>B1e.</b> Wie häufig kam es seit der Geburt Ihres Kindes zu '
+            'Meinungsverschiedenheiten über finanzielle Themen '
+            '(z. B. Ausgaben, Sparverhalten, Aufteilung der Einkommen)?'
+        ),
+        choices=[
+            [1, 'Nie'],
+            [2, 'Selten'],
+            [3, 'Manchmal'],
+            [4, 'Häufig'],
+            [5, 'Sehr häufig'],
+        ],
+        widget=widgets.RadioSelectHorizontal,
+    )
+
+    # ── CFPB Financial Well-Being Scale (5 items × 2 timepoints) ─────
+    # Part 1 (items 1-3): "Beschreibt mich vollständig" to "Überhaupt nicht"
+    # Part 2 (items 4-5): "Immer" to "Nie"
+
+    # --- Before birth of first child (retrospective) ---
+    fwb_before_1 = models.IntegerField(
+        label='Ich könnte eine größere unerwartete Ausgabe bewältigen.',
+        choices=[
+            [1, 'Beschreibt mich vollständig'],
+            [2, 'Beschreibt mich sehr gut'],
+            [3, 'Beschreibt mich einigermaßen'],
+            [4, 'Beschreibt mich wenig'],
+            [5, 'Überhaupt nicht'],
+        ],
+        widget=widgets.RadioSelectHorizontal,
+    )
+    fwb_before_2 = models.IntegerField(
+        label='Ich sichere meine finanzielle Zukunft ab.',
+        choices=[
+            [1, 'Beschreibt mich vollständig'],
+            [2, 'Beschreibt mich sehr gut'],
+            [3, 'Beschreibt mich einigermaßen'],
+            [4, 'Beschreibt mich wenig'],
+            [5, 'Überhaupt nicht'],
+        ],
+        widget=widgets.RadioSelectHorizontal,
+    )
+    fwb_before_3 = models.IntegerField(
+        label='Aufgrund meiner finanziellen Situation habe ich das Gefühl, dass ich nie das haben werde, was ich im Leben möchte.',
+        choices=[
+            [1, 'Beschreibt mich vollständig'],
+            [2, 'Beschreibt mich sehr gut'],
+            [3, 'Beschreibt mich einigermaßen'],
+            [4, 'Beschreibt mich wenig'],
+            [5, 'Überhaupt nicht'],
+        ],
+        widget=widgets.RadioSelectHorizontal,
+    )
+    fwb_before_4 = models.IntegerField(
+        label='Ein Geschenk für eine Hochzeit, einen Geburtstag oder einen anderen Anlass zu machen, würde meine Finanzen für den Monat belasten.',
+        choices=[
+            [1, 'Immer'],
+            [2, 'Oft'],
+            [3, 'Manchmal'],
+            [4, 'Selten'],
+            [5, 'Nie'],
+        ],
+        widget=widgets.RadioSelectHorizontal,
+    )
+    fwb_before_5 = models.IntegerField(
+        label='Am Ende des Monats habe ich noch Geld übrig.',
+        choices=[
+            [1, 'Immer'],
+            [2, 'Oft'],
+            [3, 'Manchmal'],
+            [4, 'Selten'],
+            [5, 'Nie'],
+        ],
+        widget=widgets.RadioSelectHorizontal,
+    )
+
+    # --- Now (current) ---
+    fwb_now_1 = models.IntegerField(
+        label='Ich könnte eine größere unerwartete Ausgabe bewältigen.',
+        choices=[
+            [1, 'Beschreibt mich vollständig'],
+            [2, 'Beschreibt mich sehr gut'],
+            [3, 'Beschreibt mich einigermaßen'],
+            [4, 'Beschreibt mich wenig'],
+            [5, 'Überhaupt nicht'],
+        ],
+        widget=widgets.RadioSelectHorizontal,
+    )
+    fwb_now_2 = models.IntegerField(
+        label='Ich sichere meine finanzielle Zukunft ab.',
+        choices=[
+            [1, 'Beschreibt mich vollständig'],
+            [2, 'Beschreibt mich sehr gut'],
+            [3, 'Beschreibt mich einigermaßen'],
+            [4, 'Beschreibt mich wenig'],
+            [5, 'Überhaupt nicht'],
+        ],
+        widget=widgets.RadioSelectHorizontal,
+    )
+    fwb_now_3 = models.IntegerField(
+        label='Aufgrund meiner finanziellen Situation habe ich das Gefühl, dass ich nie das haben werde, was ich im Leben möchte.',
+        choices=[
+            [1, 'Beschreibt mich vollständig'],
+            [2, 'Beschreibt mich sehr gut'],
+            [3, 'Beschreibt mich einigermaßen'],
+            [4, 'Beschreibt mich wenig'],
+            [5, 'Überhaupt nicht'],
+        ],
+        widget=widgets.RadioSelectHorizontal,
+    )
+    fwb_now_4 = models.IntegerField(
+        label='Ein Geschenk für eine Hochzeit, einen Geburtstag oder einen anderen Anlass zu machen, würde meine Finanzen für den Monat belasten.',
+        choices=[
+            [1, 'Immer'],
+            [2, 'Oft'],
+            [3, 'Manchmal'],
+            [4, 'Selten'],
+            [5, 'Nie'],
+        ],
+        widget=widgets.RadioSelectHorizontal,
+    )
+    fwb_now_5 = models.IntegerField(
+        label='Am Ende des Monats habe ich noch Geld übrig.',
+        choices=[
+            [1, 'Immer'],
+            [2, 'Oft'],
+            [3, 'Manchmal'],
+            [4, 'Selten'],
+            [5, 'Nie'],
+        ],
+        widget=widgets.RadioSelectHorizontal,
+    )
+
+    # ── Financial information awareness (before vs now) ──────────────
+    b_fin_info_before = models.IntegerField(
+        label=(
+            '<b>B1f.</b> Bevor Ihr erstes Kind geboren wurde: Wie gut waren Sie über Ihre '
+            'Haushaltsfinanzen informiert – zum Beispiel über Ihr Budget, Ersparnisse, '
+            'Steuern oder Zukunftspläne?'
+        ),
+        choices=[
+            [1, '1 – Sehr schlecht'],
+            [2, '2'],
+            [3, '3'],
+            [4, '4'],
+            [5, '5'],
+            [6, '6 – Sehr gut'],
+        ],
+        widget=widgets.RadioSelectHorizontal,
+    )
+
+    b_fin_info_now = models.IntegerField(
+        label=(
+            '<b>B1g.</b> Und wie gut sind Sie heute darüber informiert?'
+        ),
+        choices=[
+            [1, '1 – Sehr schlecht'],
+            [2, '2'],
+            [3, '3'],
+            [4, '4'],
+            [5, '5'],
+            [6, '6 – Sehr gut'],
+        ],
+        widget=widgets.RadioSelectHorizontal,
+    )
+
     # B2: Ranking question — "most underestimated / didn't see coming"
     b2_rank_income_drop = models.IntegerField(
-        label='Der Einkommensrückgang während der Elternzeit',
+        label='Der Einkommenseinbruch während der Elternzeit',
         choices=[[1, '1'], [2, '2'], [3, '3']],
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
@@ -619,7 +849,13 @@ class PageA0(Page):
     form_model = 'player'
     form_fields = [
         'a0_1_birth_year',
-        'a0_2_income',
+        'a0_age',
+        'a0_num_children',
+        'a0_other_children_ages',
+        'a0_relationship',
+        'a0_relationship_other',
+        'a0_personal_income',
+        'a0_household_income',
         'a0_3_activity',
         'a0_3_activity_other',
         'a0_3b_sector',
@@ -724,7 +960,7 @@ class PageA3_Ranking(Page):
 
 
 class PageB1_OpenEnd(Page):
-    """Section B1: Open-ended financial surprise question — shown before the rest of B."""
+    """Section B1: Open-ended financial surprise + measures + conflict + fin info."""
     form_model = 'player'
     form_fields = [
         'b1_biggest_surprise',
@@ -732,6 +968,25 @@ class PageB1_OpenEnd(Page):
         'b1c_own_account', 'b1c_contract', 'b1c_grundbuch',
         'b1c_overview', 'b1c_retirement', 'b1c_care_compensation',
         'b1c_none',
+        'b_decision_power',
+        'b_conflict_frequency',
+        'b_fin_info_before',
+        'b_fin_info_now',
+    ]
+
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.consent
+
+
+class PageB_FWB(Page):
+    """CFPB Financial Well-Being Scale: before birth vs now."""
+    form_model = 'player'
+    form_fields = [
+        'fwb_before_1', 'fwb_before_2', 'fwb_before_3',
+        'fwb_before_4', 'fwb_before_5',
+        'fwb_now_1', 'fwb_now_2', 'fwb_now_3',
+        'fwb_now_4', 'fwb_now_5',
     ]
 
     @staticmethod
@@ -842,6 +1097,7 @@ page_sequence = [
     PageA_Work,
     PageA3_Ranking,
     PageB1_OpenEnd,
+    PageB_FWB,
     PageB_Finance,
     PageC_Advice,
     PageD_Knowledge,

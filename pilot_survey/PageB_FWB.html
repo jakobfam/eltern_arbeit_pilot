@@ -1,0 +1,41 @@
+{{ block title }}Finanzielles Wohlbefinden{{ endblock }}
+
+{{ block content }}
+<p class="text-muted fst-italic">
+  Im Folgenden geht es darum, wie Sie Ihre finanzielle Situation einschätzen –
+  einmal rückblickend vor der Geburt Ihres ersten Kindes und einmal heute.
+</p>
+
+{# ── Part A: Before birth ────────────────────────────────────────── #}
+<h5 class="mt-4 mb-3">Vor der Geburt Ihres ersten Kindes</h5>
+<p class="text-muted">
+  Bitte denken Sie an die Zeit <em>vor</em> der Geburt Ihres ersten Kindes.
+  Wie gut beschreiben die folgenden Aussagen Ihre damalige Situation?
+</p>
+
+<p class="text-muted small mb-2"><em>Wie gut beschreibt diese Aussage Sie oder Ihre damalige Situation?</em></p>
+{{ formfield 'fwb_before_1' }}
+{{ formfield 'fwb_before_2' }}
+{{ formfield 'fwb_before_3' }}
+
+<p class="text-muted small mb-2 mt-3"><em>Wie oft traf diese Aussage auf Sie zu?</em></p>
+{{ formfield 'fwb_before_4' }}
+{{ formfield 'fwb_before_5' }}
+
+{# ── Part B: Now ─────────────────────────────────────────────────── #}
+<h5 class="mt-5 mb-3">Heute</h5>
+<p class="text-muted">
+  Und wie sieht es <em>heute</em> aus?
+</p>
+
+<p class="text-muted small mb-2"><em>Wie gut beschreibt diese Aussage Sie oder Ihre aktuelle Situation?</em></p>
+{{ formfield 'fwb_now_1' }}
+{{ formfield 'fwb_now_2' }}
+{{ formfield 'fwb_now_3' }}
+
+<p class="text-muted small mb-2 mt-3"><em>Wie oft trifft diese Aussage auf Sie zu?</em></p>
+{{ formfield 'fwb_now_4' }}
+{{ formfield 'fwb_now_5' }}
+
+{{ next_button }}
+{{ endblock }}

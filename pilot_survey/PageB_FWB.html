@@ -6,36 +6,265 @@
   einmal rückblickend vor der Geburt Ihres ersten Kindes und einmal heute.
 </p>
 
-{# ── Part A: Before birth ────────────────────────────────────────── #}
-<h5 class="mt-4 mb-3">Vor der Geburt Ihres ersten Kindes</h5>
-<p class="text-muted">
+{# Hidden oTree fields — JS syncs radio selections to these #}
+<div style="display:none">
+  {{ formfield 'fwb_before_1' }}
+  {{ formfield 'fwb_before_2' }}
+  {{ formfield 'fwb_before_3' }}
+  {{ formfield 'fwb_before_4' }}
+  {{ formfield 'fwb_before_5' }}
+  {{ formfield 'fwb_now_1' }}
+  {{ formfield 'fwb_now_2' }}
+  {{ formfield 'fwb_now_3' }}
+  {{ formfield 'fwb_now_4' }}
+  {{ formfield 'fwb_now_5' }}
+</div>
+
+{# ── Part A: Before birth — Items 1-3 (description scale) ──────── #}
+<h5 class="mt-4 mb-2">Vor der Geburt Ihres ersten Kindes</h5>
+<p class="text-muted small">
   Bitte denken Sie an die Zeit <em>vor</em> der Geburt Ihres ersten Kindes.
   Wie gut beschreiben die folgenden Aussagen Ihre damalige Situation?
 </p>
 
-<p class="text-muted small mb-2"><em>Wie gut beschreibt diese Aussage Sie oder Ihre damalige Situation?</em></p>
-{{ formfield 'fwb_before_1' }}
-{{ formfield 'fwb_before_2' }}
-{{ formfield 'fwb_before_3' }}
+<div class="table-responsive">
+  <table class="table table-bordered fwb-table">
+    <thead>
+      <tr>
+        <th class="fwb-statement-col">Aussage</th>
+        <th>Beschreibt mich vollständig</th>
+        <th>Beschreibt mich sehr gut</th>
+        <th>Beschreibt mich einigermaßen</th>
+        <th>Beschreibt mich wenig</th>
+        <th>Überhaupt nicht</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Ich konnte eine größere unerwartete Ausgabe bewältigen.</td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_1" value="1"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_1" value="2"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_1" value="3"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_1" value="4"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_1" value="5"></td>
+      </tr>
+      <tr>
+        <td>Ich sicherte meine finanzielle Zukunft ab.</td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_2" value="1"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_2" value="2"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_2" value="3"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_2" value="4"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_2" value="5"></td>
+      </tr>
+      <tr>
+        <td>Aufgrund meiner finanziellen Situation hatte ich das Gefühl, dass ich nie das haben werde, was ich im Leben möchte.</td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_3" value="1"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_3" value="2"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_3" value="3"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_3" value="4"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_3" value="5"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-<p class="text-muted small mb-2 mt-3"><em>Wie oft traf diese Aussage auf Sie zu?</em></p>
-{{ formfield 'fwb_before_4' }}
-{{ formfield 'fwb_before_5' }}
+{# ── Part A continued: Items 4-5 (frequency scale) ────────────── #}
+<p class="text-muted small mt-3">
+  <em>Wie oft traf diese Aussage auf Sie zu?</em>
+</p>
 
-{# ── Part B: Now ─────────────────────────────────────────────────── #}
-<h5 class="mt-5 mb-3">Heute</h5>
-<p class="text-muted">
+<div class="table-responsive">
+  <table class="table table-bordered fwb-table">
+    <thead>
+      <tr>
+        <th class="fwb-statement-col">Aussage</th>
+        <th>Immer</th>
+        <th>Oft</th>
+        <th>Manchmal</th>
+        <th>Selten</th>
+        <th>Nie</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Ein Geschenk für eine Hochzeit, einen Geburtstag oder einen anderen Anlass zu machen, würde meine Finanzen für den Monat belasten.</td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_4" value="1"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_4" value="2"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_4" value="3"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_4" value="4"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_4" value="5"></td>
+      </tr>
+      <tr>
+        <td>Am Ende des Monats hatte ich noch Geld übrig.</td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_5" value="1"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_5" value="2"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_5" value="3"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_5" value="4"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_before_5" value="5"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+{# ── Part B: Now — Items 1-3 (description scale) ──────────────── #}
+<h5 class="mt-5 mb-2">Heute</h5>
+<p class="text-muted small">
   Und wie sieht es <em>heute</em> aus?
 </p>
 
-<p class="text-muted small mb-2"><em>Wie gut beschreibt diese Aussage Sie oder Ihre aktuelle Situation?</em></p>
-{{ formfield 'fwb_now_1' }}
-{{ formfield 'fwb_now_2' }}
-{{ formfield 'fwb_now_3' }}
+<div class="table-responsive">
+  <table class="table table-bordered fwb-table">
+    <thead>
+      <tr>
+        <th class="fwb-statement-col">Aussage</th>
+        <th>Beschreibt mich vollständig</th>
+        <th>Beschreibt mich sehr gut</th>
+        <th>Beschreibt mich einigermaßen</th>
+        <th>Beschreibt mich wenig</th>
+        <th>Überhaupt nicht</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Ich kann eine größere unerwartete Ausgabe bewältigen.</td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_1" value="1"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_1" value="2"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_1" value="3"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_1" value="4"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_1" value="5"></td>
+      </tr>
+      <tr>
+        <td>Ich sichere meine finanzielle Zukunft ab.</td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_2" value="1"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_2" value="2"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_2" value="3"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_2" value="4"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_2" value="5"></td>
+      </tr>
+      <tr>
+        <td>Aufgrund meiner finanziellen Situation habe ich das Gefühl, dass ich nie das haben werde, was ich im Leben möchte.</td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_3" value="1"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_3" value="2"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_3" value="3"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_3" value="4"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_3" value="5"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-<p class="text-muted small mb-2 mt-3"><em>Wie oft trifft diese Aussage auf Sie zu?</em></p>
-{{ formfield 'fwb_now_4' }}
-{{ formfield 'fwb_now_5' }}
+{# ── Part B continued: Items 4-5 (frequency scale) ────────────── #}
+<p class="text-muted small mt-3">
+  <em>Wie oft trifft diese Aussage auf Sie zu?</em>
+</p>
+
+<div class="table-responsive">
+  <table class="table table-bordered fwb-table">
+    <thead>
+      <tr>
+        <th class="fwb-statement-col">Aussage</th>
+        <th>Immer</th>
+        <th>Oft</th>
+        <th>Manchmal</th>
+        <th>Selten</th>
+        <th>Nie</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Ein Geschenk für eine Hochzeit, einen Geburtstag oder einen anderen Anlass zu machen, würde meine Finanzen für den Monat belasten.</td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_4" value="1"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_4" value="2"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_4" value="3"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_4" value="4"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_4" value="5"></td>
+      </tr>
+      <tr>
+        <td>Am Ende des Monats habe ich noch Geld übrig.</td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_5" value="1"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_5" value="2"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_5" value="3"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_5" value="4"></td>
+        <td class="text-center"><input type="radio" name="fwb_tbl_now_5" value="5"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 {{ next_button }}
+
+{# ── Styles ──────────────────────────────────────────────────────── #}
+<style>
+  .fwb-table {
+    font-size: 0.9rem;
+  }
+  .fwb-table th {
+    font-size: 0.8rem;
+    text-align: center;
+    vertical-align: bottom;
+    padding: 8px 4px;
+  }
+  .fwb-statement-col {
+    width: 40%;
+    text-align: left !important;
+  }
+  .fwb-table td {
+    vertical-align: middle;
+    padding: 10px 6px;
+  }
+  .fwb-table input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+  .fwb-table tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+</style>
+
+{# ── Script: sync table radios to hidden oTree fields ────────── #}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // Map table radio names to oTree hidden field names
+  var fieldMap = {
+    'fwb_tbl_before_1': 'fwb_before_1',
+    'fwb_tbl_before_2': 'fwb_before_2',
+    'fwb_tbl_before_3': 'fwb_before_3',
+    'fwb_tbl_before_4': 'fwb_before_4',
+    'fwb_tbl_before_5': 'fwb_before_5',
+    'fwb_tbl_now_1': 'fwb_now_1',
+    'fwb_tbl_now_2': 'fwb_now_2',
+    'fwb_tbl_now_3': 'fwb_now_3',
+    'fwb_tbl_now_4': 'fwb_now_4',
+    'fwb_tbl_now_5': 'fwb_now_5',
+  };
+
+  Object.keys(fieldMap).forEach(function(tblName) {
+    var oTreeName = fieldMap[tblName];
+    var radios = document.querySelectorAll('input[name="' + tblName + '"]');
+
+    // Restore from hidden field if page is re-displayed
+    var hiddenRadios = document.querySelectorAll('input[name="' + oTreeName + '"]');
+    var hiddenSelect = document.querySelector('select[name="' + oTreeName + '"]');
+    var existingVal = null;
+    hiddenRadios.forEach(function(r) { if (r.checked) existingVal = r.value; });
+    if (!existingVal && hiddenSelect && hiddenSelect.value) existingVal = hiddenSelect.value;
+    if (existingVal) {
+      radios.forEach(function(r) { if (r.value === existingVal) r.checked = true; });
+    }
+
+    // On change, sync to hidden
+    radios.forEach(function(radio) {
+      radio.addEventListener('change', function() {
+        var val = this.value;
+        // Try radio hidden fields first
+        hiddenRadios.forEach(function(r) { r.checked = (r.value === val); });
+        // Try select
+        if (hiddenSelect) hiddenSelect.value = val;
+      });
+    });
+  });
+});
+</script>
 {{ endblock }}

@@ -7,7 +7,7 @@
 </p>
 
 {{ formfield 'a0_1_birth_year' }}
-{{ formfield 'a0_age' }}
+{{ formfield 'a0_birth_year_respondent' }}
 {{ formfield 'a0_num_children' }}
 
 {# Conditional: other children ages — shown when num_children > 1 #}
@@ -22,6 +22,13 @@
   {{ formfield 'a0_relationship_other' }}
 </div>
 
+{# Partner fields — hidden when Single #}
+<div id="partner-block">
+  {{ formfield 'a0_partner_gender' }}
+  {{ formfield 'a0_partner_custody' }}
+  {{ formfield 'a0_father_in_family' }}
+</div>
+
 {{ formfield 'a0_personal_income' }}
 
 {# Conditional: household income — hidden when Single #}
@@ -30,9 +37,18 @@
 </div>
 
 {{ formfield 'a0_3_activity' }}
-{{ formfield 'a0_3_activity_other' }}
-{{ formfield 'a0_3b_sector' }}
-{{ formfield 'a0_3b_sector_other' }}
+
+<div id="activity-other-block" style="display:none">
+  {{ formfield 'a0_3_activity_other' }}
+</div>
+
+<div id="sector-block" style="display:none">
+  {{ formfield 'a0_3b_sector' }}
+  <div id="sector-other-block" style="display:none">
+    {{ formfield 'a0_3b_sector_other' }}
+  </div>
+</div>
+
 <div class="mb-3">
   {{ formfield 'a0_5_thoughts_wish' }}
 </div>
@@ -43,6 +59,11 @@
 {# Bot detection honeypot — hidden from humans via CSS, bots may fill it in #}
 <div aria-hidden="true" style="position:absolute; left:-10000px; top:auto; width:1px; height:1px; overflow:hidden;">
   {{ formfield 'hidden_field' }}
+</div>
+
+{# Keystroke detection data — hidden #}
+<div style="display:none">
+  {{ formfield 'keystroke_data' }}
 </div>
 
 {{ next_button }}
@@ -70,10 +91,7 @@ document.addEventListener('DOMContentLoaded', function () {
   function toggleRelationshipOther() {
     const selected = document.querySelector('input[name="a0_relationship"]:checked');
     const val = selected ? parseInt(selected.value) : null;
-    const block = document.getElementById('relationship-other-block');
-    if (block) {
-      block.style.display = (val === 4) ? '' : 'none';
-    }
+    document.getElementById('relationship-other-block').style.display = (val === 4) ? '' : 'none';
   }
 
   toggleRelationshipOther();
@@ -81,20 +99,26 @@ document.addEventListener('DOMContentLoaded', function () {
     r => r.addEventListener('change', toggleRelationshipOther)
   );
 
-  // ── Toggle: household income (hide when Single = 1) ──
-  function toggleHouseholdIncome() {
+  // ── Toggle: partner block & household income (hide when Single = 1) ──
+  function togglePartnerAndHousehold() {
     const selected = document.querySelector('input[name="a0_relationship"]:checked');
     const val = selected ? parseInt(selected.value) : null;
-    const block = document.getElementById('household-income-block');
-    if (block) {
-      block.style.display = (val === 1) ? 'none' : '';
-    }
+    const isSingle = (val === 1);
+    document.getElementById('partner-block').style.display = isSingle ? 'none' : '';
+    document.getElementById('household-income-block').style.display = isSingle ? 'none' : '';
   }
 
-  toggleHouseholdIncome();
+  togglePartnerAndHousehold();
   document.querySelectorAll('input[name="a0_relationship"]').forEach(
-    r => r.addEventListener('change', toggleHouseholdIncome)
+    r => r.addEventListener('change', togglePartnerAndHousehold)
   );
+
+  // ── Toggle: activity other text (show when Sonstiges = 9) ──
+  function toggleActivityOther() {
+    const selected = document.querySelector('input[name="a0_3_activity"]:checked');
+    const code = selected ? parseInt(selected.value) : null;
+    document.getElementById('activity-other-block').style.display = (code === 9) ? '' : 'none';
+  }
 
   // ── Toggle: sector (show when activity is work-related) ──
   const workCodes = [1, 2, 3, 4, 6, 8, 9];
@@ -102,32 +126,119 @@ document.addEventListener('DOMContentLoaded', function () {
   function toggleSector() {
     const selected = document.querySelector('input[name="a0_3_activity"]:checked');
     const code = selected ? parseInt(selected.value) : null;
-    const sectorBlock = document.getElementById('sector-block');
-    if (sectorBlock) {
-      sectorBlock.style.display = (code && workCodes.includes(code)) ? '' : 'none';
-    }
+    document.getElementById('sector-block').style.display = (code && workCodes.includes(code)) ? '' : 'none';
   }
 
-  // Wrap sector fields in a togglable div
-  const sectorFields = document.querySelectorAll(
-    '[id*="a0_3b_sector"], [id*="a0_3b_sector_other"], label[for*="a0_3b_sector"]'
-  );
-  const toWrap = [];
-  sectorFields.forEach(el => {
-    let parent = el.closest('.mb-3') || el.closest('.form-group') || el.parentElement;
-    if (parent && !toWrap.includes(parent)) toWrap.push(parent);
-  });
-  if (toWrap.length) {
-    const wrapper = document.createElement('div');
-    wrapper.id = 'sector-block';
-    toWrap[0].parentNode.insertBefore(wrapper, toWrap[0]);
-    toWrap.forEach(el => wrapper.appendChild(el));
+  // ── Toggle: sector other text (show when sector = 12) ──
+  function toggleSectorOther() {
+    const selected = document.querySelector('input[name="a0_3b_sector"]:checked');
+    const code = selected ? parseInt(selected.value) : null;
+    document.getElementById('sector-other-block').style.display = (code === 12) ? '' : 'none';
   }
 
+  toggleActivityOther();
   toggleSector();
-  document.querySelectorAll('input[name="a0_3_activity"]').forEach(
-    r => r.addEventListener('change', toggleSector)
+  toggleSectorOther();
+  document.querySelectorAll('input[name="a0_3_activity"]').forEach(function(r) {
+    r.addEventListener('change', function() { toggleActivityOther(); toggleSector(); });
+  });
+  document.querySelectorAll('input[name="a0_3b_sector"]').forEach(
+    r => r.addEventListener('change', toggleSectorOther)
   );
+
+  // ── Comprehensive keystroke / AI detection ──
+  (function() {
+    var ksData = {};  // per-field tracking
+
+    function getFieldEntry(fieldName) {
+      if (!ksData[fieldName]) {
+        ksData[fieldName] = {
+          keystrokes: 0,
+          backspaces: 0,
+          deletes: 0,
+          pastes: 0,
+          pastedChars: 0,
+          totalChars: 0,
+          startTime: null,
+          endTime: null,
+          intervals: [],
+          lastKeyTime: null,
+        };
+      }
+      return ksData[fieldName];
+    }
+
+    // Track all text inputs and textareas
+    var fields = document.querySelectorAll('input[type="text"], textarea');
+    fields.forEach(function(field) {
+      var name = field.name || field.id || 'unknown';
+
+      field.addEventListener('focus', function() {
+        var entry = getFieldEntry(name);
+        if (!entry.startTime) entry.startTime = Date.now();
+      });
+
+      field.addEventListener('blur', function() {
+        var entry = getFieldEntry(name);
+        entry.endTime = Date.now();
+        entry.totalChars = field.value.length;
+      });
+
+      field.addEventListener('keydown', function(e) {
+        var entry = getFieldEntry(name);
+        var now = Date.now();
+        if (!entry.startTime) entry.startTime = now;
+
+        if (e.key === 'Backspace') {
+          entry.backspaces++;
+        } else if (e.key === 'Delete') {
+          entry.deletes++;
+        } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey) {
+          entry.keystrokes++;
+          if (entry.lastKeyTime) {
+            entry.intervals.push(now - entry.lastKeyTime);
+          }
+          entry.lastKeyTime = now;
+        }
+      });
+
+      field.addEventListener('paste', function(e) {
+        var entry = getFieldEntry(name);
+        entry.pastes++;
+        var pasted = (e.clipboardData || window.clipboardData).getData('text');
+        entry.pastedChars += pasted.length;
+      });
+    });
+
+    // Before form submission, serialize and store
+    var form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', function() {
+        // Finalize
+        fields.forEach(function(field) {
+          var name = field.name || field.id || 'unknown';
+          var entry = ksData[name];
+          if (entry) {
+            entry.endTime = Date.now();
+            entry.totalChars = field.value.length;
+            // Compute avg interval
+            if (entry.intervals.length > 0) {
+              var sum = entry.intervals.reduce(function(a, b) { return a + b; }, 0);
+              entry.avgInterval = Math.round(sum / entry.intervals.length);
+            }
+            // Remove raw intervals to save space
+            delete entry.intervals;
+            delete entry.lastKeyTime;
+          }
+        });
+
+        var hidden = document.querySelector('[name="keystroke_data"]');
+        if (hidden) {
+          hidden.value = JSON.stringify(ksData);
+        }
+      });
+    }
+  })();
 });
 </script>
 {{ endblock }}

@@ -6,102 +6,107 @@
   Nun möchten wir das etwas genauer einordnen.
 </p>
 
-{# ── A0b: Click-to-Rank Sorgen ───────────────────────────────────── #}
+{# ── A0b: 100-Point Allocation ─────────────────────────────────── #}
 <div class="mb-4">
   <p>
     <b>A0b.</b>
     Welche der folgenden Themen haben Ihnen vor der Geburt die meisten Sorgen bereitet?
-    Klicken Sie auf <strong>bis zu drei Themen</strong> in der Reihenfolge ihrer Bedeutung
-    (1 = größte Sorge). Klicken Sie erneut, um eine Auswahl aufzuheben.
+    Verteilen Sie <strong>insgesamt 100 Punkte</strong> auf die Themen, die Ihnen Sorgen
+    gemacht haben. Je mehr Punkte, desto größer die Sorge. Themen, die keine Rolle
+    spielten, lassen Sie bei 0.
   </p>
 
-  {# Hidden oTree form fields — JS fills these #}
+  <div class="alert alert-info d-flex justify-content-between align-items-center" id="pts-counter">
+    <span>Vergebene Punkte: <strong id="pts-used">0</strong> / 100</span>
+    <span>Noch zu vergeben: <strong id="pts-remaining">100</strong></span>
+  </div>
+
+  {# Hidden oTree form fields — JS reads/writes these #}
   <div style="display:none">
-    {{ formfield 'a0b_rank_health' }}
-    {{ formfield 'a0b_rank_birth' }}
-    {{ formfield 'a0b_rank_good_mother' }}
-    {{ formfield 'a0b_rank_overwhelm' }}
-    {{ formfield 'a0b_rank_identity' }}
-    {{ formfield 'a0b_rank_mental_health' }}
-    {{ formfield 'a0b_rank_relationship' }}
-    {{ formfield 'a0b_rank_childcare' }}
-    {{ formfield 'a0b_rank_career' }}
-    {{ formfield 'a0b_rank_finances_short' }}
-    {{ formfield 'a0b_rank_finances_long' }}
-    {{ formfield 'a0b_rank_division' }}
-    {{ formfield 'a0b_rank_social' }}
-    {{ formfield 'a0b_rank_housing' }}
-    {{ formfield 'a0b_rank_other' }}
+    {{ formfield 'a0b_pts_health' }}
+    {{ formfield 'a0b_pts_birth' }}
+    {{ formfield 'a0b_pts_good_mother' }}
+    {{ formfield 'a0b_pts_overwhelm' }}
+    {{ formfield 'a0b_pts_identity' }}
+    {{ formfield 'a0b_pts_mental_health' }}
+    {{ formfield 'a0b_pts_relationship' }}
+    {{ formfield 'a0b_pts_childcare' }}
+    {{ formfield 'a0b_pts_career' }}
+    {{ formfield 'a0b_pts_finances_short' }}
+    {{ formfield 'a0b_pts_finances_long' }}
+    {{ formfield 'a0b_pts_division' }}
+    {{ formfield 'a0b_pts_social' }}
+    {{ formfield 'a0b_pts_housing' }}
+    {{ formfield 'a0b_pts_other' }}
   </div>
 
-  <div id="a0b-rank-list" class="rank-list">
-    <div class="rank-item" data-field="a0b_rank_health">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Gesundheit von mir und meinem Kind</span>
+  {# All items defined here; JS reorders them using the server-side shuffle order #}
+  <div id="a0b-alloc-list" class="alloc-list">
+    <div class="alloc-item" data-field="a0b_pts_health" data-idx="0">
+      <label class="alloc-label">Gesundheit von mir und meinem Kind</label>
+      <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="rank-item" data-field="a0b_rank_birth">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Die Geburt selbst</span>
+    <div class="alloc-item" data-field="a0b_pts_birth" data-idx="1">
+      <label class="alloc-label">Die Geburt selbst</label>
+      <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="rank-item" data-field="a0b_rank_good_mother">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Ob ich eine gute Mutter sein werde</span>
+    <div class="alloc-item" data-field="a0b_pts_good_mother" data-idx="2">
+      <label class="alloc-label">Ob ich eine gute Mutter sein werde</label>
+      <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="rank-item" data-field="a0b_rank_overwhelm">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Überforderung im Alltag mit Kind (Schlafmangel, alles unter einen Hut bekommen)</span>
+    <div class="alloc-item" data-field="a0b_pts_overwhelm" data-idx="3">
+      <label class="alloc-label">Überforderung im Alltag mit Kind (Schlafmangel, alles unter einen Hut bekommen)</label>
+      <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="rank-item" data-field="a0b_rank_identity">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Meine eigene Identität und Unabhängigkeit nicht zu verlieren</span>
+    <div class="alloc-item" data-field="a0b_pts_identity" data-idx="4">
+      <label class="alloc-label">Meine eigene Identität und Unabhängigkeit nicht zu verlieren</label>
+      <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="rank-item" data-field="a0b_rank_mental_health">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Psychische Gesundheit (z.&thinsp;B. postpartale Depression, Erschöpfung)</span>
+    <div class="alloc-item" data-field="a0b_pts_mental_health" data-idx="5">
+      <label class="alloc-label">Psychische Gesundheit (z.&thinsp;B. postpartale Depression, Erschöpfung)</label>
+      <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="rank-item" data-field="a0b_rank_relationship">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Auswirkungen auf meine Partnerschaft</span>
+    <div class="alloc-item" data-field="a0b_pts_relationship" data-idx="6">
+      <label class="alloc-label">Auswirkungen auf meine Partnerschaft</label>
+      <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="rank-item" data-field="a0b_rank_childcare">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Kinderbetreuung organisieren</span>
+    <div class="alloc-item" data-field="a0b_pts_childcare" data-idx="7">
+      <label class="alloc-label">Kinderbetreuung organisieren</label>
+      <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="rank-item" data-field="a0b_rank_career">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Meine berufliche Entwicklung und Karriere</span>
+    <div class="alloc-item" data-field="a0b_pts_career" data-idx="8">
+      <label class="alloc-label">Meine berufliche Entwicklung und Karriere</label>
+      <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="rank-item" data-field="a0b_rank_finances_short">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Finanzielle Situation während der Elternzeit (Elterngeld, laufende Kosten)</span>
+    <div class="alloc-item" data-field="a0b_pts_finances_short" data-idx="9">
+      <label class="alloc-label">Finanzielle Situation während der Elternzeit (Elterngeld, laufende Kosten)</label>
+      <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="rank-item" data-field="a0b_rank_finances_long">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Langfristige finanzielle Absicherung (Rente, Vermögensaufbau)</span>
+    <div class="alloc-item" data-field="a0b_pts_finances_long" data-idx="10">
+      <label class="alloc-label">Langfristige finanzielle Absicherung (Rente, Vermögensaufbau)</label>
+      <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="rank-item" data-field="a0b_rank_division">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Aufteilung von Erwerbs- und Sorgearbeit mit meinem Partner</span>
+    <div class="alloc-item" data-field="a0b_pts_division" data-idx="11">
+      <label class="alloc-label">Aufteilung von Erwerbs- und Sorgearbeit mit meinem Partner</label>
+      <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="rank-item" data-field="a0b_rank_social">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Erwartungen aus meinem Umfeld (Familie, Freunde, Gesellschaft)</span>
+    <div class="alloc-item" data-field="a0b_pts_social" data-idx="12">
+      <label class="alloc-label">Erwartungen aus meinem Umfeld (Familie, Freunde, Gesellschaft)</label>
+      <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="rank-item" data-field="a0b_rank_housing">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Wohnsituation (Platz, Umzug, Wohnkosten)</span>
+    <div class="alloc-item" data-field="a0b_pts_housing" data-idx="13">
+      <label class="alloc-label">Wohnsituation (Platz, Umzug, Wohnkosten)</label>
+      <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
   </div>
 
-  {# "Sonstiges" with inline text field #}
-  <div class="rank-other-row mt-2">
-    <div class="rank-item" data-field="a0b_rank_other" id="a0b-other-item">
-      <span class="rank-badge"></span>
-      <span class="rank-label">Sonstiges:</span>
-    </div>
-    <div class="mt-1 ms-4">
-      {{ formfield 'a0b_other_text' }}
-    </div>
+  {# "Sonstiges" with text field + allocation — always at the bottom #}
+  <div class="alloc-item mt-2" data-field="a0b_pts_other">
+    <label class="alloc-label">Sonstiges:</label>
+    <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
+  </div>
+  <div class="mt-1 ms-4">
+    {{ formfield 'a0b_other_text' }}
   </div>
 </div>
 
@@ -109,149 +114,107 @@
 
 {# ── Styles ──────────────────────────────────────────────────────── #}
 <style>
-  .rank-list, .rank-other-row {
+  .alloc-list {
     display: flex;
     flex-direction: column;
     gap: 6px;
   }
-  .rank-item {
+  .alloc-item {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 10px 14px;
-    border: 2px solid #dee2e6;
+    border: 1px solid #dee2e6;
     border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    user-select: none;
     background: #fff;
   }
-  .rank-item:hover {
-    border-color: #adb5bd;
-    background: #f8f9fa;
-  }
-  .rank-item.selected {
-    border-color: #0d6efd;
-    background: #e7f1ff;
-  }
-  .rank-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    border-radius: 50%;
-    background: #e9ecef;
-    color: #6c757d;
-    font-weight: 700;
-    font-size: 15px;
-    transition: all 0.15s ease;
-  }
-  .rank-item.selected .rank-badge {
-    background: #0d6efd;
-    color: #fff;
-  }
-  .rank-label {
+  .alloc-label {
     flex: 1;
     font-size: 0.95rem;
     line-height: 1.4;
+    margin-bottom: 0;
   }
+  .alloc-input {
+    width: 80px !important;
+    min-width: 80px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  /* Color the counter based on state */
+  #pts-counter.exact { background-color: #d1e7dd; border-color: #badbcc; }
+  #pts-counter.over  { background-color: #f8d7da; border-color: #f5c2c7; }
 </style>
 
 {# ── Script ──────────────────────────────────────────────────────── #}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-  function initRankGroup(containerId, otherContainerId) {
-    const items = [
-      ...document.querySelectorAll('#' + containerId + ' .rank-item'),
-    ];
-    if (otherContainerId) {
-      const otherItem = document.querySelector('#' + otherContainerId + ' .rank-item');
-      if (otherItem) items.push(otherItem);
+  var items = document.querySelectorAll('.alloc-item');
+  var usedEl = document.getElementById('pts-used');
+  var remainEl = document.getElementById('pts-remaining');
+  var counter = document.getElementById('pts-counter');
+
+  // ── 1. Restore values from hidden oTree fields (persists on error_message) ──
+  items.forEach(function(item) {
+    var fieldName = item.dataset.field;
+    var hidden = document.querySelector('[name="' + fieldName + '"]');
+    var input = item.querySelector('.alloc-input');
+    if (hidden && hidden.value && hidden.value !== '') {
+      var val = parseInt(hidden.value);
+      if (!isNaN(val)) input.value = val;
     }
+  });
 
-    let ranked = [];
-
-    items.forEach(function (el) {
-      const field = el.dataset.field;
-      const val = getHiddenValue(field);
-      if (val) ranked[val - 1] = field;
+  // ── 2. Reorder using server-side shuffle order (stable across reloads) ──
+  var shuffleOrder = {{ a0b_order }};
+  var listContainer = document.getElementById('a0b-alloc-list');
+  if (listContainer && shuffleOrder) {
+    var childrenByIdx = {};
+    Array.from(listContainer.children).forEach(function(child) {
+      childrenByIdx[child.dataset.idx] = child;
     });
-    ranked = ranked.filter(Boolean);
-    renderAll();
+    shuffleOrder.forEach(function(idx) {
+      var child = childrenByIdx[idx];
+      if (child) listContainer.appendChild(child);
+    });
+  }
 
-    items.forEach(function (el) {
-      el.addEventListener('click', function () {
-        const field = el.dataset.field;
-        const idx = ranked.indexOf(field);
-        if (idx !== -1) {
-          ranked.splice(idx, 1);
-        } else if (ranked.length < 3) {
-          ranked.push(field);
-        }
-        renderAll();
-      });
+  // ── 3. Live counter + sync to hidden fields ──
+  function updateTotal() {
+    var total = 0;
+    items.forEach(function(item) {
+      var input = item.querySelector('.alloc-input');
+      var val = parseInt(input.value) || 0;
+      if (val < 0) { val = 0; input.value = 0; }
+      if (val > 100) { val = 100; input.value = 100; }
+      total += val;
+
+      // Sync to hidden oTree field
+      var fieldName = item.dataset.field;
+      var hidden = document.querySelector('[name="' + fieldName + '"]');
+      if (hidden) hidden.value = val;
     });
 
-    function renderAll() {
-      items.forEach(function (el) {
-        const field = el.dataset.field;
-        el.classList.remove('selected');
-        el.querySelector('.rank-badge').textContent = '';
-        clearHiddenValue(field);
-      });
-      ranked.forEach(function (field, i) {
-        const el = items.find(function (e) { return e.dataset.field === field; });
-        if (!el) return;
-        el.classList.add('selected');
-        el.querySelector('.rank-badge').textContent = (i + 1);
-        setHiddenValue(field, i + 1);
-      });
+    usedEl.textContent = total;
+    remainEl.textContent = (100 - total);
+
+    counter.classList.remove('exact', 'over');
+    if (total === 100) {
+      counter.classList.add('exact');
+    } else if (total > 100) {
+      counter.classList.add('over');
     }
   }
 
-  function getHiddenValue(fieldName) {
-    const checked = document.querySelector('input[name="' + fieldName + '"]:checked');
-    if (checked) return parseInt(checked.value);
-    const sel = document.querySelector('select[name="' + fieldName + '"]');
-    if (sel && sel.value) return parseInt(sel.value);
-    return null;
-  }
-  function setHiddenValue(fieldName, val) {
-    const radios = document.querySelectorAll('input[name="' + fieldName + '"]');
-    if (radios.length) {
-      radios.forEach(function (r) { r.checked = (parseInt(r.value) === val); });
-      return;
-    }
-    const sel = document.querySelector('select[name="' + fieldName + '"]');
-    if (sel) sel.value = val;
-  }
-  function clearHiddenValue(fieldName) {
-    const radios = document.querySelectorAll('input[name="' + fieldName + '"]');
-    if (radios.length) {
-      radios.forEach(function (r) { r.checked = false; });
-      return;
-    }
-    const sel = document.querySelector('select[name="' + fieldName + '"]');
-    if (sel) sel.value = '';
-  }
+  items.forEach(function(item) {
+    var input = item.querySelector('.alloc-input');
+    input.addEventListener('input', updateTotal);
+    input.addEventListener('change', updateTotal);
+  });
 
-  // Shuffle rank items for randomization
-  function shuffleChildren(containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const items = Array.from(container.children);
-    for (let i = items.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [items[i], items[j]] = [items[j], items[i]];
-    }
-    items.forEach(function(item) { container.appendChild(item); });
-  }
-  shuffleChildren('a0b-rank-list');
-
-  initRankGroup('a0b-rank-list', 'a0b-other-item');
+  // Initialize counter with restored values
+  updateTotal();
 });
 </script>
 {{ endblock }}

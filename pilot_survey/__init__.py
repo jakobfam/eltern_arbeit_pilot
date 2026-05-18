@@ -86,8 +86,13 @@ class Player(BasePlayer):
 
     a0_num_children = models.IntegerField(
         label='<b>A0.3.</b> Wie viele Kinder haben Sie?',
-        min=1,
-        max=14,
+        choices=[
+            [1, '1'],
+            [2, '2'],
+            [3, '3'],
+            [4, '4 oder mehr'],
+        ],
+        widget=widgets.RadioSelectHorizontal,
     )
 
     a0_other_children_ages = models.StringField(
@@ -466,7 +471,7 @@ class Player(BasePlayer):
         blank=True, widget=widgets.CheckboxInput,
     )
 
-    # -- Financial conflict & decision power ------------------------------
+    # -- Financial decision control & conflict -----------------------------
     b_decision_power = models.IntegerField(
         label=(
             '<b>B1d.</b> Inwieweit stimmen Sie folgender Aussage zu: '
@@ -705,6 +710,56 @@ class Player(BasePlayer):
         blank=True, widget=widgets.RadioSelectHorizontal,
     )
 
+    # B2b: Salient moment timing
+    b2b_salient_moment = models.IntegerField(
+        label=(
+            '<b>B2b.</b> Wann wurde Ihnen zum ersten Mal wirklich bewusst, welche '
+            'langfristigen finanziellen Konsequenzen die Mutterschaft für Sie '
+            'persönlich hat?'
+        ),
+        choices=[
+            [1, 'Schon während der Schwangerschaft'],
+            [2, 'Während der Elternzeit'],
+            [3, 'Als ich in den Beruf zurückgekehrt bin'],
+            [4, 'Als ich einen Rentenbescheid oder eine Rentenauskunft erhalten habe'],
+            [5, 'Als ich meine erste Steuererklärung nach der Geburt gemacht habe'],
+            [6, 'Bei einem einschneidenden Lebensereignis (Trennung, Krankheit, Jobverlust)'],
+            [7, 'Das ist mir noch nicht wirklich bewusst geworden'],
+            [8, 'Sonstiges'],
+        ],
+        widget=widgets.RadioSelect,
+    )
+    b2b_salient_other = models.StringField(
+        label='Falls "Sonstiges": bitte angeben',
+        blank=True,
+    )
+
+    # B2c: Mechanism decomposition — for rank #1 and #2 domains
+    b2c_mechanism_1 = models.IntegerField(
+        label='',  # label set dynamically in template
+        choices=[
+            [1, 'Ich hatte es schlicht nicht auf dem Schirm — mir war nicht klar, dass es relevant sein könnte'],
+            [2, 'Ich wusste, dass es wichtig ist, aber es fühlte sich zu weit weg und abstrakt an'],
+            [3, 'Ich wusste, dass es wichtig ist, hatte aber schlicht zu viel anderes zu bewältigen'],
+            [4, 'Ich hatte darüber nachgedacht und mir vorgenommen, etwas zu tun — aber es ist dann doch nicht passiert'],
+            [5, 'Dieses Thema hat tatsächlich eine Rolle gespielt — ich habe mich damit beschäftigt'],
+        ],
+        widget=widgets.RadioSelect,
+        blank=True,
+    )
+    b2c_mechanism_2 = models.IntegerField(
+        label='',  # label set dynamically in template
+        choices=[
+            [1, 'Ich hatte es schlicht nicht auf dem Schirm — mir war nicht klar, dass es relevant sein könnte'],
+            [2, 'Ich wusste, dass es wichtig ist, aber es fühlte sich zu weit weg und abstrakt an'],
+            [3, 'Ich wusste, dass es wichtig ist, hatte aber schlicht zu viel anderes zu bewältigen'],
+            [4, 'Ich hatte darüber nachgedacht und mir vorgenommen, etwas zu tun — aber es ist dann doch nicht passiert'],
+            [5, 'Dieses Thema hat tatsächlich eine Rolle gespielt — ich habe mich damit beschäftigt'],
+        ],
+        widget=widgets.RadioSelect,
+        blank=True,
+    )
+
     b3_preparedness = models.IntegerField(
         label=(
             '<b>B3.</b> Wie gut fühlten Sie sich vor der Geburt Ihres ersten Kindes '
@@ -905,12 +960,6 @@ class PageA0(Page):
         'a0_partner_gender',
         'a0_partner_custody',
         'a0_father_in_family',
-        'a0_personal_income',
-        'a0_household_income',
-        'a0_3_activity',
-        'a0_3_activity_other',
-        'a0_3b_sector',
-        'a0_3b_sector_other',
         'a0_5_thoughts_wish',
         'attention_check_1',
         'hidden_field',
@@ -1021,6 +1070,8 @@ class PageB_Finance(Page):
         'b2_rank_childcare_cost', 'b2_rank_career', 'b2_rank_daily_costs',
         'b2_rank_insurance', 'b2_rank_elterngeld', 'b2_rank_prepared',
         'b2_other_text', 'b2_rank_other',
+        # B2b salient moment
+        'b2b_salient_moment', 'b2b_salient_other',
         # B3, B4, B5
         'b3_preparedness', 'b4_planning_horizon',
         'b5_simplify', 'b5b_dropped',
@@ -1056,6 +1107,66 @@ class PageB_Finance(Page):
             return 'Bitte vergeben Sie bei Frage B2 jeden Rang nur einmal.'
 
 
+class PageB_Mechanism(Page):
+    """B2c: Mechanism decomposition — why didn't you engage with your top-ranked domains?"""
+    form_model = 'player'
+    form_fields = [
+        'b2c_mechanism_1',
+        'b2c_mechanism_2',
+    ]
+
+    # Map B2 field names to human-readable topic labels
+    B2_TOPIC_MAP = {
+        'b2_rank_income_drop': 'Der Einkommenseinbruch während der Elternzeit',
+        'b2_rank_tax_work': 'Der Einfluss von Steuern und Sozialleistungen darauf, ob sich Mehrarbeit lohnt',
+        'b2_rank_pension': 'Die Auswirkung von Teilzeitarbeit auf Ihre spätere Rente',
+        'b2_rank_childcare_cost': 'Die Kosten und Verfügbarkeit von Kinderbetreuung',
+        'b2_rank_career': 'Der Einfluss auf Ihren beruflichen Werdegang und Ihr Gehalt',
+        'b2_rank_daily_costs': 'Die alltäglichen Kosten mit Kind',
+        'b2_rank_insurance': 'Änderungen bei Versicherungen und Gesundheitsversorgung',
+        'b2_rank_elterngeld': 'Wie Elterngeld und ElterngeldPlus in der Praxis funktionieren',
+        'b2_rank_prepared': 'Insgesamt hat mich finanziell nichts besonders überrascht',
+        'b2_rank_other': 'Sonstiges',
+    }
+
+    @staticmethod
+    def is_displayed(player: Player):
+        if not player.consent:
+            return False
+        # Only show if the respondent ranked at least 1 topic in B2
+        b2_fields = [
+            'b2_rank_income_drop', 'b2_rank_tax_work', 'b2_rank_pension',
+            'b2_rank_childcare_cost', 'b2_rank_career', 'b2_rank_daily_costs',
+            'b2_rank_insurance', 'b2_rank_elterngeld', 'b2_rank_prepared',
+            'b2_rank_other',
+        ]
+        ranked = [(f, player.field_maybe_none(f)) for f in b2_fields if player.field_maybe_none(f) is not None]
+        return len(ranked) >= 1
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        b2_fields = [
+            'b2_rank_income_drop', 'b2_rank_tax_work', 'b2_rank_pension',
+            'b2_rank_childcare_cost', 'b2_rank_career', 'b2_rank_daily_costs',
+            'b2_rank_insurance', 'b2_rank_elterngeld', 'b2_rank_prepared',
+            'b2_rank_other',
+        ]
+        # Build list of (field_name, rank) sorted by rank
+        ranked = [(f, player.field_maybe_none(f)) for f in b2_fields if player.field_maybe_none(f) is not None]
+        ranked.sort(key=lambda x: x[1])
+
+        topic_map = PageB_Mechanism.B2_TOPIC_MAP
+        topic_1 = topic_map.get(ranked[0][0], '') if len(ranked) >= 1 else ''
+        topic_2 = topic_map.get(ranked[1][0], '') if len(ranked) >= 2 else ''
+        has_topic_2 = len(ranked) >= 2
+
+        return dict(
+            topic_1=topic_1,
+            topic_2=topic_2,
+            has_topic_2=has_topic_2,
+        )
+
+
 class PageA_Work(Page):
     """Section A page 1: A1 (expectation), A2 (experience Likert, conditional)."""
     form_model = 'player'
@@ -1067,10 +1178,6 @@ class PageA_Work(Page):
     @staticmethod
     def is_displayed(player: Player):
         return player.consent
-
-    @staticmethod
-    def vars_for_template(player):
-        return dict(activity=player.a0_3_activity)
 
 
 class PageA3_Ranking(Page):
@@ -1094,7 +1201,7 @@ class PageA3_Ranking(Page):
             indices = list(range(9))  # 9 main A3 items (excl. "other")
             random.shuffle(indices)
             player.participant.vars['a3_order'] = indices
-        return dict(activity=player.a0_3_activity, a3_order=player.participant.vars['a3_order'])
+        return dict(a3_order=player.participant.vars['a3_order'])
 
     @staticmethod
     def error_message(player, values):
@@ -1140,6 +1247,23 @@ class PageC_Advice(Page):
             return 'Bitte wählen Sie bei Frage C2 maximal 3 Themen aus.'
 
 
+class PageA0_End(Page):
+    """End-of-survey demographics: income, activity, sector."""
+    form_model = 'player'
+    form_fields = [
+        'a0_personal_income',
+        'a0_household_income',
+        'a0_3_activity',
+        'a0_3_activity_other',
+        'a0_3b_sector',
+        'a0_3b_sector_other',
+    ]
+
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.consent
+
+
 class PageD_Knowledge(Page):
     """Section D: Knowledge check + attention_check_2. Runs final screenout checks."""
     form_model = 'player'
@@ -1182,9 +1306,11 @@ page_sequence = [
     PageB1_OpenEnd,
     PageB_FWB,
     PageB_Finance,
+    PageB_Mechanism,
     PageA_Work,
     PageA3_Ranking,
     PageC_Advice,
+    PageA0_End,
     PageD_Knowledge,
     Results,
 ]

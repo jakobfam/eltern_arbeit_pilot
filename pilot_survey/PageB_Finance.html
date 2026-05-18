@@ -75,6 +75,12 @@
   </div>
 </div>
 
+{# B2b: Salient moment timing #}
+{{ formfield 'b2b_salient_moment' }}
+<div id="b2b-other-block" style="display:none">
+  {{ formfield 'b2b_salient_other' }}
+</div>
+
 {# B3 #}
 {{ formfield 'b3_preparedness' }}
 
@@ -106,6 +112,17 @@ document.addEventListener('DOMContentLoaded', function () {
   toggleB5b();
   document.querySelectorAll('input[name="b5_simplify"]').forEach(
     r => r.addEventListener('change', toggleB5b)
+  );
+
+  // Toggle B2b "Sonstiges" text field (show when value = 8)
+  function toggleB2bOther() {
+    const selected = document.querySelector('input[name="b2b_salient_moment"]:checked');
+    const val = selected ? parseInt(selected.value) : null;
+    document.getElementById('b2b-other-block').style.display = (val === 8) ? '' : 'none';
+  }
+  toggleB2bOther();
+  document.querySelectorAll('input[name="b2b_salient_moment"]').forEach(
+    r => r.addEventListener('change', toggleB2bOther)
   );
 });
 </script>

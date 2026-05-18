@@ -1,0 +1,177 @@
+{{ block title }}Warum diese Themen keine größere Rolle spielten{{ endblock }}
+
+{{ block content }}
+<p class="text-muted fst-italic">
+  Sie haben gerade angegeben, welche finanziellen Themen Sie am meisten unterschätzt haben.
+  Nun möchten wir besser verstehen, <em>warum</em> diese Themen vor der Geburt keine
+  größere Rolle für Sie gespielt haben.
+</p>
+
+{# Hidden oTree form fields — JS fills these #}
+<div style="display:none">
+  {{ formfield 'b2c_mechanism_1' }}
+  {{ formfield 'b2c_mechanism_2' }}
+</div>
+
+{# ── Mechanism question for rank #1 topic ──────────────────────── #}
+<div class="mb-4">
+  <p>
+    <b>B2c.</b> Denken Sie an das Thema, das Sie am meisten unterschätzt haben:
+    <strong id="topic-1-label">{{ topic_1 }}</strong>.
+    Welche Aussage beschreibt am besten, warum dieses Thema vor der Geburt keine
+    größere Rolle gespielt hat?
+  </p>
+
+  <div id="mech1-list" class="mech-list">
+    <div class="mech-item" data-field="b2c_mechanism_1" data-value="1">
+      <span class="mech-radio"></span>
+      <span class="mech-label">Ich hatte es schlicht nicht auf dem Schirm — mir war nicht klar, dass es relevant sein könnte</span>
+    </div>
+    <div class="mech-item" data-field="b2c_mechanism_1" data-value="2">
+      <span class="mech-radio"></span>
+      <span class="mech-label">Ich wusste, dass es wichtig ist, aber es fühlte sich zu weit weg und abstrakt an</span>
+    </div>
+    <div class="mech-item" data-field="b2c_mechanism_1" data-value="3">
+      <span class="mech-radio"></span>
+      <span class="mech-label">Ich wusste, dass es wichtig ist, hatte aber schlicht zu viel anderes zu bewältigen</span>
+    </div>
+    <div class="mech-item" data-field="b2c_mechanism_1" data-value="4">
+      <span class="mech-radio"></span>
+      <span class="mech-label">Ich hatte darüber nachgedacht und mir vorgenommen, etwas zu tun — aber es ist dann doch nicht passiert</span>
+    </div>
+    <div class="mech-item" data-field="b2c_mechanism_1" data-value="5">
+      <span class="mech-radio"></span>
+      <span class="mech-label">Dieses Thema hat tatsächlich eine Rolle gespielt — ich habe mich damit beschäftigt</span>
+    </div>
+  </div>
+</div>
+
+{# ── Mechanism question for rank #2 topic (conditional) ─────────── #}
+{{ if has_topic_2 }}
+<div class="mb-4" id="mech2-block">
+  <p>
+    <b>B2d.</b> Und nun zum zweitwichtigsten Thema:
+    <strong id="topic-2-label">{{ topic_2 }}</strong>.
+    Welche Aussage trifft hier am besten zu?
+  </p>
+
+  <div id="mech2-list" class="mech-list">
+    <div class="mech-item" data-field="b2c_mechanism_2" data-value="1">
+      <span class="mech-radio"></span>
+      <span class="mech-label">Ich hatte es schlicht nicht auf dem Schirm — mir war nicht klar, dass es relevant sein könnte</span>
+    </div>
+    <div class="mech-item" data-field="b2c_mechanism_2" data-value="2">
+      <span class="mech-radio"></span>
+      <span class="mech-label">Ich wusste, dass es wichtig ist, aber es fühlte sich zu weit weg und abstrakt an</span>
+    </div>
+    <div class="mech-item" data-field="b2c_mechanism_2" data-value="3">
+      <span class="mech-radio"></span>
+      <span class="mech-label">Ich wusste, dass es wichtig ist, hatte aber schlicht zu viel anderes zu bewältigen</span>
+    </div>
+    <div class="mech-item" data-field="b2c_mechanism_2" data-value="4">
+      <span class="mech-radio"></span>
+      <span class="mech-label">Ich hatte darüber nachgedacht und mir vorgenommen, etwas zu tun — aber es ist dann doch nicht passiert</span>
+    </div>
+    <div class="mech-item" data-field="b2c_mechanism_2" data-value="5">
+      <span class="mech-radio"></span>
+      <span class="mech-label">Dieses Thema hat tatsächlich eine Rolle gespielt — ich habe mich damit beschäftigt</span>
+    </div>
+  </div>
+</div>
+{{ endif }}
+
+{{ next_button }}
+
+{# ── Styles ──────────────────────────────────────────────────────── #}
+<style>
+  .mech-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .mech-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+    background: #fff;
+  }
+  .mech-item:hover {
+    border-color: #adb5bd;
+    background: #f8f9fa;
+  }
+  .mech-item.selected {
+    border-color: #0d6efd;
+    background: #e7f1ff;
+  }
+  .mech-radio {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    border-radius: 50%;
+    border: 2px solid #adb5bd;
+    transition: all 0.15s ease;
+  }
+  .mech-item.selected .mech-radio {
+    border-color: #0d6efd;
+    background: #0d6efd;
+    box-shadow: inset 0 0 0 4px #fff;
+  }
+  .mech-label {
+    flex: 1;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+</style>
+
+{# ── Script ──────────────────────────────────────────────────────── #}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  function initMechGroup(containerId, fieldName) {
+    var items = document.querySelectorAll('#' + containerId + ' .mech-item');
+
+    // Restore from hidden field
+    var hiddenRadios = document.querySelectorAll('input[name="' + fieldName + '"]');
+    var hiddenSelect = document.querySelector('select[name="' + fieldName + '"]');
+    var currentVal = null;
+    hiddenRadios.forEach(function(r) { if (r.checked) currentVal = r.value; });
+    if (!currentVal && hiddenSelect && hiddenSelect.value) currentVal = hiddenSelect.value;
+
+    if (currentVal) {
+      items.forEach(function(item) {
+        if (item.dataset.value === currentVal) item.classList.add('selected');
+      });
+    }
+
+    items.forEach(function(item) {
+      item.addEventListener('click', function() {
+        // Deselect all in this group
+        items.forEach(function(el) { el.classList.remove('selected'); });
+        // Select this one
+        item.classList.add('selected');
+        var val = item.dataset.value;
+        // Sync to hidden field
+        hiddenRadios.forEach(function(r) { r.checked = (r.value === val); });
+        if (hiddenSelect) hiddenSelect.value = val;
+      });
+    });
+  }
+
+  initMechGroup('mech1-list', 'b2c_mechanism_1');
+
+  var mech2 = document.getElementById('mech2-list');
+  if (mech2) {
+    initMechGroup('mech2-list', 'b2c_mechanism_2');
+  }
+});
+</script>
+{{ endblock }}

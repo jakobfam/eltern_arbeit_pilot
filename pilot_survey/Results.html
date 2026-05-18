@@ -7,30 +7,42 @@
                 Vielen Dank für Ihre Teilnahme an unserer Studie! Ihre Antworten wurden
                 erfolgreich gespeichert.
             </p>
+            {{ if completed }}
+            <p>Sie werden in wenigen Sekunden automatisch weitergeleitet.</p>
             <p>
                 <a href="{{ completed }}" class="btn btn-primary">
-                    Zurück zu Prolific
+                    Weiter
                 </a>
             </p>
+            <script>setTimeout(function(){ window.location.href = "{{ completed }}"; }, 3000);</script>
+            {{ endif }}
         {{ else }}
             <p>
                 Vielen Dank für Ihre Teilnahme. Leider haben Sie die Aufmerksamkeitsfragen
                 nicht korrekt beantwortet.
             </p>
+            {{ if no_attention }}
+            <p>Sie werden in wenigen Sekunden automatisch weitergeleitet.</p>
             <p>
                 <a href="{{ no_attention }}" class="btn btn-secondary">
-                    Zurück zu Prolific
+                    Weiter
                 </a>
             </p>
+            <script>setTimeout(function(){ window.location.href = "{{ no_attention }}"; }, 3000);</script>
+            {{ endif }}
         {{ endif }}
     {{ else }}
         <p>
             Sie haben der Teilnahme nicht zugestimmt. Vielen Dank für Ihr Interesse.
         </p>
+        {{ if no_consent }}
+        <p>Sie werden in wenigen Sekunden automatisch weitergeleitet.</p>
         <p>
             <a href="{{ no_consent }}" class="btn btn-secondary">
-                Zurück zu Prolific
+                Weiter
             </a>
         </p>
+        <script>setTimeout(function(){ window.location.href = "{{ no_consent }}"; }, 3000);</script>
+        {{ endif }}
     {{ endif }}
 {{ endblock }}

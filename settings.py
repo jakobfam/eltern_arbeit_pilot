@@ -12,6 +12,17 @@ SESSION_CONFIGS = [
         link_no_consent='https://app.prolific.com/submissions/complete?cc=C11JQHIK',
         link_no_attention='https://app.prolific.com/submissions/complete?cc=C1P0U9NC',
     ),
+    dict(
+        name='pilot_survey_bilendi',
+        display_name='Pilotstudie – Bilendi Panel',
+        app_sequence=['pilot_survey'],
+        num_demo_participants=1,
+        prolific=False,
+        # Bilendi/generic completion URLs — replace with actual redirect links
+        link_completed='https://example.com/complete',
+        link_no_consent='https://example.com/screenout',
+        link_no_attention='https://example.com/screenout',
+    ),
 ]
 
 SESSION_CONFIG_DEFAULTS = dict(

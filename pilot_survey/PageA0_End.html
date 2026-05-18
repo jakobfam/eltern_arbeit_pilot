@@ -1,0 +1,71 @@
+{{ block title }}Noch ein paar Angaben zu Ihnen{{ endblock }}
+
+{{ block content }}
+<p class="text-muted fst-italic">
+  Zum Schluss noch einige Fragen zu Ihrer beruflichen und finanziellen Situation.
+</p>
+
+{{ formfield 'a0_personal_income' }}
+
+{# Conditional: household income — hidden when Single #}
+<div id="household-income-block">
+  {{ formfield 'a0_household_income' }}
+</div>
+
+{{ formfield 'a0_3_activity' }}
+
+<div id="activity-other-block" style="display:none">
+  {{ formfield 'a0_3_activity_other' }}
+</div>
+
+<div id="sector-block" style="display:none">
+  {{ formfield 'a0_3b_sector' }}
+  <div id="sector-other-block" style="display:none">
+    {{ formfield 'a0_3b_sector_other' }}
+  </div>
+</div>
+
+{{ next_button }}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // ── Toggle: household income — hide when relationship was Single (=1) ──
+  // relationship was answered on PageA0; if we can't read it here,
+  // just show household income by default (it's blank=True anyway)
+
+  // ── Toggle: activity other text (show when Sonstiges = 9) ──
+  function toggleActivityOther() {
+    const selected = document.querySelector('input[name="a0_3_activity"]:checked');
+    const code = selected ? parseInt(selected.value) : null;
+    document.getElementById('activity-other-block').style.display = (code === 9) ? '' : 'none';
+  }
+
+  // ── Toggle: sector (show when activity is work-related) ──
+  const workCodes = [1, 2, 3, 4, 6, 8, 9];
+
+  function toggleSector() {
+    const selected = document.querySelector('input[name="a0_3_activity"]:checked');
+    const code = selected ? parseInt(selected.value) : null;
+    document.getElementById('sector-block').style.display = (code && workCodes.includes(code)) ? '' : 'none';
+  }
+
+  // ── Toggle: sector other text (show when sector = 12) ──
+  function toggleSectorOther() {
+    const selected = document.querySelector('input[name="a0_3b_sector"]:checked');
+    const code = selected ? parseInt(selected.value) : null;
+    document.getElementById('sector-other-block').style.display = (code === 12) ? '' : 'none';
+  }
+
+  toggleActivityOther();
+  toggleSector();
+  toggleSectorOther();
+  document.querySelectorAll('input[name="a0_3_activity"]').forEach(function(r) {
+    r.addEventListener('change', function() { toggleActivityOther(); toggleSector(); });
+  });
+  document.querySelectorAll('input[name="a0_3b_sector"]').forEach(
+    r => r.addEventListener('change', toggleSectorOther)
+  );
+});
+</script>
+{{ endblock }}

@@ -82,6 +82,7 @@ class Player(BasePlayer):
     keystroke_data_a3 = models.LongStringField(blank=True, default='')
     keystroke_data_c = models.LongStringField(blank=True, default='')
     keystroke_data_thoughts = models.LongStringField(blank=True, default='')
+    keystroke_data_b_prep = models.LongStringField(blank=True, default='')
     keystroke_data_a0_end = models.LongStringField(blank=True, default='')
 
     # == Section A0: Demographics =========================================
@@ -147,6 +148,7 @@ class Player(BasePlayer):
         choices=[
             [1, 'Ja'],
             [2, 'Nein'],
+            [3, 'Möchte ich nicht angeben'],
         ],
         widget=widgets.RadioSelect,
         blank=True,
@@ -263,8 +265,8 @@ class Player(BasePlayer):
     a0_5_thoughts_wish = models.LongStringField(
         label=(
             '<b>A0.7.</b> Was sind die <b>drei wichtigsten Themen</b>, '
-            'von denen Sie sich <b>wünschen</b>, Sie hätten sich vor der Geburt '
-            'damit beschäftigt?'
+            'mit denen Sie sich gerne schon <b>vor der Geburt</b> '
+            'beschäftigt hätten?'
         ),
     )
 
@@ -765,6 +767,18 @@ class Player(BasePlayer):
         widget=widgets.RadioSelect,
         blank=True,
     )
+    b2c_mechanism_3 = models.IntegerField(
+        label='',  # label set dynamically in template
+        choices=[
+            [1, 'Ich hatte es schlicht nicht auf dem Schirm — mir war nicht klar, dass es relevant sein könnte'],
+            [2, 'Ich wusste, dass es wichtig ist, aber es fühlte sich zu weit weg und abstrakt an'],
+            [3, 'Ich wusste, dass es wichtig ist, hatte aber schlicht zu viel anderes zu bewältigen'],
+            [4, 'Ich hatte darüber nachgedacht und mir vorgenommen, etwas zu tun — aber es ist dann doch nicht passiert'],
+            [5, 'Dieses Thema hat tatsächlich eine Rolle gespielt — ich habe mich damit beschäftigt'],
+        ],
+        widget=widgets.RadioSelect,
+        blank=True,
+    )
 
     b3_preparedness = models.IntegerField(
         label=(
@@ -894,7 +908,7 @@ class Player(BasePlayer):
             [2, '50 - 100 Euro pro Monat'],
             [3, '150 - 250 Euro pro Monat'],
             [4, '300 - 500 Euro pro Monat'],
-            [5, 'Weiss ich nicht / bin nicht sicher'],
+            [5, 'Weiß ich nicht / bin nicht sicher'],
         ],
         widget=widgets.RadioSelect,
     )
@@ -910,8 +924,8 @@ class Player(BasePlayer):
             [1, 'Zwei Partner mit in etwa gleichem Einkommen'],
             [2, 'Zwei Partner, bei denen einer deutlich mehr verdient als der andere'],
             [3, 'Der Vorteil ist unabhängig von der Einkommensverteilung gleich'],
-            [4, 'Weiss ich nicht / bin nicht sicher'],
-            [5, 'Ich weiss nicht, was Ehegattensplitting ist'],
+            [4, 'Weiß ich nicht / bin nicht sicher'],
+            [5, 'Ich weiß nicht, was Ehegattensplitting ist'],
         ],
         widget=widgets.RadioSelect,
     )
@@ -935,6 +949,41 @@ def check_bot(player: Player):
 def get_prolific_label(player: Player):
     if player.session.config.get('prolific', False):
         player.prolificID = player.participant.label or ''
+
+
+# Progress indicator: page lists per block (excluding Intro and Results)
+_PAGES_COMMON = [
+    'PageA0', 'PageA0_Thoughts', 'PageA0b_Sorgen', 'PageB1_OpenEnd',
+    'PageB_Prep', 'PageC_Advice', 'PageA0_End', 'PageD_Knowledge',
+]
+_PAGES_BLOCK1 = ['PageB_FWB', 'PageA_Work', 'PageA3_Ranking']
+_PAGES_BLOCK2 = ['PageB_Finance', 'PageB_Mechanism']
+
+# Build ordered page lists per block (matching page_sequence order)
+_PAGE_ORDER = [
+    'PageA0', 'PageA0_Thoughts', 'PageA0b_Sorgen', 'PageB1_OpenEnd',
+    'PageB_FWB', 'PageB_Finance', 'PageB_Mechanism',
+    'PageB_Prep', 'PageA_Work', 'PageA3_Ranking',
+    'PageC_Advice', 'PageA0_End', 'PageD_Knowledge',
+]
+_BLOCK_PAGES = {
+    1: [p for p in _PAGE_ORDER if p in _PAGES_COMMON or p in _PAGES_BLOCK1],
+    2: [p for p in _PAGE_ORDER if p in _PAGES_COMMON or p in _PAGES_BLOCK2],
+    3: _PAGE_ORDER,  # test mode: all pages
+}
+
+
+def get_progress(player, page_class):
+    """Return (current_page, total_pages, progress_pct) for the progress bar."""
+    block = player.participant.vars.get('survey_block', 3)
+    pages = _BLOCK_PAGES.get(block, _PAGE_ORDER)
+    page_name = page_class.__name__
+    if page_name in pages:
+        pn = pages.index(page_name) + 1
+        tp = len(pages)
+        pct = round(pn / tp * 100)
+        return pn, tp, pct
+    return None, None, None
 
 
 # =========================================================================
@@ -979,6 +1028,12 @@ class PageA0(Page):
         return player.consent
 
     @staticmethod
+    def vars_for_template(player: Player):
+        pn, tp, pct = get_progress(player, PageA0)
+        return dict(page_num=pn, total_pages=tp, progress_pct=pct)
+
+
+    @staticmethod
     def error_message(player, values):
         child_year = values.get('a0_1_birth_year')
         resp_year = values.get('a0_birth_year_respondent')
@@ -998,6 +1053,12 @@ class PageA0_Thoughts(Page):
     @staticmethod
     def is_displayed(player: Player):
         return player.consent
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        pn, tp, pct = get_progress(player, PageA0_Thoughts)
+        return dict(page_num=pn, total_pages=tp, progress_pct=pct)
+
 
 
 class PageA0b_Sorgen(Page):
@@ -1024,7 +1085,8 @@ class PageA0b_Sorgen(Page):
             indices = list(range(11))  # 11 main items (excl. "other")
             random.shuffle(indices)
             player.participant.vars['a0b_order'] = indices
-        return dict(a0b_order=player.participant.vars['a0b_order'])
+        pn, tp, pct = get_progress(player, PageA0b_Sorgen)
+        return dict(a0b_order=player.participant.vars['a0b_order'], page_num=pn, total_pages=tp, progress_pct=pct)
 
     @staticmethod
     def error_message(player, values):
@@ -1061,6 +1123,12 @@ class PageB1_OpenEnd(Page):
     @staticmethod
     def is_displayed(player: Player):
         return player.consent
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        pn, tp, pct = get_progress(player, PageB1_OpenEnd)
+        return dict(page_num=pn, total_pages=tp, progress_pct=pct)
+
 
 
 class PageB_FWB(Page):
@@ -1105,7 +1173,8 @@ class PageB_Finance(Page):
             indices = list(range(9))  # 9 main B2 items (excl. "other")
             random.shuffle(indices)
             player.participant.vars['b2_order'] = indices
-        return dict(b2_order=player.participant.vars['b2_order'])
+        pn, tp, pct = get_progress(player, PageB_Finance)
+        return dict(b2_order=player.participant.vars['b2_order'], page_num=pn, total_pages=tp, progress_pct=pct)
 
     @staticmethod
     def error_message(player, values):
@@ -1130,6 +1199,7 @@ class PageB_Mechanism(Page):
     form_fields = [
         'b2c_mechanism_1',
         'b2c_mechanism_2',
+        'b2c_mechanism_3',
     ]
 
     # Map B2 field names to human-readable topic labels
@@ -1177,12 +1247,20 @@ class PageB_Mechanism(Page):
         topic_map = PageB_Mechanism.B2_TOPIC_MAP
         topic_1 = topic_map.get(ranked[0][0], '') if len(ranked) >= 1 else ''
         topic_2 = topic_map.get(ranked[1][0], '') if len(ranked) >= 2 else ''
+        topic_3 = topic_map.get(ranked[2][0], '') if len(ranked) >= 3 else ''
         has_topic_2 = len(ranked) >= 2
+        has_topic_3 = len(ranked) >= 3
 
+        pn, tp, pct = get_progress(player, PageB_Mechanism)
         return dict(
             topic_1=topic_1,
             topic_2=topic_2,
+            topic_3=topic_3,
             has_topic_2=has_topic_2,
+            has_topic_3=has_topic_3,
+            page_num=pn,
+            total_pages=tp,
+            progress_pct=pct,
         )
 
 
@@ -1192,11 +1270,24 @@ class PageB_Prep(Page):
     form_fields = [
         'b3_preparedness', 'b4_planning_horizon',
         'b5_simplify', 'b5b_dropped',
+        'keystroke_data_b_prep',
     ]
 
     @staticmethod
     def is_displayed(player: Player):
         return player.consent
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        pn, tp, pct = get_progress(player, PageB_Prep)
+        return dict(page_num=pn, total_pages=tp, progress_pct=pct)
+
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        pn, tp, pct = get_progress(player, PageB_FWB)
+        return dict(page_num=pn, total_pages=tp, progress_pct=pct)
+
 
 
 class PageA_Work(Page):
@@ -1236,7 +1327,8 @@ class PageA3_Ranking(Page):
             indices = list(range(9))  # 9 main A3 items (excl. "other")
             random.shuffle(indices)
             player.participant.vars['a3_order'] = indices
-        return dict(a3_order=player.participant.vars['a3_order'])
+        pn, tp, pct = get_progress(player, PageA3_Ranking)
+        return dict(a3_order=player.participant.vars['a3_order'], page_num=pn, total_pages=tp, progress_pct=pct)
 
     @staticmethod
     def error_message(player, values):
@@ -1271,6 +1363,18 @@ class PageC_Advice(Page):
         return player.consent
 
     @staticmethod
+    def vars_for_template(player: Player):
+        pn, tp, pct = get_progress(player, PageC_Advice)
+        return dict(page_num=pn, total_pages=tp, progress_pct=pct)
+
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        pn, tp, pct = get_progress(player, PageA_Work)
+        return dict(page_num=pn, total_pages=tp, progress_pct=pct)
+
+
+    @staticmethod
     def error_message(player, values):
         c2_fields = [
             'c2_elterngeld', 'c2_tax', 'c2_pension', 'c2_childcare', 'c2_career',
@@ -1300,6 +1404,12 @@ class PageA0_End(Page):
     def is_displayed(player: Player):
         return player.consent
 
+    @staticmethod
+    def vars_for_template(player: Player):
+        pn, tp, pct = get_progress(player, PageA0_End)
+        return dict(page_num=pn, total_pages=tp, progress_pct=pct)
+
+
 
 class PageD_Knowledge(Page):
     """Section D: Knowledge check + attention_check_2. Runs final screenout checks."""
@@ -1312,6 +1422,12 @@ class PageD_Knowledge(Page):
     @staticmethod
     def is_displayed(player: Player):
         return player.consent
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        pn, tp, pct = get_progress(player, PageD_Knowledge)
+        return dict(page_num=pn, total_pages=tp, progress_pct=pct)
+
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):

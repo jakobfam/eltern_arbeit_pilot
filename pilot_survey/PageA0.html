@@ -1,6 +1,11 @@
 {{ block title }}Über Sie{{ endblock }}
 
 {{ block content }}
+{{ if page_num }}
+<div class="progress-text">Seite {{ page_num }} von {{ total_pages }}</div>
+<div class="progress-bar-container"><div class="progress-bar-fill" style="width: {{ progress_pct }}%"></div></div>
+{{ endif }}
+
 <p class="text-muted fst-italic">
   Zu Beginn ein paar kurze Fragen zu Ihrem Hintergrund.
   Diese helfen uns zu verstehen, wen wir befragen.

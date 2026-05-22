@@ -1,6 +1,11 @@
 {{ block title }}Faktoren bei der Rückkehr{{ endblock }}
 
 {{ block content }}
+{{ if page_num }}
+<div class="progress-text">Seite {{ page_num }} von {{ total_pages }}</div>
+<div class="progress-bar-container"><div class="progress-bar-fill" style="width: {{ progress_pct }}%"></div></div>
+{{ endif }}
+
 
 {# ── A3: Click-to-Rank ─────────────────────────────────────────── #}
 <div class="mb-4">

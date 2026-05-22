@@ -1,6 +1,11 @@
 {{ block title }}Einige letzte Fragen{{ endblock }}
 
 {{ block content }}
+{{ if page_num }}
+<div class="progress-text">Seite {{ page_num }} von {{ total_pages }}</div>
+<div class="progress-bar-container"><div class="progress-bar-fill" style="width: {{ progress_pct }}%"></div></div>
+{{ endif }}
+
 <p class="text-muted fst-italic">
   Zum Abschluss noch zwei kurze Fragen.
   Wenn Sie sich nicht sicher sind, ist das völlig in Ordnung – wählen Sie einfach „Weiß ich nicht".

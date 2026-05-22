@@ -1,6 +1,11 @@
 {{ block title }}Ihre Rückkehr zur Arbeit{{ endblock }}
 
 {{ block content }}
+{{ if page_num }}
+<div class="progress-text">Seite {{ page_num }} von {{ total_pages }}</div>
+<div class="progress-bar-container"><div class="progress-bar-fill" style="width: {{ progress_pct }}%"></div></div>
+{{ endif }}
+
 <p class="text-muted fst-italic">
   Wir möchten gerne erfahren, wie die Elternschaft Ihr Berufsleben geprägt hat.
   Ob Sie bereits in den Beruf zurückgekehrt sind, dies noch planen oder sich dagegen entschieden haben –

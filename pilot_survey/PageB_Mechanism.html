@@ -1,6 +1,11 @@
 {{ block title }}Warum diese Themen keine größere Rolle spielten{{ endblock }}
 
 {{ block content }}
+{{ if page_num }}
+<div class="progress-text">Seite {{ page_num }} von {{ total_pages }}</div>
+<div class="progress-bar-container"><div class="progress-bar-fill" style="width: {{ progress_pct }}%"></div></div>
+{{ endif }}
+
 <p class="text-muted fst-italic">
   Sie haben gerade angegeben, welche finanziellen Themen Sie am meisten unterschätzt haben.
   Nun möchten wir besser verstehen, <em>warum</em> diese Themen vor der Geburt keine
@@ -11,6 +16,7 @@
 <div style="display:none">
   {{ formfield 'b2c_mechanism_1' }}
   {{ formfield 'b2c_mechanism_2' }}
+  {{ formfield 'b2c_mechanism_3' }}
 </div>
 
 {# ── Mechanism question for rank #1 topic ──────────────────────── #}
@@ -73,6 +79,40 @@
       <span class="mech-label">Ich hatte darüber nachgedacht und mir vorgenommen, etwas zu tun — aber es ist dann doch nicht passiert</span>
     </div>
     <div class="mech-item" data-field="b2c_mechanism_2" data-value="5">
+      <span class="mech-radio"></span>
+      <span class="mech-label">Dieses Thema hat tatsächlich eine Rolle gespielt — ich habe mich damit beschäftigt</span>
+    </div>
+  </div>
+</div>
+{{ endif }}
+
+{# ── Mechanism question for rank #3 topic (conditional) ─────────── #}
+{{ if has_topic_3 }}
+<div class="mb-4" id="mech3-block">
+  <p>
+    <b>B2e.</b> Und zum drittwichtigsten Thema:
+    <strong id="topic-3-label">{{ topic_3 }}</strong>.
+    Welche Aussage trifft hier am besten zu?
+  </p>
+
+  <div id="mech3-list" class="mech-list">
+    <div class="mech-item" data-field="b2c_mechanism_3" data-value="1">
+      <span class="mech-radio"></span>
+      <span class="mech-label">Ich hatte es schlicht nicht auf dem Schirm — mir war nicht klar, dass es relevant sein könnte</span>
+    </div>
+    <div class="mech-item" data-field="b2c_mechanism_3" data-value="2">
+      <span class="mech-radio"></span>
+      <span class="mech-label">Ich wusste, dass es wichtig ist, aber es fühlte sich zu weit weg und abstrakt an</span>
+    </div>
+    <div class="mech-item" data-field="b2c_mechanism_3" data-value="3">
+      <span class="mech-radio"></span>
+      <span class="mech-label">Ich wusste, dass es wichtig ist, hatte aber schlicht zu viel anderes zu bewältigen</span>
+    </div>
+    <div class="mech-item" data-field="b2c_mechanism_3" data-value="4">
+      <span class="mech-radio"></span>
+      <span class="mech-label">Ich hatte darüber nachgedacht und mir vorgenommen, etwas zu tun — aber es ist dann doch nicht passiert</span>
+    </div>
+    <div class="mech-item" data-field="b2c_mechanism_3" data-value="5">
       <span class="mech-radio"></span>
       <span class="mech-label">Dieses Thema hat tatsächlich eine Rolle gespielt — ich habe mich damit beschäftigt</span>
     </div>
@@ -171,6 +211,11 @@ document.addEventListener('DOMContentLoaded', function () {
   var mech2 = document.getElementById('mech2-list');
   if (mech2) {
     initMechGroup('mech2-list', 'b2c_mechanism_2');
+  }
+
+  var mech3 = document.getElementById('mech3-list');
+  if (mech3) {
+    initMechGroup('mech3-list', 'b2c_mechanism_3');
   }
 });
 </script>

@@ -1146,6 +1146,11 @@ class PageB_FWB(Page):
         block = player.participant.vars.get('survey_block')
         return player.consent and block in [1, 3]
 
+    @staticmethod
+    def vars_for_template(player: Player):
+        pn, tp, pct = get_progress(player, PageB_FWB)
+        return dict(page_num=pn, total_pages=tp, progress_pct=pct)
+
 
 class PageB_Finance(Page):
     """Section B: Financial surprises ranking B2. Block 2 only."""
@@ -1283,13 +1288,6 @@ class PageB_Prep(Page):
         return dict(page_num=pn, total_pages=tp, progress_pct=pct)
 
 
-    @staticmethod
-    def vars_for_template(player: Player):
-        pn, tp, pct = get_progress(player, PageB_FWB)
-        return dict(page_num=pn, total_pages=tp, progress_pct=pct)
-
-
-
 class PageA_Work(Page):
     """Section E page 1: E1 (expectation), E2 (experience Likert, conditional). Block 1 only."""
     form_model = 'player'
@@ -1302,6 +1300,11 @@ class PageA_Work(Page):
     def is_displayed(player: Player):
         block = player.participant.vars.get('survey_block')
         return player.consent and block in [1, 3]
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        pn, tp, pct = get_progress(player, PageA_Work)
+        return dict(page_num=pn, total_pages=tp, progress_pct=pct)
 
 
 class PageA3_Ranking(Page):
@@ -1366,13 +1369,6 @@ class PageC_Advice(Page):
     def vars_for_template(player: Player):
         pn, tp, pct = get_progress(player, PageC_Advice)
         return dict(page_num=pn, total_pages=tp, progress_pct=pct)
-
-
-    @staticmethod
-    def vars_for_template(player: Player):
-        pn, tp, pct = get_progress(player, PageA_Work)
-        return dict(page_num=pn, total_pages=tp, progress_pct=pct)
-
 
     @staticmethod
     def error_message(player, values):

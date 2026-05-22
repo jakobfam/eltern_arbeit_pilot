@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
       ...document.querySelectorAll('#' + containerId + ' .rank-item'),
     ];
     if (otherContainerId) {
-      const otherItem = document.querySelector('#' + otherContainerId + ' .rank-item');
+      const otherItem = document.getElementById(otherContainerId);
       if (otherItem) items.push(otherItem);
     }
 

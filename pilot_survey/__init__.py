@@ -16,7 +16,7 @@ class C(BaseConstants):
 
     # Correct answers for attention checks
     CORRECT_AC1 = 2   # attention_check_1: "FAZ"
-    CORRECT_AC2 = 5   # attention_check_2: "Noch nie"
+    CORRECT_AC2 = 4   # attention_check_2: "Selten"
 
 
 class Subsession(BaseSubsession):
@@ -48,10 +48,15 @@ class Player(BasePlayer):
         widget=widgets.RadioSelect,
     )
     attention_check_2 = models.IntegerField(
-        label='<b>D3.</b> Wie häufig sind Sie über den Atlantik geschwommen, um zur Arbeit zu kommen?',
+        label=(
+            '<b>D3.</b> Viele Eltern berichten, dass sie sich nach der Geburt '
+            'intensiver mit Finanzthemen beschäftigt haben. '
+            'Um die Qualität unserer Daten sicherzustellen, wählen Sie bitte '
+            '„Selten" aus.'
+        ),
         choices=[
-            [1, 'Täglich'], [2, 'Wöchentlich'], [3, 'Monatlich'],
-            [4, 'Jährlich'], [5, 'Noch nie'],
+            [1, 'Immer'], [2, 'Oft'], [3, 'Manchmal'],
+            [4, 'Selten'], [5, 'Nie'],
         ],
         widget=widgets.RadioSelect,
     )
@@ -63,12 +68,21 @@ class Player(BasePlayer):
         blank=True, default=''
     )
 
+    # == Survey block (split design) =======================================
+    survey_block = models.IntegerField(blank=True)  # 1 or 2
+
     # == Timing ===========================================================
     time_started = models.FloatField(blank=True)
     time_to_complete = models.FloatField(blank=True)
 
     # == Keystroke / AI detection =========================================
     keystroke_data = models.LongStringField(blank=True, default='')
+    keystroke_data_b1 = models.LongStringField(blank=True, default='')
+    keystroke_data_b_finance = models.LongStringField(blank=True, default='')
+    keystroke_data_a3 = models.LongStringField(blank=True, default='')
+    keystroke_data_c = models.LongStringField(blank=True, default='')
+    keystroke_data_thoughts = models.LongStringField(blank=True, default='')
+    keystroke_data_a0_end = models.LongStringField(blank=True, default='')
 
     # == Section A0: Demographics =========================================
 
@@ -117,7 +131,7 @@ class Player(BasePlayer):
     )
 
     a0_partner_gender = models.IntegerField(
-        label='<b>A0.5.</b> Welches Geschlecht hat der andere Elternteil Ihres Kindes / Ihrer Kinder?',
+        label='<b>A0.5.</b> Welches Geschlecht hat der andere Elternteil Ihres ersten Kindes?',
         choices=[
             [1, 'Männlich'],
             [2, 'Weiblich'],
@@ -129,7 +143,7 @@ class Player(BasePlayer):
     )
 
     a0_partner_custody = models.IntegerField(
-        label='<b>A0.6.</b> Ist der andere Elternteil derzeit sorgeberechtigt?',
+        label='<b>A0.6.</b> Ist der andere Elternteil Ihres ersten Kindes derzeit sorgeberechtigt?',
         choices=[
             [1, 'Ja'],
             [2, 'Nein'],
@@ -175,10 +189,9 @@ class Player(BasePlayer):
             [3, '30.000 - 50.000 Euro'],
             [4, '50.000 - 70.000 Euro'],
             [5, '70.000 - 100.000 Euro'],
-            [6, '100.000 - 150.000 Euro'],
-            [7, 'Über 150.000 Euro'],
+            [6, '100.000 - 175.000 Euro'],
+            [7, 'Über 175.000 Euro'],
             [8, 'Kein eigenes Einkommen'],
-            [9, 'Möchte ich nicht angeben'],
         ],
         widget=widgets.RadioSelect,
     )
@@ -194,9 +207,8 @@ class Player(BasePlayer):
             [3, '30.000 - 50.000 Euro'],
             [4, '50.000 - 70.000 Euro'],
             [5, '70.000 - 100.000 Euro'],
-            [6, '100.000 - 150.000 Euro'],
-            [7, 'Über 150.000 Euro'],
-            [8, 'Möchte ich nicht angeben'],
+            [6, '100.000 - 175.000 Euro'],
+            [7, 'Über 175.000 Euro'],
         ],
         widget=widgets.RadioSelect,
         blank=True,
@@ -250,7 +262,7 @@ class Player(BasePlayer):
 
     a0_5_thoughts_wish = models.LongStringField(
         label=(
-            '<b>A0.11.</b> Was sind die <b>drei wichtigsten Themen</b>, '
+            '<b>A0.7.</b> Was sind die <b>drei wichtigsten Themen</b>, '
             'von denen Sie sich <b>wünschen</b>, Sie hätten sich vor der Geburt '
             'damit beschäftigt?'
         ),
@@ -258,28 +270,18 @@ class Player(BasePlayer):
 
     # == Section A0b: 100-point allocation (worries before birth) =========
 
-    a0b_pts_health = models.IntegerField(
-        label='Gesundheit von mir und meinem Kind',
+    # Combined: health + birth + mental_health
+    a0b_pts_health_wellbeing = models.IntegerField(
+        label='Gesundheit und Wohlbefinden (körperlich und psychisch, inkl. Geburt)',
         min=0, max=100, initial=0, blank=True,
     )
-    a0b_pts_birth = models.IntegerField(
-        label='Die Geburt selbst',
-        min=0, max=100, initial=0, blank=True,
-    )
-    a0b_pts_good_mother = models.IntegerField(
-        label='Ob ich eine gute Mutter sein werde',
+    # Combined: good_mother + identity
+    a0b_pts_identity_role = models.IntegerField(
+        label='Persönliche Identität und Rolle als Mutter',
         min=0, max=100, initial=0, blank=True,
     )
     a0b_pts_overwhelm = models.IntegerField(
         label='Überforderung im Alltag mit Kind (Schlafmangel, alles unter einen Hut bekommen)',
-        min=0, max=100, initial=0, blank=True,
-    )
-    a0b_pts_identity = models.IntegerField(
-        label='Meine eigene Identität und Unabhängigkeit nicht zu verlieren',
-        min=0, max=100, initial=0, blank=True,
-    )
-    a0b_pts_mental_health = models.IntegerField(
-        label='Psychische Gesundheit (z. B. postpartale Depression, Erschöpfung)',
         min=0, max=100, initial=0, blank=True,
     )
     a0b_pts_relationship = models.IntegerField(
@@ -328,7 +330,7 @@ class Player(BasePlayer):
 
     a1_expectation = models.IntegerField(
         label=(
-            '<b>A1.</b> Wie hat sich Ihr Berufsleben nach der Geburt im Vergleich '
+            '<b>E1.</b> Wie hat sich Ihr Berufsleben nach der Geburt im Vergleich '
             'zu Ihren Erwartungen entwickelt?'
         ),
         choices=[
@@ -345,7 +347,7 @@ class Player(BasePlayer):
     # A2: Overall experience Likert - conditional: hidden when A1=5
     a2_return_experience = models.IntegerField(
         label=(
-            '<b>A2.</b> Unabhängig davon, ob Sie bereits in den Beruf zurückgekehrt sind '
+            '<b>E2.</b> Unabhängig davon, ob Sie bereits in den Beruf zurückgekehrt sind '
             'oder nicht - wie empfinden oder empfanden Sie den Prozess rund um den '
             'beruflichen Wiedereinstieg insgesamt?'
         ),
@@ -466,6 +468,10 @@ class Player(BasePlayer):
         label='Einen finanziellen Ausgleich für Care-Arbeit vereinbart',
         blank=True, widget=widgets.CheckboxInput,
     )
+    b1c_attention_check = models.BooleanField(
+        label='Bitte wählen Sie diese Option aus',
+        blank=True, widget=widgets.CheckboxInput,
+    )
     b1c_none = models.BooleanField(
         label='Nichts davon',
         blank=True, widget=widgets.CheckboxInput,
@@ -475,7 +481,7 @@ class Player(BasePlayer):
     b_decision_power = models.IntegerField(
         label=(
             '<b>B1d.</b> Inwieweit stimmen Sie folgender Aussage zu: '
-            '"Wer mehr verdient, hat in der Beziehung mehr Einfluss auf finanzielle Entscheidungen."'
+            '"Es ist fair, wenn die Person mit dem höheren Einkommen mehr Einfluss auf finanzielle Entscheidungen hat."'
         ),
         choices=[
             [1, 'Stimme überhaupt nicht zu'],
@@ -626,7 +632,7 @@ class Player(BasePlayer):
         label=(
             '<b>B1f.</b> Bevor Ihr erstes Kind geboren wurde: Wie gut waren Sie über Ihre '
             'Haushaltsfinanzen informiert - zum Beispiel über Ihr Budget, Ersparnisse, '
-            'Steuern oder Zukunftsplaene?'
+            'Steuern oder Zukunftspläne?'
         ),
         choices=[
             [1, '1 - Sehr schlecht'],
@@ -778,12 +784,12 @@ class Player(BasePlayer):
     b4_planning_horizon = models.IntegerField(
         label=(
             '<b>B4.</b> Als Sie sich finanziell auf Ihr erstes Kind vorbereitet haben, '
-            'wie weit haben Sie dabei hauptsächlich in die Zukunft gedacht?'
+            'wie weit haben Sie dabei in die Zukunft gedacht?'
         ),
         choices=[
             [1, 'Hauptsächlich an die Schwangerschaft und die Geburt selbst'],
             [2, 'Die Elternzeit (ungefähr die ersten 1-2 Jahre)'],
-            [3, 'Die fruehe Kindheit (bis zum Schulalter)'],
+            [3, 'Die frühe Kindheit (bis zum Schulalter)'],
             [4, 'Langfristig (Karriereweg, Rente, Familienfinanzen über viele Jahre)'],
             [5, 'Ich habe mir vor der Geburt nicht viel über die finanzielle Seite Gedanken gemacht'],
         ],
@@ -802,7 +808,7 @@ class Player(BasePlayer):
             [1, 'Ja, ich habe mich bewusst auf wenige Bereiche konzentriert und andere erstmal ausgeklammert'],
             [2, 'Teilweise - manches habe ich auf später verschoben, ohne aktiv darüber nachzudenken'],
             [3, 'Nein, ich habe versucht, alle Bereiche gleichzeitig zu berücksichtigen'],
-            [4, 'Mir ist erst später bewusst geworden, wie viele Bereiche ich hätte bedenken koennen'],
+            [4, 'Mir ist erst später bewusst geworden, wie viele Bereiche ich hätte bedenken können'],
         ],
         widget=widgets.RadioSelect,
     )
@@ -819,7 +825,7 @@ class Player(BasePlayer):
 
     c1_advice = models.LongStringField(
         label=(
-            '<b>C1.</b> Eine enge Freundin erzaehlt Ihnen, dass sie ihr erstes Kind erwartet. '
+            '<b>C1.</b> Eine enge Freundin erzählt Ihnen, dass sie ihr erstes Kind erwartet. '
             'Welchen finanziellen Ratschlag würden Sie ihr geben?'
         ),
     )
@@ -867,7 +873,7 @@ class Player(BasePlayer):
             'einen Plan für den beruflichen Wiedereinstieg zu haben?'
         ),
         choices=[
-            [1, 'Sehr wichtig - ein Plan hat mir geholfen (oder ich wuenschte, ich hätte einen gehabt)'],
+            [1, 'Sehr wichtig - ein Plan hat mir geholfen (oder ich wünschte, ich hätte einen gehabt)'],
             [2, 'Etwas wichtig - ein guter Ausgangspunkt, aber man muss flexibel bleiben'],
             [3, 'Nicht sehr wichtig - die Realität nach der Geburt war zu anders, als dass ein Plan viel geholfen hätte'],
             [4, 'Bin nicht sicher'],
@@ -881,7 +887,7 @@ class Player(BasePlayer):
         label=(
             '<b>D1.</b> Angenommen, eine Frau verdient Vollzeit 3.000 Euro brutto im Monat. '
             'Sie arbeitet nach der Geburt ihres ersten Kindes 10 Jahre lang Teilzeit (20 Stunden/Woche). '
-            'Um wie viel Euro pro Monat wird ihre gesetzliche Rente dadurch ungefähr geringer sein?'
+            'Um wie viel Euro pro Monat wird ihre gesetzliche Rente dadurch ungefähr geringer sein, als wenn sie Vollzeit weitergearbeitet hätte?'
         ),
         choices=[
             [1, 'Unter 50 Euro pro Monat'],
@@ -916,8 +922,8 @@ class Player(BasePlayer):
 # =========================================================================
 
 def check_attention(player: Player):
-    # Fail only if BOTH attention checks are wrong (lenient)
-    if player.attention_check_1 != C.CORRECT_AC1 and player.attention_check_2 != C.CORRECT_AC2:
+    # Fail if attention check is wrong
+    if player.attention_check_2 != C.CORRECT_AC2:
         player.attention = False
 
 
@@ -942,13 +948,18 @@ class Intro(Page):
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        import time
+        import time, random
         player.time_started = time.time()
         get_prolific_label(player)
+        # Randomly assign survey block (1 or 2) for split design
+        # Block 3 = test mode (all pages shown) — change to random.choice([1, 2]) for production
+        block = 3
+        player.participant.vars['survey_block'] = block
+        player.survey_block = block
 
 
 class PageA0(Page):
-    """Section A0: Demographics + open-text + attention_check_1 + bot field."""
+    """Section A0: Demographics + bot field."""
     form_model = 'player'
     form_fields = [
         'a0_1_birth_year',
@@ -959,9 +970,6 @@ class PageA0(Page):
         'a0_relationship_other',
         'a0_partner_gender',
         'a0_partner_custody',
-        'a0_father_in_family',
-        'a0_5_thoughts_wish',
-        'attention_check_1',
         'hidden_field',
         'keystroke_data',
     ]
@@ -982,13 +990,22 @@ class PageA0(Page):
                 )
 
 
+class PageA0_Thoughts(Page):
+    """Standalone page for the open-ended thoughts/wishes question."""
+    form_model = 'player'
+    form_fields = ['a0_5_thoughts_wish', 'keystroke_data_thoughts']
+
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.consent
+
+
 class PageA0b_Sorgen(Page):
     """100-point allocation: which topics worried you most before birth?"""
     form_model = 'player'
     form_fields = [
-        'a0b_pts_health', 'a0b_pts_birth',
-        'a0b_pts_good_mother', 'a0b_pts_overwhelm',
-        'a0b_pts_identity', 'a0b_pts_mental_health',
+        'a0b_pts_health_wellbeing', 'a0b_pts_identity_role',
+        'a0b_pts_overwhelm',
         'a0b_pts_relationship', 'a0b_pts_childcare', 'a0b_pts_career',
         'a0b_pts_finances_short', 'a0b_pts_finances_long',
         'a0b_pts_division', 'a0b_pts_social', 'a0b_pts_housing',
@@ -1004,7 +1021,7 @@ class PageA0b_Sorgen(Page):
         import random
         # Generate a stable shuffle order once and store it
         if 'a0b_order' not in player.participant.vars:
-            indices = list(range(14))  # 14 main items (excl. "other")
+            indices = list(range(11))  # 11 main items (excl. "other")
             random.shuffle(indices)
             player.participant.vars['a0b_order'] = indices
         return dict(a0b_order=player.participant.vars['a0b_order'])
@@ -1012,9 +1029,8 @@ class PageA0b_Sorgen(Page):
     @staticmethod
     def error_message(player, values):
         pts_fields = [
-            'a0b_pts_health', 'a0b_pts_birth',
-            'a0b_pts_good_mother', 'a0b_pts_overwhelm',
-            'a0b_pts_identity', 'a0b_pts_mental_health',
+            'a0b_pts_health_wellbeing', 'a0b_pts_identity_role',
+            'a0b_pts_overwhelm',
             'a0b_pts_relationship', 'a0b_pts_childcare', 'a0b_pts_career',
             'a0b_pts_finances_short', 'a0b_pts_finances_long',
             'a0b_pts_division', 'a0b_pts_social', 'a0b_pts_housing',
@@ -1039,6 +1055,7 @@ class PageB1_OpenEnd(Page):
         'b_conflict_frequency',
         'b_fin_info_before',
         'b_fin_info_now',
+        'keystroke_data_b1',
     ]
 
     @staticmethod
@@ -1047,7 +1064,7 @@ class PageB1_OpenEnd(Page):
 
 
 class PageB_FWB(Page):
-    """CFPB Financial Well-Being Scale: before birth vs now."""
+    """CFPB Financial Well-Being Scale: before birth vs now. Block 1 only."""
     form_model = 'player'
     form_fields = [
         'fwb_before_1', 'fwb_before_2', 'fwb_before_3',
@@ -1058,11 +1075,12 @@ class PageB_FWB(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent
+        block = player.participant.vars.get('survey_block')
+        return player.consent and block in [1, 3]
 
 
 class PageB_Finance(Page):
-    """Section B: Financial surprises - includes ranking B2."""
+    """Section B: Financial surprises ranking B2. Block 2 only."""
     form_model = 'player'
     form_fields = [
         # B2 ranking items
@@ -1072,14 +1090,13 @@ class PageB_Finance(Page):
         'b2_other_text', 'b2_rank_other',
         # B2b salient moment
         'b2b_salient_moment', 'b2b_salient_other',
-        # B3, B4, B5
-        'b3_preparedness', 'b4_planning_horizon',
-        'b5_simplify', 'b5b_dropped',
+        'keystroke_data_b_finance',
     ]
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent
+        block = player.participant.vars.get('survey_block')
+        return player.consent and block in [2, 3]
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1108,7 +1125,7 @@ class PageB_Finance(Page):
 
 
 class PageB_Mechanism(Page):
-    """B2c: Mechanism decomposition — why didn't you engage with your top-ranked domains?"""
+    """B2c: Mechanism decomposition — why didn't you engage with your top-ranked domains? Block 2 only."""
     form_model = 'player'
     form_fields = [
         'b2c_mechanism_1',
@@ -1132,6 +1149,8 @@ class PageB_Mechanism(Page):
     @staticmethod
     def is_displayed(player: Player):
         if not player.consent:
+            return False
+        if player.participant.vars.get('survey_block') not in [2, 3]:
             return False
         # Only show if the respondent ranked at least 1 topic in B2
         b2_fields = [
@@ -1167,8 +1186,21 @@ class PageB_Mechanism(Page):
         )
 
 
+class PageB_Prep(Page):
+    """B3-B5: Preparedness, planning horizon, complexity. Shown to everyone."""
+    form_model = 'player'
+    form_fields = [
+        'b3_preparedness', 'b4_planning_horizon',
+        'b5_simplify', 'b5b_dropped',
+    ]
+
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.consent
+
+
 class PageA_Work(Page):
-    """Section A page 1: A1 (expectation), A2 (experience Likert, conditional)."""
+    """Section E page 1: E1 (expectation), E2 (experience Likert, conditional). Block 1 only."""
     form_model = 'player'
     form_fields = [
         'a1_expectation',
@@ -1177,22 +1209,25 @@ class PageA_Work(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent
+        block = player.participant.vars.get('survey_block')
+        return player.consent and block in [1, 3]
 
 
 class PageA3_Ranking(Page):
-    """Section A page 2: A3 ranking of factors (top 5)."""
+    """Section E page 2: E3 ranking of factors (top 5). Block 1 only."""
     form_model = 'player'
     form_fields = [
         'a3_rank_childcare', 'a3_rank_taxbenefit', 'a3_rank_employer',
         'a3_rank_partner', 'a3_rank_social', 'a3_rank_confidence',
         'a3_rank_recovery', 'a3_rank_preference', 'a3_rank_nodifficulty',
         'a3_other_text', 'a3_rank_other',
+        'keystroke_data_a3',
     ]
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent
+        block = player.participant.vars.get('survey_block')
+        return player.consent and block in [1, 3]
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1213,11 +1248,11 @@ class PageA3_Ranking(Page):
         ]
         ranks = [values.get(f) for f in a3_fields if values.get(f) is not None]
         if len(ranks) < 1:
-            return 'Bitte wählen Sie bei Frage A3 mindestens einen Faktor aus.'
+            return 'Bitte wählen Sie bei Frage E3 mindestens einen Faktor aus.'
         if len(ranks) > 5:
-            return 'Bitte wählen Sie bei Frage A3 höchstens fünf Faktoren aus.'
+            return 'Bitte wählen Sie bei Frage E3 höchstens fünf Faktoren aus.'
         if len(set(ranks)) != len(ranks):
-            return 'Bitte vergeben Sie bei Frage A3 jeden Rang nur einmal.'
+            return 'Bitte vergeben Sie bei Frage E3 jeden Rang nur einmal.'
 
 
 class PageC_Advice(Page):
@@ -1228,6 +1263,7 @@ class PageC_Advice(Page):
         'c2_elterngeld', 'c2_tax', 'c2_pension', 'c2_childcare', 'c2_career',
         'c2_insurance', 'c2_budget', 'c2_savings', 'c2_legal',
         'c3_plan_importance',
+        'keystroke_data_c',
     ]
 
     @staticmethod
@@ -1257,6 +1293,7 @@ class PageA0_End(Page):
         'a0_3_activity_other',
         'a0_3b_sector',
         'a0_3b_sector_other',
+        'keystroke_data_a0_end',
     ]
 
     @staticmethod
@@ -1291,24 +1328,35 @@ class Results(Page):
     @staticmethod
     def vars_for_template(player: Player):
         session = player.session
+        pid = player.participant.label or ''
+
+        def resolve_url(key):
+            url = session.config.get(key, '')
+            return url.replace('PANELIST_ID_PLACEHOLDER', pid)
+
         return dict(
-            no_consent=session.config.get('link_no_consent', ''),
-            no_attention=session.config.get('link_no_attention', ''),
-            completed=session.config.get('link_completed', ''),
+            no_consent=resolve_url('link_no_consent'),
+            no_attention=resolve_url('link_no_attention'),
+            completed=resolve_url('link_completed'),
         )
 
 
-# Page order: Demographics -> Worries -> Finance -> Work -> Advice -> Knowledge
+# Page order — split design:
+# Block 1 (50%): FWB + Return to Work (E1, E2, E3)
+# Block 2 (50%): B2 ranking + B2b + B2c mechanism
+# Everyone: B1, B3-B5, C, D, demographics
 page_sequence = [
     Intro,
     PageA0,
+    PageA0_Thoughts,
     PageA0b_Sorgen,
     PageB1_OpenEnd,
-    PageB_FWB,
-    PageB_Finance,
-    PageB_Mechanism,
-    PageA_Work,
-    PageA3_Ranking,
+    PageB_FWB,          # Block 1 only
+    PageB_Finance,      # Block 2 only (B2 + B2b)
+    PageB_Mechanism,    # Block 2 only (B2c)
+    PageB_Prep,         # Everyone (B3, B4, B5, B5b)
+    PageA_Work,         # Block 1 only (E1, E2)
+    PageA3_Ranking,     # Block 1 only (E3)
     PageC_Advice,
     PageA0_End,
     PageD_Knowledge,

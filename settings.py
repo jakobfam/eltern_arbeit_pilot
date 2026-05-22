@@ -18,10 +18,10 @@ SESSION_CONFIGS = [
         app_sequence=['pilot_survey'],
         num_demo_participants=1,
         prolific=False,
-        # Bilendi/generic completion URLs — replace with actual redirect links
-        link_completed='https://example.com/complete',
-        link_no_consent='https://example.com/screenout',
-        link_no_attention='https://example.com/screenout',
+        # Bilendi completion URLs
+        link_completed='https://survey.maximiles.com/complete?p=98327_8107c9fe&m=PANELIST_ID_PLACEHOLDER',
+        link_no_consent='https://survey.maximiles.com/screenout?p=98327_8107c9fe&m=PANELIST_ID_PLACEHOLDER',
+        link_no_attention='https://survey.maximiles.com/screenout?p=98327_8107c9fe&m=PANELIST_ID_PLACEHOLDER',
     ),
 ]
 

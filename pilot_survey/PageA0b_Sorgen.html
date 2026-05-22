@@ -23,12 +23,9 @@
 
   {# Hidden oTree form fields — JS reads/writes these #}
   <div style="display:none">
-    {{ formfield 'a0b_pts_health' }}
-    {{ formfield 'a0b_pts_birth' }}
-    {{ formfield 'a0b_pts_good_mother' }}
+    {{ formfield 'a0b_pts_health_wellbeing' }}
+    {{ formfield 'a0b_pts_identity_role' }}
     {{ formfield 'a0b_pts_overwhelm' }}
-    {{ formfield 'a0b_pts_identity' }}
-    {{ formfield 'a0b_pts_mental_health' }}
     {{ formfield 'a0b_pts_relationship' }}
     {{ formfield 'a0b_pts_childcare' }}
     {{ formfield 'a0b_pts_career' }}
@@ -42,59 +39,47 @@
 
   {# All items defined here; JS reorders them using the server-side shuffle order #}
   <div id="a0b-alloc-list" class="alloc-list">
-    <div class="alloc-item" data-field="a0b_pts_health" data-idx="0">
-      <label class="alloc-label">Gesundheit von mir und meinem Kind</label>
+    <div class="alloc-item" data-field="a0b_pts_health_wellbeing" data-idx="0">
+      <label class="alloc-label">Gesundheit und Wohlbefinden (körperlich und psychisch, inkl. Geburt)</label>
       <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="alloc-item" data-field="a0b_pts_birth" data-idx="1">
-      <label class="alloc-label">Die Geburt selbst</label>
+    <div class="alloc-item" data-field="a0b_pts_identity_role" data-idx="1">
+      <label class="alloc-label">Persönliche Identität und Rolle als Mutter</label>
       <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="alloc-item" data-field="a0b_pts_good_mother" data-idx="2">
-      <label class="alloc-label">Ob ich eine gute Mutter sein werde</label>
-      <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
-    </div>
-    <div class="alloc-item" data-field="a0b_pts_overwhelm" data-idx="3">
+    <div class="alloc-item" data-field="a0b_pts_overwhelm" data-idx="2">
       <label class="alloc-label">Überforderung im Alltag mit Kind (Schlafmangel, alles unter einen Hut bekommen)</label>
       <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="alloc-item" data-field="a0b_pts_identity" data-idx="4">
-      <label class="alloc-label">Meine eigene Identität und Unabhängigkeit nicht zu verlieren</label>
-      <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
-    </div>
-    <div class="alloc-item" data-field="a0b_pts_mental_health" data-idx="5">
-      <label class="alloc-label">Psychische Gesundheit (z.&thinsp;B. postpartale Depression, Erschöpfung)</label>
-      <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
-    </div>
-    <div class="alloc-item" data-field="a0b_pts_relationship" data-idx="6">
+    <div class="alloc-item" data-field="a0b_pts_relationship" data-idx="3">
       <label class="alloc-label">Auswirkungen auf meine Partnerschaft</label>
       <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="alloc-item" data-field="a0b_pts_childcare" data-idx="7">
+    <div class="alloc-item" data-field="a0b_pts_childcare" data-idx="4">
       <label class="alloc-label">Kinderbetreuung organisieren</label>
       <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="alloc-item" data-field="a0b_pts_career" data-idx="8">
+    <div class="alloc-item" data-field="a0b_pts_career" data-idx="5">
       <label class="alloc-label">Meine berufliche Entwicklung und Karriere</label>
       <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="alloc-item" data-field="a0b_pts_finances_short" data-idx="9">
+    <div class="alloc-item" data-field="a0b_pts_finances_short" data-idx="6">
       <label class="alloc-label">Finanzielle Situation während der Elternzeit (Elterngeld, laufende Kosten)</label>
       <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="alloc-item" data-field="a0b_pts_finances_long" data-idx="10">
+    <div class="alloc-item" data-field="a0b_pts_finances_long" data-idx="7">
       <label class="alloc-label">Langfristige finanzielle Absicherung (Rente, Vermögensaufbau)</label>
       <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="alloc-item" data-field="a0b_pts_division" data-idx="11">
-      <label class="alloc-label">Aufteilung von Erwerbs- und Sorgearbeit mit meinem Partner</label>
+    <div class="alloc-item" data-field="a0b_pts_division" data-idx="8">
+      <label class="alloc-label">Aufteilung von Erwerbs- und Sorgearbeit</label>
       <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="alloc-item" data-field="a0b_pts_social" data-idx="12">
+    <div class="alloc-item" data-field="a0b_pts_social" data-idx="9">
       <label class="alloc-label">Erwartungen aus meinem Umfeld (Familie, Freunde, Gesellschaft)</label>
       <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>
-    <div class="alloc-item" data-field="a0b_pts_housing" data-idx="13">
+    <div class="alloc-item" data-field="a0b_pts_housing" data-idx="10">
       <label class="alloc-label">Wohnsituation (Platz, Umzug, Wohnkosten)</label>
       <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
     </div>

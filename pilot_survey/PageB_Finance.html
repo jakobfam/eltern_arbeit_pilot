@@ -81,39 +81,15 @@
   {{ formfield 'b2b_salient_other' }}
 </div>
 
-{# B3 #}
-{{ formfield 'b3_preparedness' }}
-
-{# B4 #}
-{{ formfield 'b4_planning_horizon' }}
-
-{# B5: Complexity — deliberate simplification #}
-{{ formfield 'b5_simplify' }}
-
-{# B5b: Which dimensions were dropped — show only when B5 = 1 or 2 #}
-<div id="b5b-block">
-  {{ formfield 'b5b_dropped' }}
+{# Keystroke detection data — hidden #}
+<div style="display:none">
+  {{ formfield 'keystroke_data_b_finance' }}
 </div>
 
 {{ next_button }}
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  function toggleB5b() {
-    const selected = document.querySelector('input[name="b5_simplify"]:checked');
-    const val = selected ? parseInt(selected.value) : null;
-    const b5bBlock = document.getElementById('b5b-block');
-    if (b5bBlock) {
-      // Show follow-up when "Ja" (1), "Teilweise" (2), or "Erst später aufgefallen" (4)
-      b5bBlock.style.display = (val === 1 || val === 2 || val === 4) ? '' : 'none';
-    }
-  }
-
-  toggleB5b();
-  document.querySelectorAll('input[name="b5_simplify"]').forEach(
-    r => r.addEventListener('change', toggleB5b)
-  );
-
   // Toggle B2b "Sonstiges" text field (show when value = 8)
   function toggleB2bOther() {
     const selected = document.querySelector('input[name="b2b_salient_moment"]:checked');
@@ -273,6 +249,66 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   initRankGroup('b2-rank-list', 'b2-other-item');
+
+  // ── Keystroke / AI detection ──
+  (function() {
+    var ksData = {};
+    function getFieldEntry(fieldName) {
+      if (!ksData[fieldName]) {
+        ksData[fieldName] = {
+          keystrokes: 0, backspaces: 0, deletes: 0,
+          pastes: 0, pastedChars: 0, totalChars: 0,
+          startTime: null, endTime: null, intervals: [], lastKeyTime: null,
+        };
+      }
+      return ksData[fieldName];
+    }
+    var fields = document.querySelectorAll('input[type="text"], textarea');
+    fields.forEach(function(field) {
+      var name = field.name || field.id || 'unknown';
+      field.addEventListener('focus', function() {
+        var e = getFieldEntry(name); if (!e.startTime) e.startTime = Date.now();
+      });
+      field.addEventListener('blur', function() {
+        var e = getFieldEntry(name); e.endTime = Date.now(); e.totalChars = field.value.length;
+      });
+      field.addEventListener('keydown', function(ev) {
+        var e = getFieldEntry(name); var now = Date.now();
+        if (!e.startTime) e.startTime = now;
+        if (ev.key === 'Backspace') { e.backspaces++; }
+        else if (ev.key === 'Delete') { e.deletes++; }
+        else if (ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey) {
+          e.keystrokes++;
+          if (e.lastKeyTime) e.intervals.push(now - e.lastKeyTime);
+          e.lastKeyTime = now;
+        }
+      });
+      field.addEventListener('paste', function(ev) {
+        var e = getFieldEntry(name); e.pastes++;
+        var pasted = (ev.clipboardData || window.clipboardData).getData('text');
+        e.pastedChars += pasted.length;
+      });
+    });
+    var form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', function() {
+        fields.forEach(function(field) {
+          var name = field.name || field.id || 'unknown';
+          var e = ksData[name];
+          if (e) {
+            e.endTime = Date.now(); e.totalChars = field.value.length;
+            if (e.intervals.length > 0) {
+              var sum = e.intervals.reduce(function(a, b) { return a + b; }, 0);
+              e.avgInterval = Math.round(sum / e.intervals.length);
+            }
+            delete e.intervals; delete e.lastKeyTime;
+          }
+        });
+        var hidden = document.querySelector('[name="keystroke_data_b_finance"]');
+        if (hidden) hidden.value = JSON.stringify(ksData);
+      });
+    }
+  })();
 });
 </script>
 {{ endblock }}

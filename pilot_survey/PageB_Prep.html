@@ -1,0 +1,38 @@
+{{ block title }}Finanzielle Vorbereitung{{ endblock }}
+
+{{ block content }}
+
+{# B3 #}
+{{ formfield 'b3_preparedness' }}
+
+{# B4 #}
+{{ formfield 'b4_planning_horizon' }}
+
+{# B5: Complexity — deliberate simplification #}
+{{ formfield 'b5_simplify' }}
+
+{# B5b: Which dimensions were dropped — show only when B5 = 1, 2, or 4 #}
+<div id="b5b-block">
+  {{ formfield 'b5b_dropped' }}
+</div>
+
+{{ next_button }}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  function toggleB5b() {
+    const selected = document.querySelector('input[name="b5_simplify"]:checked');
+    const val = selected ? parseInt(selected.value) : null;
+    const b5bBlock = document.getElementById('b5b-block');
+    if (b5bBlock) {
+      b5bBlock.style.display = (val === 1 || val === 2 || val === 4) ? '' : 'none';
+    }
+  }
+
+  toggleB5b();
+  document.querySelectorAll('input[name="b5_simplify"]').forEach(
+    r => r.addEventListener('change', toggleB5b)
+  );
+});
+</script>
+{{ endblock }}

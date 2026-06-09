@@ -35,6 +35,20 @@ class Player(BasePlayer):
         label='Sind Sie mit der Teilnahme an dieser Studie einverstanden?',
     )
     prolificID = models.StringField(blank=True)
+    # Generic external panel ID (Bilendi/respondi panelist ID, or Prolific PID).
+    # Captured from the start-URL parameter `participant_label`.
+    panelist_id = models.StringField(blank=True)
+
+    # == Target-group screener ============================================
+    screener_has_child = models.BooleanField(
+        label=(
+            '<b>S1.</b> Sind Sie Mutter von mindestens einem Kind?'
+        ),
+        choices=[[True, 'Ja'], [False, 'Nein']],
+        widget=widgets.RadioSelect,
+    )
+    # True if the respondent failed the target-group screener (no child).
+    screened_out = models.BooleanField(default=False)
 
     # == Attention checks =================================================
     attention = models.BooleanField(default=True)
@@ -84,6 +98,7 @@ class Player(BasePlayer):
     keystroke_data_thoughts = models.LongStringField(blank=True, default='')
     keystroke_data_b_prep = models.LongStringField(blank=True, default='')
     keystroke_data_a0_end = models.LongStringField(blank=True, default='')
+    keystroke_data_multi_child = models.LongStringField(blank=True, default='')
 
     # == Section A0: Demographics =========================================
 
@@ -742,6 +757,16 @@ class Player(BasePlayer):
         blank=True,
     )
 
+    # B2d: Difference first vs. further child (only if num_children > 1; Block 2)
+    b_multi_child_difference = models.LongStringField(
+        label=(
+            '<b>B2d.</b> Sie haben angegeben, mehr als ein Kind zu haben. '
+            'Was war der größte finanzielle Unterschied zwischen dem ersten '
+            'und dem zweiten Kind?'
+        ),
+        blank=True,
+    )
+
     # B2c: Mechanism decomposition — for rank #1 and #2 domains
     b2c_mechanism_1 = models.IntegerField(
         label='',  # label set dynamically in template
@@ -946,9 +971,58 @@ def check_bot(player: Player):
         player.is_bot = True
 
 
-def get_prolific_label(player: Player):
+def capture_panel_id(player: Player):
+    """Store the external panel ID (Bilendi panelist ID / Prolific PID).
+
+    Both panels deliver the ID via the start-URL parameter `participant_label`,
+    which oTree saves as participant.label.
+    """
+    pid = player.participant.label or ''
+    player.panelist_id = pid
     if player.session.config.get('prolific', False):
-        player.prolificID = player.participant.label or ''
+        player.prolificID = pid
+
+
+def is_active(player: Player):
+    """True while the participant is still a valid, in-survey respondent:
+    consented and not screened out of the target group. All content pages
+    gate on this so a screened-out participant skips straight to the redirect."""
+    return player.consent and not player.participant.vars.get('screened_out', False)
+
+
+def get_redirect(player: Player):
+    """Resolve (redirect_url, status) for the terminal page based on outcome.
+
+    Priority: no-consent -> screen-out -> quality fail -> speeder -> complete.
+    URLs come from the session config; %SPM_PANELIST_ID% is replaced with the
+    captured panel ID. Falls back gracefully for the Prolific config, which
+    only defines link_completed / link_no_consent / link_no_attention.
+    """
+    session = player.session
+    pid = player.participant.label or ''
+
+    def resolve(*keys):
+        for key in keys:
+            url = session.config.get(key, '') or ''
+            if url:
+                return (url
+                        .replace('%SPM_PANELIST_ID%', pid)
+                        .replace('PANELIST_ID_PLACEHOLDER', pid))
+        return ''
+
+    if not player.consent:
+        return resolve('link_screen_out', 'link_no_consent'), 'no_consent'
+    if player.participant.vars.get('screened_out', False):
+        return resolve('link_screen_out', 'link_no_consent'), 'screen_out'
+    if player.is_bot or not player.attention:
+        return resolve('link_quality', 'link_no_attention'), 'quality'
+    # Speeder: only if a speeder link is configured and a threshold is crossed.
+    speeder_url = resolve('link_speeder')
+    threshold = session.config.get('speeder_threshold_seconds', 0)
+    t = player.field_maybe_none('time_to_complete')
+    if speeder_url and threshold and t is not None and t < threshold:
+        return speeder_url, 'speeder'
+    return resolve('link_completed'), 'complete'
 
 
 # Progress indicator: page lists per block (excluding Intro and Results)
@@ -957,12 +1031,12 @@ _PAGES_COMMON = [
     'PageB_Prep', 'PageC_Advice', 'PageA0_End', 'PageD_Knowledge',
 ]
 _PAGES_BLOCK1 = ['PageB_FWB', 'PageA_Work', 'PageA3_Ranking']
-_PAGES_BLOCK2 = ['PageB_Finance', 'PageB_Mechanism']
+_PAGES_BLOCK2 = ['PageB_Finance', 'PageB_Mechanism', 'PageB_MultiChild']
 
 # Build ordered page lists per block (matching page_sequence order)
 _PAGE_ORDER = [
     'PageA0', 'PageA0_Thoughts', 'PageA0b_Sorgen', 'PageB1_OpenEnd',
-    'PageB_FWB', 'PageB_Finance', 'PageB_Mechanism',
+    'PageB_FWB', 'PageB_Finance', 'PageB_Mechanism', 'PageB_MultiChild',
     'PageB_Prep', 'PageA_Work', 'PageA3_Ranking',
     'PageC_Advice', 'PageA0_End', 'PageD_Knowledge',
 ]
@@ -977,6 +1051,9 @@ def get_progress(player, page_class):
     """Return (current_page, total_pages, progress_pct) for the progress bar."""
     block = player.participant.vars.get('survey_block', 3)
     pages = _BLOCK_PAGES.get(block, _PAGE_ORDER)
+    # PageB_MultiChild only displays when the respondent has more than one child
+    if 'PageB_MultiChild' in pages and (player.field_maybe_none('a0_num_children') or 0) <= 1:
+        pages = [p for p in pages if p != 'PageB_MultiChild']
     page_name = page_class.__name__
     if page_name in pages:
         pn = pages.index(page_name) + 1
@@ -999,12 +1076,31 @@ class Intro(Page):
     def before_next_page(player: Player, timeout_happened):
         import time, random
         player.time_started = time.time()
-        get_prolific_label(player)
+        capture_panel_id(player)
         # Randomly assign survey block (1 or 2) for split design
         # Block 3 = test mode (all pages shown) — change to random.choice([1, 2]) for production
         block = 3
         player.participant.vars['survey_block'] = block
         player.survey_block = block
+
+
+class PageScreener(Page):
+    """Target-group screener (first question): respondent must be a mother of
+    at least one child. 'Nein' -> screen-out redirect. Kept first so the
+    screen-out always happens well within Bilendi's 2-minute window."""
+    form_model = 'player'
+    form_fields = ['screener_has_child']
+
+    @staticmethod
+    def is_displayed(player: Player):
+        return is_active(player)
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        # screener_has_child is required (not blank); False means no child.
+        if not player.screener_has_child:
+            player.screened_out = True
+            player.participant.vars['screened_out'] = True
 
 
 class PageA0(Page):
@@ -1025,7 +1121,7 @@ class PageA0(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent
+        return is_active(player)
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1052,7 +1148,7 @@ class PageA0_Thoughts(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent
+        return is_active(player)
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1075,7 +1171,7 @@ class PageA0b_Sorgen(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent
+        return is_active(player)
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1122,7 +1218,7 @@ class PageB1_OpenEnd(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent
+        return is_active(player)
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1144,7 +1240,7 @@ class PageB_FWB(Page):
     @staticmethod
     def is_displayed(player: Player):
         block = player.participant.vars.get('survey_block')
-        return player.consent and block in [1, 3]
+        return is_active(player) and block in [1, 3]
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1169,7 +1265,7 @@ class PageB_Finance(Page):
     @staticmethod
     def is_displayed(player: Player):
         block = player.participant.vars.get('survey_block')
-        return player.consent and block in [2, 3]
+        return is_active(player) and block in [2, 3]
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1223,7 +1319,7 @@ class PageB_Mechanism(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        if not player.consent:
+        if not is_active(player):
             return False
         if player.participant.vars.get('survey_block') not in [2, 3]:
             return False
@@ -1269,6 +1365,26 @@ class PageB_Mechanism(Page):
         )
 
 
+class PageB_MultiChild(Page):
+    """B2d: Open-ended — biggest financial difference between first and second
+    child. Block 2 only, and only if the respondent has more than one child."""
+    form_model = 'player'
+    form_fields = ['b_multi_child_difference', 'keystroke_data_multi_child']
+
+    @staticmethod
+    def is_displayed(player: Player):
+        if not is_active(player):
+            return False
+        if player.participant.vars.get('survey_block') not in [2, 3]:
+            return False
+        return (player.field_maybe_none('a0_num_children') or 0) > 1
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        pn, tp, pct = get_progress(player, PageB_MultiChild)
+        return dict(page_num=pn, total_pages=tp, progress_pct=pct)
+
+
 class PageB_Prep(Page):
     """B3-B5: Preparedness, planning horizon, complexity. Shown to everyone."""
     form_model = 'player'
@@ -1280,7 +1396,7 @@ class PageB_Prep(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent
+        return is_active(player)
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1299,7 +1415,7 @@ class PageA_Work(Page):
     @staticmethod
     def is_displayed(player: Player):
         block = player.participant.vars.get('survey_block')
-        return player.consent and block in [1, 3]
+        return is_active(player) and block in [1, 3]
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1321,7 +1437,7 @@ class PageA3_Ranking(Page):
     @staticmethod
     def is_displayed(player: Player):
         block = player.participant.vars.get('survey_block')
-        return player.consent and block in [1, 3]
+        return is_active(player) and block in [1, 3]
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1363,7 +1479,7 @@ class PageC_Advice(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent
+        return is_active(player)
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1398,7 +1514,7 @@ class PageA0_End(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent
+        return is_active(player)
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1417,7 +1533,7 @@ class PageD_Knowledge(Page):
 
     @staticmethod
     def is_displayed(player: Player):
-        return player.consent
+        return is_active(player)
 
     @staticmethod
     def vars_for_template(player: Player):
@@ -1435,21 +1551,20 @@ class PageD_Knowledge(Page):
 
 
 class Results(Page):
-    """Final page: redirects (Prolific) depending on consent/attention status."""
+    """Terminal page: resolves the correct panel redirect (complete / screen-out
+    / quality / speeder) and forwards the participant back to Bilendi."""
 
     @staticmethod
     def vars_for_template(player: Player):
-        session = player.session
-        pid = player.participant.label or ''
-
-        def resolve_url(key):
-            url = session.config.get(key, '')
-            return url.replace('PANELIST_ID_PLACEHOLDER', pid)
-
+        redirect_url, status = get_redirect(player)
+        # Expand status into booleans (oTree templates: avoid string == comparison)
         return dict(
-            no_consent=resolve_url('link_no_consent'),
-            no_attention=resolve_url('link_no_attention'),
-            completed=resolve_url('link_completed'),
+            redirect_url=redirect_url,
+            is_complete=(status == 'complete'),
+            is_screen_out=(status == 'screen_out'),
+            is_no_consent=(status == 'no_consent'),
+            is_speeder=(status == 'speeder'),
+            is_quality=(status == 'quality'),
         )
 
 
@@ -1459,6 +1574,7 @@ class Results(Page):
 # Everyone: B1, B3-B5, C, D, demographics
 page_sequence = [
     Intro,
+    PageScreener,
     PageA0,
     PageA0_Thoughts,
     PageA0b_Sorgen,
@@ -1466,6 +1582,7 @@ page_sequence = [
     PageB_FWB,          # Block 1 only
     PageB_Finance,      # Block 2 only (B2 + B2b)
     PageB_Mechanism,    # Block 2 only (B2c)
+    PageB_MultiChild,   # Block 2 only (B2d) — only if num_children > 1
     PageB_Prep,         # Everyone (B3, B4, B5, B5b)
     PageA_Work,         # Block 1 only (E1, E2)
     PageA3_Ranking,     # Block 1 only (E3)

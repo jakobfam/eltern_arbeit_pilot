@@ -18,10 +18,21 @@ SESSION_CONFIGS = [
         app_sequence=['pilot_survey'],
         num_demo_participants=1,
         prolific=False,
-        # Bilendi completion URLs
-        link_completed='https://survey.maximiles.com/complete?p=98327_8107c9fe&m=PANELIST_ID_PLACEHOLDER',
-        link_no_consent='https://survey.maximiles.com/screenout?p=98327_8107c9fe&m=PANELIST_ID_PLACEHOLDER',
-        link_no_attention='https://survey.maximiles.com/screenout?p=98327_8107c9fe&m=PANELIST_ID_PLACEHOLDER',
+        # --- Bilendi / respondi (Maximiles) dynamic redirect URLs ----------
+        # The panelist ID arrives in the start link as the GET parameter
+        # `participant_label` (oTree stores it as participant.label) and is
+        # written back here in place of %SPM_PANELIST_ID%.
+        # Project p=168504. Links taken verbatim from the Bilendi setup mail.
+        link_completed='https://survey.maximiles.com/complete?p=168504_895c05cb&m=%SPM_PANELIST_ID%',
+        link_screen_out='https://survey.maximiles.com/screenout?p=168504_21a5bfc7&m=%SPM_PANELIST_ID%',
+        link_quotas_full='https://survey.maximiles.com/quotasfull?p=168504_ecc1b96f&m=%SPM_PANELIST_ID%',
+        link_quality='https://survey.maximiles.com/quality?p=168504&m=%SPM_PANELIST_ID%',
+        link_speeder='https://survey.maximiles.com/speeder?p=168504&m=%SPM_PANELIST_ID%',
+        link_duplicate='https://survey.maximiles.com/duplicate?p=168504&m=%SPM_PANELIST_ID%',
+        link_geoip='https://survey.maximiles.com/geoip?p=168504&m=%SPM_PANELIST_ID%',
+        # Speeder threshold: completes faster than this (seconds) -> speeder.
+        # LOI is 15 min; we flag anything under 6 min (360 s).
+        speeder_threshold_seconds=360,
     ),
 ]
 

@@ -1,0 +1,81 @@
+{{ block title }}Erstes und weiteres Kind{{ endblock }}
+
+{{ block content }}
+{{ if page_num }}
+<div class="progress-text">Seite {{ page_num }} von {{ total_pages }}</div>
+<div class="progress-bar-container"><div class="progress-bar-fill" style="width: {{ progress_pct }}%"></div></div>
+{{ endif }}
+
+
+{{ formfield 'b_multi_child_difference' }}
+
+{# Keystroke detection data — hidden #}
+<div style="display:none">
+  {{ formfield 'keystroke_data_multi_child' }}
+</div>
+
+{{ next_button }}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  (function() {
+    var ksData = {};
+    function getFieldEntry(fieldName) {
+      if (!ksData[fieldName]) {
+        ksData[fieldName] = {
+          keystrokes: 0, backspaces: 0, deletes: 0,
+          pastes: 0, pastedChars: 0, totalChars: 0,
+          startTime: null, endTime: null, intervals: [], lastKeyTime: null,
+        };
+      }
+      return ksData[fieldName];
+    }
+    var fields = document.querySelectorAll('input[type="text"], textarea');
+    fields.forEach(function(field) {
+      var name = field.name || field.id || 'unknown';
+      field.addEventListener('focus', function() {
+        var e = getFieldEntry(name); if (!e.startTime) e.startTime = Date.now();
+      });
+      field.addEventListener('blur', function() {
+        var e = getFieldEntry(name); e.endTime = Date.now(); e.totalChars = field.value.length;
+      });
+      field.addEventListener('keydown', function(ev) {
+        var e = getFieldEntry(name); var now = Date.now();
+        if (!e.startTime) e.startTime = now;
+        if (ev.key === 'Backspace') { e.backspaces++; }
+        else if (ev.key === 'Delete') { e.deletes++; }
+        else if (ev.key.length === 1 && !ev.ctrlKey && !ev.metaKey) {
+          e.keystrokes++;
+          if (e.lastKeyTime) e.intervals.push(now - e.lastKeyTime);
+          e.lastKeyTime = now;
+        }
+      });
+      field.addEventListener('paste', function(ev) {
+        var e = getFieldEntry(name); e.pastes++;
+        var pasted = (ev.clipboardData || window.clipboardData).getData('text');
+        e.pastedChars += pasted.length;
+      });
+    });
+    var form = document.querySelector('form');
+    if (form) {
+      form.addEventListener('submit', function() {
+        fields.forEach(function(field) {
+          var name = field.name || field.id || 'unknown';
+          var e = ksData[name];
+          if (e) {
+            e.endTime = Date.now(); e.totalChars = field.value.length;
+            if (e.intervals.length > 0) {
+              var sum = e.intervals.reduce(function(a, b) { return a + b; }, 0);
+              e.avgInterval = Math.round(sum / e.intervals.length);
+            }
+            delete e.intervals; delete e.lastKeyTime;
+          }
+        });
+        var hidden = document.querySelector('[name="keystroke_data_multi_child"]');
+        if (hidden) hidden.value = JSON.stringify(ksData);
+      });
+    }
+  })();
+});
+</script>
+{{ endblock }}

@@ -1,0 +1,19 @@
+{{ block title }}Finanzielle Entscheidungen{{ endblock }}
+
+{{ block content }}
+{{ if page_num }}
+<div class="progress-text">Seite {{ page_num }} von {{ total_pages }}</div>
+<div class="progress-bar-container"><div class="progress-bar-fill" style="width: {{ progress_pct }}%"></div></div>
+{{ endif }}
+
+{# B1f #}
+{{ formfield 'b_decision_power' }}
+
+{# B1g #}
+{{ formfield 'b_conflict_frequency' }}
+
+{# Attention check (instructed-response item) #}
+{{ formfield 'attention_check_2' }}
+
+{{ next_button }}
+{{ endblock }}

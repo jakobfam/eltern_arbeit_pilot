@@ -63,7 +63,7 @@ class Player(BasePlayer):
     )
     attention_check_2 = models.IntegerField(
         label=(
-            '<b>D3.</b> Viele Eltern berichten, dass sie sich nach der Geburt '
+            'Viele Eltern berichten, dass sie sich nach der Geburt '
             'intensiver mit Finanzthemen beschäftigt haben. '
             'Um die Qualität unserer Daten sicherzustellen, wählen Sie bitte '
             '„Selten" aus.'
@@ -88,6 +88,10 @@ class Player(BasePlayer):
     # == Timing ===========================================================
     time_started = models.FloatField(blank=True)
     time_to_complete = models.FloatField(blank=True)
+
+    # == Final outcome (recorded on the last page; never shown to anyone) ===
+    final_status = models.StringField(blank=True)        # complete / screen_out / no_consent / quality / speeder
+    final_redirect_url = models.StringField(blank=True)  # exact redirect URL the participant received
 
     # == Keystroke / AI detection =========================================
     keystroke_data = models.LongStringField(blank=True, default='')
@@ -293,9 +297,9 @@ class Player(BasePlayer):
 
     a0_5_thoughts_wish = models.LongStringField(
         label=(
-            '<b>A0.8.</b> Was sind die <b>drei wichtigsten Themen</b>, '
-            'mit denen Sie sich gerne schon <b>vor der Geburt</b> '
-            'beschäftigt hätten?'
+            '<b>A0.8.</b> Wenn Sie heute zurückblicken: Was sind die '
+            '<b>drei wichtigsten Dinge</b>, mit denen Sie sich aus heutiger '
+            'Sicht gerne schon <b>vor der Geburt</b> beschäftigt hätten?'
         ),
     )
 
@@ -511,7 +515,7 @@ class Player(BasePlayer):
     # -- Financial decision control & conflict -----------------------------
     b_decision_power = models.IntegerField(
         label=(
-            '<b>B1d.</b> Inwieweit stimmen Sie folgender Aussage zu: '
+            '<b>B1f.</b> Inwieweit stimmen Sie folgender Aussage zu: '
             '"Es ist fair, wenn die Person mit dem höheren Einkommen mehr Einfluss auf finanzielle Entscheidungen hat."'
         ),
         choices=[
@@ -526,7 +530,7 @@ class Player(BasePlayer):
 
     b_conflict_frequency = models.IntegerField(
         label=(
-            '<b>B1e.</b> Wie häufig kam es seit der Geburt Ihres Kindes innerhalb '
+            '<b>B1g.</b> Wie häufig kam es seit der Geburt Ihres Kindes innerhalb '
             'Ihres Haushalts zu Meinungsverschiedenheiten über finanzielle Themen '
             '(z. B. Ausgaben, Sparverhalten, Aufteilung der Einkommen)?'
         ),
@@ -661,7 +665,7 @@ class Player(BasePlayer):
     # -- Financial information awareness (before vs now) ------------------
     b_fin_info_before = models.IntegerField(
         label=(
-            '<b>B1f.</b> Bevor Ihr erstes Kind geboren wurde: Wie gut waren Sie über Ihre '
+            '<b>B1d.</b> Bevor Ihr erstes Kind geboren wurde: Wie gut waren Sie über Ihre '
             'Haushaltsfinanzen informiert - zum Beispiel über Ihr Budget, Ersparnisse, '
             'Steuern oder Zukunftspläne?'
         ),
@@ -678,7 +682,7 @@ class Player(BasePlayer):
 
     b_fin_info_now = models.IntegerField(
         label=(
-            '<b>B1g.</b> Und wie gut sind Sie heute darüber informiert?'
+            '<b>B1e.</b> Und wie gut sind Sie heute darüber informiert?'
         ),
         choices=[
             [1, '1 - Sehr schlecht'],
@@ -1095,9 +1099,13 @@ def capture_panel_id(player: Player):
 
 def is_active(player: Player):
     """True while the participant is still a valid, in-survey respondent:
-    consented and not screened out of the target group. All content pages
-    gate on this so a screened-out participant skips straight to the redirect."""
-    return player.consent and not player.participant.vars.get('screened_out', False)
+    consented, not screened out of the target group, and has not failed the
+    attention check. All content pages gate on this, so a screened-out or
+    attention-failed participant skips straight to the redirect — rather than
+    only being screened out at the very end of the survey."""
+    return (player.consent
+            and not player.participant.vars.get('screened_out', False)
+            and player.attention)
 
 
 def get_redirect(player: Player):
@@ -1140,6 +1148,7 @@ def get_redirect(player: Player):
 # Progress indicator: page lists per block (excluding Intro and Results)
 _PAGES_COMMON = [
     'PageA0', 'PageA0_Thoughts', 'PageA0b_Sorgen', 'PageB1_OpenEnd',
+    'PageB1_Decisions',
     'PageB_Prep', 'PageC_Advice', 'PageA0_End', 'PageD_Knowledge',
 ]
 _PAGES_BLOCK1 = ['PageB_FWB', 'PageA_Work', 'PageA3_Ranking']
@@ -1148,6 +1157,7 @@ _PAGES_BLOCK2 = ['PageB_Finance', 'PageB_Mechanism', 'PageB_MultiChild']
 # Build ordered page lists per block (matching page_sequence order)
 _PAGE_ORDER = [
     'PageA0', 'PageA0_Thoughts', 'PageA0b_Sorgen', 'PageB1_OpenEnd',
+    'PageB1_Decisions',
     'PageB_FWB', 'PageB_Finance', 'PageB_Mechanism', 'PageB_MultiChild',
     'PageB_Prep', 'PageA_Work', 'PageA3_Ranking',
     'PageC_Advice', 'PageA0_End', 'PageD_Knowledge',
@@ -1320,7 +1330,8 @@ class PageA0b_Sorgen(Page):
 
 
 class PageB1_OpenEnd(Page):
-    """Section B1: Open-ended financial surprise + measures + conflict + fin info."""
+    """Section B1: Open-ended financial surprise + measures (B1c) + financial
+    information awareness (B1d–B1e). Shown to everyone."""
     form_model = 'player'
     form_fields = [
         'a0_income_gap',
@@ -1329,8 +1340,6 @@ class PageB1_OpenEnd(Page):
         'b1c_own_account', 'b1c_contract', 'b1c_grundbuch',
         'b1c_overview', 'b1c_retirement', 'b1c_care_compensation',
         'b1c_none',
-        'b_decision_power',
-        'b_conflict_frequency',
         'b_fin_info_before',
         'b_fin_info_now',
         'keystroke_data_b1',
@@ -1345,6 +1354,29 @@ class PageB1_OpenEnd(Page):
         pn, tp, pct = get_progress(player, PageB1_OpenEnd)
         return dict(page_num=pn, total_pages=tp, progress_pct=pct)
 
+
+class PageB1_Decisions(Page):
+    """B1f–B1g: Financial decision power & conflict frequency in the household,
+    plus the attention check (placed mid-survey, so an attention failure exits
+    here rather than only at the very end). Shown to everyone."""
+    form_model = 'player'
+    form_fields = ['b_decision_power', 'b_conflict_frequency', 'attention_check_2']
+
+    @staticmethod
+    def is_displayed(player: Player):
+        return is_active(player)
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        pn, tp, pct = get_progress(player, PageB1_Decisions)
+        return dict(page_num=pn, total_pages=tp, progress_pct=pct)
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        # Attention check here (mid-survey): failing sets attention=False, which
+        # makes is_active() false, so the participant skips the remaining pages
+        # and is routed to the Quality redirect immediately.
+        check_attention(player)
 
 
 class PageB_FWB(Page):
@@ -1644,11 +1676,11 @@ class PageA0_End(Page):
 
 
 class PageD_Knowledge(Page):
-    """Section D: Knowledge check + attention_check_2. Runs final screenout checks."""
+    """Section D: Knowledge check. Runs the final bot/AI checks and timing.
+    (The attention check now lives mid-survey on PageB1_Decisions.)"""
     form_model = 'player'
     form_fields = [
         'd1_pension_knowledge', 'd2_splitting_knowledge',
-        'attention_check_2',
     ]
 
     @staticmethod
@@ -1666,7 +1698,6 @@ class PageD_Knowledge(Page):
         import time
         if player.time_started:
             player.time_to_complete = time.time() - player.time_started
-        check_attention(player)
         check_bot(player)
         check_ai_keystroke(player)
         check_prompt_injection(player)
@@ -1679,6 +1710,9 @@ class Results(Page):
     @staticmethod
     def vars_for_template(player: Player):
         redirect_url, status = get_redirect(player)
+        # Persist the outcome for the data export (not shown to the participant).
+        player.final_status = status
+        player.final_redirect_url = redirect_url
         # Expand status into booleans (oTree templates: avoid string == comparison)
         return dict(
             redirect_url=redirect_url,
@@ -1700,6 +1734,7 @@ page_sequence = [
     PageA0_Thoughts,
     PageA0b_Sorgen,
     PageB1_OpenEnd,
+    PageB1_Decisions,   # Everyone (B1f, B1g)
     PageB_FWB,          # Block 1 only
     PageB_Finance,      # Block 2 only (B2 + B2b)
     PageB_Mechanism,    # Block 2 only (B2c)

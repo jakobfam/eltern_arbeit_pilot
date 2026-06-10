@@ -27,8 +27,9 @@ SESSION_CONFIGS = [
         # cases fall back to link_quality above.
         # link_ai='https://survey.maximiles.com/quality?p=168504&m=%SPM_PANELIST_ID%',
         # Speeder threshold: completes faster than this (seconds) -> speeder.
-        # LOI is 15 min; we flag anything under 6 min (360 s).
-        speeder_threshold_seconds=360,
+        # DISABLED until soft launch (0 = off). Once the real median completion
+        # time is known, set e.g. 360 for a 6-min cutoff to re-enable.
+        speeder_threshold_seconds=0,
         # AI/paste detection: flag if total pasted chars >= this AND pasting
         # dominates typing (see check_ai_keystroke).
         ai_paste_char_threshold=120,

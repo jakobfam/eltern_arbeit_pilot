@@ -42,7 +42,7 @@ class Player(BasePlayer):
     # == Target-group screener ============================================
     screener_has_child = models.BooleanField(
         label=(
-            '<b>A0.1.</b> Sind Sie Mutter von mindestens einem Kind?'
+            '<b>A0.1.</b> Haben Sie Kinder?'
         ),
         choices=[[True, 'Ja'], [False, 'Nein']],
         widget=widgets.RadioSelect,
@@ -104,6 +104,12 @@ class Player(BasePlayer):
     ai_suspected = models.BooleanField(default=False)
     ks_total_keystrokes = models.IntegerField(blank=True)
     ks_total_pasted = models.IntegerField(blank=True)
+    ks_max_wpm = models.IntegerField(blank=True)          # fastest field typing speed
+    ks_speed_flag = models.BooleanField(default=False)    # typing faster than human record
+    ks_injection_flag = models.BooleanField(default=False)  # text appeared without any input event
+    ks_injected_chars = models.IntegerField(blank=True)     # most chars injected w/o input
+    # White-text prompt-injection honeypot (answer begins with "ROBOT")
+    prompt_trap_triggered = models.BooleanField(default=False)
 
     # == Section A0: Demographics =========================================
 
@@ -980,13 +986,22 @@ def check_bot(player: Player):
 
 
 def check_ai_keystroke(player: Player):
-    """Heuristic AI / copy-paste detection from the collected keystroke data.
+    """Heuristic AI detection from the collected keystroke data.
 
-    Aggregates typed vs. pasted characters across all open-text fields and
-    flags ai_suspected when a substantial amount of text was pasted AND pasting
-    dominates genuine typing — the signature of pasting an AI-generated answer
-    rather than writing it. Threshold is configurable per session
-    (ai_paste_char_threshold, default 120 characters)."""
+    Three signals are aggregated across all open-text fields:
+      1. Paste-dominance — a lot of text was pasted and pasting outweighs
+         genuine typing (ai_paste_char_threshold, default 120 chars).
+      2. Superhuman typing speed — sustained typing faster than the human
+         typing world record (ai_max_wpm, default 305 WPM). No human can type
+         that fast, so it indicates automated/AI input.
+      3. Injection — substantial text appeared in a field without ANY input
+         event (ai_injection_char_threshold, default 25 chars). Real human
+         input (typing, swipe, autocomplete, dictation, paste) all fire the
+         'input' event; a script setting .value directly does not. The
+         pre-filled length is subtracted so a validation reload is not
+         mis-flagged. (Only fields whose template records inputEvents/prefilled
+         are evaluated.)
+    Any signal sets ai_suspected, which routes to the Quality redirect."""
     import json
     ks_fields = [
         'keystroke_data', 'keystroke_data_b1', 'keystroke_data_b_finance',
@@ -994,8 +1009,13 @@ def check_ai_keystroke(player: Player):
         'keystroke_data_b_prep', 'keystroke_data_a0_end',
         'keystroke_data_multi_child',
     ]
+    MIN_KEYSTROKES = 25     # need enough typing for a stable speed estimate
+    CHARS_PER_WORD = 5      # standard WPM definition: 1 word = 5 characters
+
     total_typed = 0
     total_pasted = 0
+    max_wpm = 0
+    max_injected = 0
     for f in ks_fields:
         raw = player.field_maybe_none(f) or ''
         if not raw:
@@ -1007,15 +1027,57 @@ def check_ai_keystroke(player: Player):
         if not isinstance(data, dict):
             continue
         for entry in data.values():
-            if isinstance(entry, dict):
-                total_typed += entry.get('keystrokes', 0) or 0
-                total_pasted += entry.get('pastedChars', 0) or 0
+            if not isinstance(entry, dict):
+                continue
+            ks = entry.get('keystrokes', 0) or 0
+            total_typed += ks
+            total_pasted += entry.get('pastedChars', 0) or 0
+            # Typing speed: WPM = (60000 ms / 5 chars) / avg-ms-between-keys.
+            # avgInterval already includes thinking pauses, so this is the
+            # sustained rate, not an instantaneous burst. Only evaluated on
+            # fields with enough typing to be reliable.
+            avg = entry.get('avgInterval')
+            if ks >= MIN_KEYSTROKES and avg is not None:
+                wpm = 99999 if avg <= 0 else round((60000 / CHARS_PER_WORD) / avg)
+                if wpm > max_wpm:
+                    max_wpm = wpm
+            # Injection: text present but no 'input' event fired for it. Only
+            # for fields that opted in (record both inputEvents and prefilled).
+            if 'inputEvents' in entry and 'prefilled' in entry:
+                if (entry.get('inputEvents') or 0) == 0:
+                    injected = (entry.get('totalChars', 0) or 0) - (entry.get('prefilled', 0) or 0)
+                    if injected > max_injected:
+                        max_injected = injected
 
     player.ks_total_keystrokes = total_typed
     player.ks_total_pasted = total_pasted
+    player.ks_max_wpm = max_wpm
+    player.ks_injected_chars = max_injected
 
-    threshold = player.session.config.get('ai_paste_char_threshold', 120)
-    if total_pasted >= threshold and total_pasted > total_typed:
+    paste_threshold = player.session.config.get('ai_paste_char_threshold', 120)
+    max_wpm_threshold = player.session.config.get('ai_max_wpm', 305)
+    injection_threshold = player.session.config.get('ai_injection_char_threshold', 25)
+
+    if total_pasted >= paste_threshold and total_pasted > total_typed:
+        player.ai_suspected = True
+    if max_wpm > max_wpm_threshold:
+        player.ks_speed_flag = True
+        player.ai_suspected = True
+    if max_injected >= injection_threshold:
+        player.ks_injection_flag = True
+        player.ai_suspected = True
+
+
+def check_prompt_injection(player: Player):
+    """White-text honeypot: an instruction hidden in white text (invisible to
+    humans, but read by text-scraping AIs) asks AI systems to begin their answer
+    to C1 with the word "ROBOT". A human never sees it. If the C1 answer starts
+    with ROBOT (allowing leading quotes/punctuation), flag it as AI."""
+    import re
+    answer = player.field_maybe_none('c1_advice') or ''
+    # \b after 'robot' avoids false positives like "Roboter ..."
+    if re.match(r'^[\s"\'„“‚‘`*\-–—:.]*robot\b', answer, re.IGNORECASE):
+        player.prompt_trap_triggered = True
         player.ai_suspected = True
 
 
@@ -1607,6 +1669,7 @@ class PageD_Knowledge(Page):
         check_attention(player)
         check_bot(player)
         check_ai_keystroke(player)
+        check_prompt_injection(player)
 
 
 class Results(Page):

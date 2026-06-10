@@ -32,6 +32,12 @@ SESSION_CONFIGS = [
         # AI/paste detection: flag if total pasted chars >= this AND pasting
         # dominates typing (see check_ai_keystroke).
         ai_paste_char_threshold=120,
+        # AI/typing-speed detection: flag if sustained typing exceeds this WPM.
+        # 305 WPM is the human typing world record — faster = automated input.
+        ai_max_wpm=305,
+        # AI/injection detection: flag if >= this many chars appear in a field
+        # with zero 'input' events (text set programmatically, not entered).
+        ai_injection_char_threshold=25,
     ),
     dict(
         name='pilot_survey',

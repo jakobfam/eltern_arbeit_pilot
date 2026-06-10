@@ -165,8 +165,20 @@ class Player(BasePlayer):
         blank=True,
     )
 
+    a0_own_gender = models.IntegerField(
+        label='<b>A0.6.</b> Welches Geschlecht haben Sie?',
+        choices=[
+            [1, 'Männlich'],
+            [2, 'Weiblich'],
+            [3, 'Divers'],
+            [4, 'Möchte ich nicht angeben'],
+        ],
+        widget=widgets.RadioSelect,
+        blank=True,
+    )
+
     a0_partner_gender = models.IntegerField(
-        label='<b>A0.6.</b> Welches Geschlecht hat der andere Elternteil Ihres ersten Kindes?',
+        label='<b>A0.7.</b> Welches Geschlecht hat der andere Elternteil Ihres ersten Kindes?',
         choices=[
             [1, 'Männlich'],
             [2, 'Weiblich'],
@@ -178,7 +190,7 @@ class Player(BasePlayer):
     )
 
     a0_partner_custody = models.IntegerField(
-        label='<b>A0.7.</b> Ist der andere Elternteil Ihres ersten Kindes derzeit sorgeberechtigt?',
+        label='<b>A0.8.</b> Ist der andere Elternteil Ihres ersten Kindes derzeit sorgeberechtigt?',
         choices=[
             [1, 'Ja'],
             [2, 'Nein'],
@@ -216,7 +228,7 @@ class Player(BasePlayer):
 
     a0_personal_income = models.IntegerField(
         label=(
-            '<b>A0.9.</b> Wie hoch ist <b>Ihr persönliches</b> ungefähres '
+            '<b>A0.10.</b> Wie hoch ist <b>Ihr persönliches</b> ungefähres '
             'jährliches Bruttoeinkommen?'
         ),
         choices=[
@@ -233,7 +245,7 @@ class Player(BasePlayer):
 
     a0_household_income = models.IntegerField(
         label=(
-            '<b>A0.10.</b> Und wie hoch ist das ungefähre jährliche Bruttoeinkommen '
+            '<b>A0.11.</b> Und wie hoch ist das ungefähre jährliche Bruttoeinkommen '
             '<b>Ihres gesamten Haushalts</b> (alle Einkommen zusammen)?'
         ),
         choices=[
@@ -250,7 +262,7 @@ class Player(BasePlayer):
     )
 
     a0_3_activity = models.IntegerField(
-        label='<b>A0.11.</b> Was ist Ihre aktuelle Haupttätigkeit?',
+        label='<b>A0.12.</b> Was ist Ihre aktuelle Haupttätigkeit?',
         choices=[
             [1, 'Vollzeitbeschäftigt'],
             [2, 'Teilzeitbeschäftigt'],
@@ -271,7 +283,7 @@ class Player(BasePlayer):
     )
 
     a0_3b_sector = models.IntegerField(
-        label='<b>A0.11b.</b> In welchem Bereich sind oder waren Sie erwerbstätig?',
+        label='<b>A0.12b.</b> In welchem Bereich sind oder waren Sie erwerbstätig?',
         choices=[
             [1, 'Land- und Forstwirtschaft, Bergbau, Energie-/Wasserversorgung'],
             [2, 'Produzierendes Gewerbe / Industrie (Verarbeitung, Bau)'],
@@ -297,7 +309,7 @@ class Player(BasePlayer):
 
     a0_5_thoughts_wish = models.LongStringField(
         label=(
-            '<b>A0.8.</b> Wenn Sie heute zurückblicken: Was sind die '
+            '<b>A0.9.</b> Wenn Sie heute zurückblicken: Was sind die '
             '<b>drei wichtigsten Dinge</b>, mit denen Sie sich aus heutiger '
             'Sicht gerne schon <b>vor der Geburt</b> beschäftigt hätten?'
         ),
@@ -1222,6 +1234,7 @@ class PageA0(Page):
         'a0_birth_year_respondent',
         'a0_relationship',
         'a0_relationship_other',
+        'a0_own_gender',
         'a0_partner_gender',
         'a0_partner_custody',
         'hidden_field',
@@ -1231,7 +1244,7 @@ class PageA0(Page):
     # Fields that become required once the respondent confirms she is a mother.
     REQUIRED_IF_MOTHER = [
         'a0_1_birth_year', 'a0_num_children',
-        'a0_birth_year_respondent', 'a0_relationship',
+        'a0_birth_year_respondent', 'a0_relationship', 'a0_own_gender',
     ]
 
     @staticmethod

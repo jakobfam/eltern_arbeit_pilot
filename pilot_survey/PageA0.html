@@ -34,6 +34,9 @@
   {{ formfield 'a0_relationship_other' }}
 </div>
 
+{# A0.6 — respondent's own gender (always shown, asked before the partner's gender) #}
+{{ formfield 'a0_own_gender' }}
+
 {# Partner fields (about the other parent) — child-related: shown when screener = Ja AND not Single #}
 <div id="partner-block" class="child-gated" style="display:none">
   {{ formfield 'a0_partner_gender' }}

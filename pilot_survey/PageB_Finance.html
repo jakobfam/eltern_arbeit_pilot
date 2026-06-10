@@ -95,11 +95,11 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-  // Toggle B2b "Sonstiges" text field (show when value = 8)
+  // Toggle B2b "Sonstiges" text field (show when value = 9)
   function toggleB2bOther() {
     const selected = document.querySelector('input[name="b2b_salient_moment"]:checked');
     const val = selected ? parseInt(selected.value) : null;
-    document.getElementById('b2b-other-block').style.display = (val === 8) ? '' : 'none';
+    document.getElementById('b2b-other-block').style.display = (val === 9) ? '' : 'none';
   }
   toggleB2bOther();
   document.querySelectorAll('input[name="b2b_salient_moment"]').forEach(

@@ -14,8 +14,7 @@ class C(BaseConstants):
     PLAYERS_PER_GROUP = None
     NUM_ROUNDS = 1
 
-    # Correct answers for attention checks
-    CORRECT_AC1 = 2   # attention_check_1: "FAZ"
+    # Correct answer for the attention check
     CORRECT_AC2 = 4   # attention_check_2: "Selten"
 
 
@@ -50,17 +49,8 @@ class Player(BasePlayer):
     # True if the respondent failed the target-group screener (no child).
     screened_out = models.BooleanField(default=False)
 
-    # == Attention checks =================================================
+    # == Attention check ==================================================
     attention = models.BooleanField(default=True)
-    attention_check_1 = models.IntegerField(
-        label=(
-            '<b>A0.12.</b> Diese Frage testet Ihre Aufmerksamkeit. '
-            'Bitte wählen Sie die Antwort "FAZ" aus. '
-            'Von welchem Medium beziehen Sie Ihre Nachrichten?'
-        ),
-        choices=[[1, 'Bild'], [2, 'FAZ'], [3, 'Zeit'], [4, 'Focus'], [5, 'Andere']],
-        widget=widgets.RadioSelect,
-    )
     attention_check_2 = models.IntegerField(
         label=(
             'Viele Eltern berichten, dass sie sich nach der Geburt '
@@ -195,16 +185,6 @@ class Player(BasePlayer):
             [1, 'Ja'],
             [2, 'Nein'],
             [3, 'Möchte ich nicht angeben'],
-        ],
-        widget=widgets.RadioSelect,
-        blank=True,
-    )
-
-    a0_father_in_family = models.IntegerField(
-        label='<b>A0.7.</b> Ist der andere Elternteil noch Teil Ihres Haushalts / Ihrer Familie?',
-        choices=[
-            [1, 'Ja'],
-            [2, 'Nein'],
         ],
         widget=widgets.RadioSelect,
         blank=True,
@@ -766,9 +746,9 @@ class Player(BasePlayer):
     # B2b: Salient moment timing
     b2b_salient_moment = models.IntegerField(
         label=(
-            '<b>B2b.</b> Wann wurde Ihnen zum ersten Mal wirklich bewusst, welche '
-            'langfristigen finanziellen Konsequenzen die Mutterschaft für Sie '
-            'persönlich hat?'
+            '<b>B2b.</b> Wann wurde Ihnen – falls überhaupt – zum ersten Mal '
+            'bewusst, welche langfristigen finanziellen Konsequenzen die '
+            'Mutterschaft für Sie persönlich hat?'
         ),
         choices=[
             [1, 'Schon während der Schwangerschaft'],
@@ -778,7 +758,8 @@ class Player(BasePlayer):
             [5, 'Als ich meine erste Steuererklärung nach der Geburt gemacht habe'],
             [6, 'Bei einem einschneidenden Lebensereignis (Trennung, Krankheit, Jobverlust)'],
             [7, 'Das ist mir noch nicht wirklich bewusst geworden'],
-            [8, 'Sonstiges'],
+            [8, 'Aus meiner Sicht hat die Mutterschaft für mich keine nennenswerten finanziellen Konsequenzen'],
+            [9, 'Sonstiges'],
         ],
         widget=widgets.RadioSelect,
     )

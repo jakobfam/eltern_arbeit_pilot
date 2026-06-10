@@ -1189,9 +1189,9 @@ class Intro(Page):
         import time, random
         player.time_started = time.time()
         capture_panel_id(player)
-        # Randomly assign survey block (1 or 2) for split design
-        # Block 3 = test mode (all pages shown) — change to random.choice([1, 2]) for production
-        block = 3
+        # Randomly assign survey block (1 or 2) for the split design (production).
+        # Block 3 = test mode (all pages shown) — set block = 3 to test everything.
+        block = random.choice([1, 2])
         player.participant.vars['survey_block'] = block
         player.survey_block = block
 

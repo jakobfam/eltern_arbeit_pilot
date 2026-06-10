@@ -42,7 +42,7 @@ class Player(BasePlayer):
     # == Target-group screener ============================================
     screener_has_child = models.BooleanField(
         label=(
-            '<b>S1.</b> Sind Sie Mutter von mindestens einem Kind?'
+            '<b>A0.1.</b> Sind Sie Mutter von mindestens einem Kind?'
         ),
         choices=[[True, 'Ja'], [False, 'Nein']],
         widget=widgets.RadioSelect,
@@ -100,18 +100,25 @@ class Player(BasePlayer):
     keystroke_data_a0_end = models.LongStringField(blank=True, default='')
     keystroke_data_multi_child = models.LongStringField(blank=True, default='')
 
+    # == AI / copy-paste detection (computed at the end from keystrokes) ===
+    ai_suspected = models.BooleanField(default=False)
+    ks_total_keystrokes = models.IntegerField(blank=True)
+    ks_total_pasted = models.IntegerField(blank=True)
+
     # == Section A0: Demographics =========================================
 
     a0_1_birth_year = models.IntegerField(
-        label='<b>A0.1.</b> In welchem Jahr wurde Ihr erstes Kind geboren?',
+        label='<b>A0.2.</b> In welchem Jahr wurde Ihr erstes Kind geboren?',
         min=1980,
         max=2026,
+        blank=True,
     )
 
     a0_birth_year_respondent = models.IntegerField(
-        label='<b>A0.2.</b> In welchem Jahr wurden Sie geboren?',
+        label='<b>A0.4.</b> In welchem Jahr wurden Sie geboren?',
         min=1970,
         max=2008,
+        blank=True,
     )
 
     a0_num_children = models.IntegerField(
@@ -123,6 +130,7 @@ class Player(BasePlayer):
             [4, '4 oder mehr'],
         ],
         widget=widgets.RadioSelectHorizontal,
+        blank=True,
     )
 
     a0_other_children_ages = models.StringField(
@@ -131,7 +139,7 @@ class Player(BasePlayer):
     )
 
     a0_relationship = models.IntegerField(
-        label='<b>A0.4.</b> Wie ist Ihr aktueller Beziehungsstatus?',
+        label='<b>A0.5.</b> Wie ist Ihr aktueller Beziehungsstatus?',
         choices=[
             [1, 'Single'],
             [2, 'In einer Beziehung'],
@@ -139,6 +147,7 @@ class Player(BasePlayer):
             [4, 'Sonstiges'],
         ],
         widget=widgets.RadioSelect,
+        blank=True,
     )
 
     a0_relationship_other = models.StringField(
@@ -147,7 +156,7 @@ class Player(BasePlayer):
     )
 
     a0_partner_gender = models.IntegerField(
-        label='<b>A0.5.</b> Welches Geschlecht hat der andere Elternteil Ihres ersten Kindes?',
+        label='<b>A0.6.</b> Welches Geschlecht hat der andere Elternteil Ihres ersten Kindes?',
         choices=[
             [1, 'Männlich'],
             [2, 'Weiblich'],
@@ -159,7 +168,7 @@ class Player(BasePlayer):
     )
 
     a0_partner_custody = models.IntegerField(
-        label='<b>A0.6.</b> Ist der andere Elternteil Ihres ersten Kindes derzeit sorgeberechtigt?',
+        label='<b>A0.7.</b> Ist der andere Elternteil Ihres ersten Kindes derzeit sorgeberechtigt?',
         choices=[
             [1, 'Ja'],
             [2, 'Nein'],
@@ -197,7 +206,7 @@ class Player(BasePlayer):
 
     a0_personal_income = models.IntegerField(
         label=(
-            '<b>A0.8.</b> Wie hoch ist <b>Ihr persönliches</b> ungefähres '
+            '<b>A0.9.</b> Wie hoch ist <b>Ihr persönliches</b> ungefähres '
             'jährliches Bruttoeinkommen?'
         ),
         choices=[
@@ -208,14 +217,13 @@ class Player(BasePlayer):
             [5, '70.000 - 100.000 Euro'],
             [6, '100.000 - 175.000 Euro'],
             [7, 'Über 175.000 Euro'],
-            [8, 'Kein eigenes Einkommen'],
         ],
         widget=widgets.RadioSelect,
     )
 
     a0_household_income = models.IntegerField(
         label=(
-            '<b>A0.9.</b> Und wie hoch ist das ungefähre jährliche Bruttoeinkommen '
+            '<b>A0.10.</b> Und wie hoch ist das ungefähre jährliche Bruttoeinkommen '
             '<b>Ihres gesamten Haushalts</b> (alle Einkommen zusammen)?'
         ),
         choices=[
@@ -232,7 +240,7 @@ class Player(BasePlayer):
     )
 
     a0_3_activity = models.IntegerField(
-        label='<b>A0.10.</b> Was ist Ihre aktuelle Haupttätigkeit?',
+        label='<b>A0.11.</b> Was ist Ihre aktuelle Haupttätigkeit?',
         choices=[
             [1, 'Vollzeitbeschäftigt'],
             [2, 'Teilzeitbeschäftigt'],
@@ -253,7 +261,7 @@ class Player(BasePlayer):
     )
 
     a0_3b_sector = models.IntegerField(
-        label='<b>A0.10b.</b> In welchem Bereich sind oder waren Sie erwerbstätig?',
+        label='<b>A0.11b.</b> In welchem Bereich sind oder waren Sie erwerbstätig?',
         choices=[
             [1, 'Land- und Forstwirtschaft, Bergbau, Energie-/Wasserversorgung'],
             [2, 'Produzierendes Gewerbe / Industrie (Verarbeitung, Bau)'],
@@ -279,7 +287,7 @@ class Player(BasePlayer):
 
     a0_5_thoughts_wish = models.LongStringField(
         label=(
-            '<b>A0.7.</b> Was sind die <b>drei wichtigsten Themen</b>, '
+            '<b>A0.8.</b> Was sind die <b>drei wichtigsten Themen</b>, '
             'mit denen Sie sich gerne schon <b>vor der Geburt</b> '
             'beschäftigt hätten?'
         ),
@@ -757,10 +765,10 @@ class Player(BasePlayer):
         blank=True,
     )
 
-    # B2d: Difference first vs. further child (only if num_children > 1; Block 2)
+    # B2f: Difference first vs. further child (only if num_children > 1; Block 2)
     b_multi_child_difference = models.LongStringField(
         label=(
-            '<b>B2d.</b> Sie haben angegeben, mehr als ein Kind zu haben. '
+            '<b>B2f.</b> Sie haben angegeben, mehr als ein Kind zu haben. '
             'Was war der größte finanzielle Unterschied zwischen dem ersten '
             'und dem zweiten Kind?'
         ),
@@ -930,8 +938,8 @@ class Player(BasePlayer):
         ),
         choices=[
             [1, 'Unter 50 Euro pro Monat'],
-            [2, '50 - 100 Euro pro Monat'],
-            [3, '150 - 250 Euro pro Monat'],
+            [2, '50 - 150 Euro pro Monat'],
+            [3, '150 - 300 Euro pro Monat'],
             [4, '300 - 500 Euro pro Monat'],
             [5, 'Weiß ich nicht / bin nicht sicher'],
         ],
@@ -971,6 +979,46 @@ def check_bot(player: Player):
         player.is_bot = True
 
 
+def check_ai_keystroke(player: Player):
+    """Heuristic AI / copy-paste detection from the collected keystroke data.
+
+    Aggregates typed vs. pasted characters across all open-text fields and
+    flags ai_suspected when a substantial amount of text was pasted AND pasting
+    dominates genuine typing — the signature of pasting an AI-generated answer
+    rather than writing it. Threshold is configurable per session
+    (ai_paste_char_threshold, default 120 characters)."""
+    import json
+    ks_fields = [
+        'keystroke_data', 'keystroke_data_b1', 'keystroke_data_b_finance',
+        'keystroke_data_a3', 'keystroke_data_c', 'keystroke_data_thoughts',
+        'keystroke_data_b_prep', 'keystroke_data_a0_end',
+        'keystroke_data_multi_child',
+    ]
+    total_typed = 0
+    total_pasted = 0
+    for f in ks_fields:
+        raw = player.field_maybe_none(f) or ''
+        if not raw:
+            continue
+        try:
+            data = json.loads(raw)
+        except (ValueError, TypeError):
+            continue
+        if not isinstance(data, dict):
+            continue
+        for entry in data.values():
+            if isinstance(entry, dict):
+                total_typed += entry.get('keystrokes', 0) or 0
+                total_pasted += entry.get('pastedChars', 0) or 0
+
+    player.ks_total_keystrokes = total_typed
+    player.ks_total_pasted = total_pasted
+
+    threshold = player.session.config.get('ai_paste_char_threshold', 120)
+    if total_pasted >= threshold and total_pasted > total_typed:
+        player.ai_suspected = True
+
+
 def capture_panel_id(player: Player):
     """Store the external panel ID (Bilendi panelist ID / Prolific PID).
 
@@ -993,7 +1041,7 @@ def is_active(player: Player):
 def get_redirect(player: Player):
     """Resolve (redirect_url, status) for the terminal page based on outcome.
 
-    Priority: no-consent -> screen-out -> quality fail -> speeder -> complete.
+    Priority: no-consent -> screen-out -> quality/AI fail -> speeder -> complete.
     URLs come from the session config; %SPM_PANELIST_ID% is replaced with the
     captured panel ID. Falls back gracefully for the Prolific config, which
     only defines link_completed / link_no_consent / link_no_attention.
@@ -1014,8 +1062,10 @@ def get_redirect(player: Player):
         return resolve('link_screen_out', 'link_no_consent'), 'no_consent'
     if player.participant.vars.get('screened_out', False):
         return resolve('link_screen_out', 'link_no_consent'), 'screen_out'
-    if player.is_bot or not player.attention:
-        return resolve('link_quality', 'link_no_attention'), 'quality'
+    if player.is_bot or not player.attention or player.ai_suspected:
+        # AI/paste-suspected uses a dedicated link if Bilendi provides one,
+        # otherwise the standard quality redirect.
+        return resolve('link_ai', 'link_quality', 'link_no_attention'), 'quality'
     # Speeder: only if a speeder link is configured and a threshold is crossed.
     speeder_url = resolve('link_speeder')
     threshold = session.config.get('speeder_threshold_seconds', 0)
@@ -1084,39 +1134,32 @@ class Intro(Page):
         player.survey_block = block
 
 
-class PageScreener(Page):
-    """Target-group screener (first question): respondent must be a mother of
-    at least one child. 'Nein' -> screen-out redirect. Kept first so the
-    screen-out always happens well within Bilendi's 2-minute window."""
-    form_model = 'player'
-    form_fields = ['screener_has_child']
-
-    @staticmethod
-    def is_displayed(player: Player):
-        return is_active(player)
-
-    @staticmethod
-    def before_next_page(player: Player, timeout_happened):
-        # screener_has_child is required (not blank); False means no child.
-        if not player.screener_has_child:
-            player.screened_out = True
-            player.participant.vars['screened_out'] = True
-
-
 class PageA0(Page):
-    """Section A0: Demographics + bot field."""
+    """Section A0: Screener (first question) + demographics + bot field.
+
+    The screener (A0.1 "Sind Sie Mutter ...?") is asked first; the
+    child-related questions are revealed client-side only when the answer is
+    'Ja'. 'Nein' is allowed to submit and triggers the screen-out in
+    before_next_page (well within Bilendi's 2-minute window)."""
     form_model = 'player'
     form_fields = [
+        'screener_has_child',
         'a0_1_birth_year',
-        'a0_birth_year_respondent',
         'a0_num_children',
         'a0_other_children_ages',
+        'a0_birth_year_respondent',
         'a0_relationship',
         'a0_relationship_other',
         'a0_partner_gender',
         'a0_partner_custody',
         'hidden_field',
         'keystroke_data',
+    ]
+
+    # Fields that become required once the respondent confirms she is a mother.
+    REQUIRED_IF_MOTHER = [
+        'a0_1_birth_year', 'a0_num_children',
+        'a0_birth_year_respondent', 'a0_relationship',
     ]
 
     @staticmethod
@@ -1128,9 +1171,17 @@ class PageA0(Page):
         pn, tp, pct = get_progress(player, PageA0)
         return dict(page_num=pn, total_pages=tp, progress_pct=pct)
 
-
     @staticmethod
     def error_message(player, values):
+        # 'Nein' -> not in target group: allow submit (screen-out happens in
+        # before_next_page); skip validation of the hidden child questions.
+        if not values.get('screener_has_child'):
+            return
+        # Confirmed mother: the revealed questions are required (they are
+        # blank=True at model level so we enforce them here in German).
+        for f in PageA0.REQUIRED_IF_MOTHER:
+            if values.get(f) is None:
+                return 'Bitte beantworten Sie alle Fragen auf dieser Seite.'
         child_year = values.get('a0_1_birth_year')
         resp_year = values.get('a0_birth_year_respondent')
         if child_year and resp_year:
@@ -1139,6 +1190,13 @@ class PageA0(Page):
                     'Bitte prüfen Sie Ihre Angaben: Das Geburtsjahr Ihres Kindes '
                     'liegt vor Ihrem 14. Lebensjahr.'
                 )
+
+    @staticmethod
+    def before_next_page(player: Player, timeout_happened):
+        # 'Nein' on the screener -> screen out of the target group.
+        if not player.screener_has_child:
+            player.screened_out = True
+            player.participant.vars['screened_out'] = True
 
 
 class PageA0_Thoughts(Page):
@@ -1366,7 +1424,7 @@ class PageB_Mechanism(Page):
 
 
 class PageB_MultiChild(Page):
-    """B2d: Open-ended — biggest financial difference between first and second
+    """B2f: Open-ended — biggest financial difference between first and second
     child. Block 2 only, and only if the respondent has more than one child."""
     form_model = 'player'
     form_fields = ['b_multi_child_difference', 'keystroke_data_multi_child']
@@ -1548,6 +1606,7 @@ class PageD_Knowledge(Page):
             player.time_to_complete = time.time() - player.time_started
         check_attention(player)
         check_bot(player)
+        check_ai_keystroke(player)
 
 
 class Results(Page):
@@ -1574,7 +1633,6 @@ class Results(Page):
 # Everyone: B1, B3-B5, C, D, demographics
 page_sequence = [
     Intro,
-    PageScreener,
     PageA0,
     PageA0_Thoughts,
     PageA0b_Sorgen,
@@ -1582,7 +1640,7 @@ page_sequence = [
     PageB_FWB,          # Block 1 only
     PageB_Finance,      # Block 2 only (B2 + B2b)
     PageB_Mechanism,    # Block 2 only (B2c)
-    PageB_MultiChild,   # Block 2 only (B2d) — only if num_children > 1
+    PageB_MultiChild,   # Block 2 only (B2f) — only if num_children > 1
     PageB_Prep,         # Everyone (B3, B4, B5, B5b)
     PageA_Work,         # Block 1 only (E1, E2)
     PageA3_Ranking,     # Block 1 only (E3)

@@ -76,7 +76,7 @@
       <span class="rank-badge"></span>
       <span class="rank-label">Sonstiges:</span>
     </div>
-    <div class="mt-1 ms-4">
+    <div id="a3-other-text-block" class="mt-1 ms-4" style="display:none">
       {{ formfield 'a3_other_text' }}
     </div>
   </div>
@@ -150,9 +150,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const items = [
       ...document.querySelectorAll('#' + containerId + ' .rank-item'),
     ];
+    let otherField = null;
     if (otherContainerId) {
-      const otherItem = document.querySelector('#' + otherContainerId + ' .rank-item');
-      if (otherItem) items.push(otherItem);
+      const otherItem = document.getElementById(otherContainerId);
+      if (otherItem) { items.push(otherItem); otherField = otherItem.dataset.field; }
     }
 
     let ranked = [];
@@ -192,6 +193,12 @@ document.addEventListener('DOMContentLoaded', function () {
         el.querySelector('.rank-badge').textContent = (i + 1);
         setHiddenValue(field, i + 1);
       });
+
+      // Show the "Sonstiges" free-text only when the Sonstiges item is ranked
+      if (otherContainerId && otherField) {
+        var otherBlk = document.getElementById(otherContainerId.replace('-item', '-text-block'));
+        if (otherBlk) otherBlk.style.display = (ranked.indexOf(otherField) !== -1) ? '' : 'none';
+      }
     }
   }
 

@@ -1,20 +1,12 @@
 from os import environ
 
+# NOTE: The Bilendi config is listed FIRST so it is the default selection when
+# creating a session in the room. If you accidentally run the Prolific config,
+# the end-of-survey redirect goes to Prolific, not Bilendi.
 SESSION_CONFIGS = [
     dict(
-        name='pilot_survey',
-        display_name='Pilotstudie – Was sollten werdende Eltern wissen?',
-        app_sequence=['pilot_survey'],
-        num_demo_participants=1,
-        prolific=True,
-        # Prolific completion URLs — replace these with the actual URLs from the Prolific study setup
-        link_completed='https://app.prolific.com/submissions/complete?cc=C1N5RAH6',
-        link_no_consent='https://app.prolific.com/submissions/complete?cc=C11JQHIK',
-        link_no_attention='https://app.prolific.com/submissions/complete?cc=C1P0U9NC',
-    ),
-    dict(
         name='pilot_survey_bilendi',
-        display_name='Pilotstudie – Bilendi Panel',
+        display_name='Pilotstudie – Bilendi Panel (LIVE)',
         app_sequence=['pilot_survey'],
         num_demo_participants=1,
         prolific=False,
@@ -30,9 +22,27 @@ SESSION_CONFIGS = [
         link_speeder='https://survey.maximiles.com/speeder?p=168504&m=%SPM_PANELIST_ID%',
         link_duplicate='https://survey.maximiles.com/duplicate?p=168504&m=%SPM_PANELIST_ID%',
         link_geoip='https://survey.maximiles.com/geoip?p=168504&m=%SPM_PANELIST_ID%',
+        # Optional dedicated AI/quality redirect. If Bilendi provides a specific
+        # link for AI-flagged respondents, set it here; otherwise AI-flagged
+        # cases fall back to link_quality above.
+        # link_ai='https://survey.maximiles.com/quality?p=168504&m=%SPM_PANELIST_ID%',
         # Speeder threshold: completes faster than this (seconds) -> speeder.
         # LOI is 15 min; we flag anything under 6 min (360 s).
         speeder_threshold_seconds=360,
+        # AI/paste detection: flag if total pasted chars >= this AND pasting
+        # dominates typing (see check_ai_keystroke).
+        ai_paste_char_threshold=120,
+    ),
+    dict(
+        name='pilot_survey',
+        display_name='Pilotstudie – Prolific (alt)',
+        app_sequence=['pilot_survey'],
+        num_demo_participants=1,
+        prolific=True,
+        # Prolific completion URLs — replace these with the actual URLs from the Prolific study setup
+        link_completed='https://app.prolific.com/submissions/complete?cc=C1N5RAH6',
+        link_no_consent='https://app.prolific.com/submissions/complete?cc=C11JQHIK',
+        link_no_attention='https://app.prolific.com/submissions/complete?cc=C1P0U9NC',
     ),
 ]
 

@@ -11,15 +11,22 @@
   Diese helfen uns zu verstehen, wen wir befragen.
 </p>
 
-{{ formfield 'a0_1_birth_year' }}
-{{ formfield 'a0_birth_year_respondent' }}
-{{ formfield 'a0_num_children' }}
+{# A0.1 — Screener (always shown, asked first) #}
+{{ formfield 'screener_has_child' }}
 
-{# Conditional: other children ages — shown when num_children > 1 #}
-<div id="other-children-block" style="display:none">
-  {{ formfield 'a0_other_children_ages' }}
+{# Child-related questions — revealed only when the screener is answered "Ja" #}
+<div class="child-gated" style="display:none">
+  {{ formfield 'a0_1_birth_year' }}
+  {{ formfield 'a0_num_children' }}
+
+  {# Conditional: other children ages — shown when num_children > 1 #}
+  <div id="other-children-block" style="display:none">
+    {{ formfield 'a0_other_children_ages' }}
+  </div>
 </div>
 
+{# Non-child demographics — always shown #}
+{{ formfield 'a0_birth_year_respondent' }}
 {{ formfield 'a0_relationship' }}
 
 {# Conditional: relationship other text #}
@@ -27,8 +34,8 @@
   {{ formfield 'a0_relationship_other' }}
 </div>
 
-{# Partner fields — hidden when Single #}
-<div id="partner-block">
+{# Partner fields (about the other parent) — child-related: shown when screener = Ja AND not Single #}
+<div id="partner-block" class="child-gated" style="display:none">
   {{ formfield 'a0_partner_gender' }}
   {{ formfield 'a0_partner_custody' }}
 </div>
@@ -48,17 +55,21 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
+  // ── Is the screener answered "Ja"? ──
+  // Be tolerant of how oTree serializes the BooleanField value ("True"/"true"/"1").
+  function screenerIsYes() {
+    const sel = document.querySelector('input[name="screener_has_child"]:checked');
+    if (!sel) return false;
+    const v = String(sel.value).toLowerCase();
+    return v === 'true' || v === '1';
+  }
+
   // ── Toggle: other children ages (show when num_children > 1) ──
   function toggleOtherChildren() {
     const selected = document.querySelector('input[name="a0_num_children"]:checked');
     const val = selected ? parseInt(selected.value) : null;
     document.getElementById('other-children-block').style.display = (val && val > 1) ? '' : 'none';
   }
-
-  toggleOtherChildren();
-  document.querySelectorAll('input[name="a0_num_children"]').forEach(
-    r => r.addEventListener('change', toggleOtherChildren)
-  );
 
   // ── Toggle: relationship other text (show when Sonstiges = 4) ──
   function toggleRelationshipOther() {
@@ -67,22 +78,38 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('relationship-other-block').style.display = (val === 4) ? '' : 'none';
   }
 
-  toggleRelationshipOther();
-  document.querySelectorAll('input[name="a0_relationship"]').forEach(
-    r => r.addEventListener('change', toggleRelationshipOther)
-  );
+  // ── Master toggle: reveal child-related questions only when screener = Ja ──
+  function toggleChildGated() {
+    const show = screenerIsYes();
+    document.querySelectorAll('.child-gated').forEach(function (el) {
+      // partner-block has an extra condition (handled in togglePartner)
+      if (el.id === 'partner-block') return;
+      el.style.display = show ? '' : 'none';
+    });
+    togglePartner();
+  }
 
-  // ── Toggle: partner block (hide when Single = 1) ──
+  // ── Toggle: partner block (show when screener = Ja AND relationship != Single) ──
   function togglePartner() {
     const selected = document.querySelector('input[name="a0_relationship"]:checked');
     const val = selected ? parseInt(selected.value) : null;
     const isSingle = (val === 1);
-    document.getElementById('partner-block').style.display = isSingle ? 'none' : '';
+    document.getElementById('partner-block').style.display = (screenerIsYes() && !isSingle) ? '' : 'none';
   }
 
-  togglePartner();
+  // Initialize on load (restores state after a validation error)
+  toggleChildGated();
+  toggleOtherChildren();
+  toggleRelationshipOther();
+
+  document.querySelectorAll('input[name="screener_has_child"]').forEach(
+    r => r.addEventListener('change', toggleChildGated)
+  );
+  document.querySelectorAll('input[name="a0_num_children"]').forEach(
+    r => r.addEventListener('change', toggleOtherChildren)
+  );
   document.querySelectorAll('input[name="a0_relationship"]').forEach(
-    r => r.addEventListener('change', togglePartner)
+    r => { r.addEventListener('change', toggleRelationshipOther); r.addEventListener('change', togglePartner); }
   );
 
   // ── Comprehensive keystroke / AI detection ──
@@ -153,19 +180,16 @@ document.addEventListener('DOMContentLoaded', function () {
     var form = document.querySelector('form');
     if (form) {
       form.addEventListener('submit', function() {
-        // Finalize
         fields.forEach(function(field) {
           var name = field.name || field.id || 'unknown';
           var entry = ksData[name];
           if (entry) {
             entry.endTime = Date.now();
             entry.totalChars = field.value.length;
-            // Compute avg interval
             if (entry.intervals.length > 0) {
               var sum = entry.intervals.reduce(function(a, b) { return a + b; }, 0);
               entry.avgInterval = Math.round(sum / entry.intervals.length);
             }
-            // Remove raw intervals to save space
             delete entry.intervals;
             delete entry.lastKeyTime;
           }

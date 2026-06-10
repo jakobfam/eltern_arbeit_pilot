@@ -95,7 +95,7 @@
     <label class="alloc-label">Sonstiges:</label>
     <input type="number" class="form-control alloc-input" min="0" max="100" value="0">
   </div>
-  <div class="mt-1 ms-4">
+  <div id="a0b-other-text-block" class="mt-1 ms-4" style="display:none">
     {{ formfield 'a0b_other_text' }}
   </div>
 </div>
@@ -130,6 +130,13 @@
     text-align: center;
     font-weight: 600;
     font-size: 1rem;
+  }
+  /* Keep the running counter visible while scrolling through the items */
+  #pts-counter {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   }
   /* Color the counter based on state */
   #pts-counter.exact { background-color: #d1e7dd; border-color: #badbcc; }
@@ -185,6 +192,13 @@ document.addEventListener('DOMContentLoaded', function () {
       var hidden = document.querySelector('[name="' + fieldName + '"]');
       if (hidden) hidden.value = val;
     });
+
+    // Show the "Sonstiges" free-text field only when points are allocated to it
+    var otherInput = document.querySelector('.alloc-item[data-field="a0b_pts_other"] .alloc-input');
+    var otherTextBlock = document.getElementById('a0b-other-text-block');
+    if (otherInput && otherTextBlock) {
+      otherTextBlock.style.display = (parseInt(otherInput.value) || 0) > 0 ? '' : 'none';
+    }
 
     usedEl.textContent = total;
     remainEl.textContent = (100 - total);

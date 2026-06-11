@@ -37,8 +37,11 @@ SESSION_CONFIGS = [
         # 305 WPM is the human typing world record — faster = automated input.
         ai_max_wpm=305,
         # AI/injection detection: flag if >= this many chars appear in a field
-        # with zero 'input' events (text set programmatically, not entered).
+        # with <= ai_injection_max_input_events 'input' events and no paste
+        # (text set programmatically, not entered). An AI filling a field fires
+        # ~1 input event; a human typing/swiping fires one per keystroke/word.
         ai_injection_char_threshold=25,
+        ai_injection_max_input_events=2,
     ),
     dict(
         name='pilot_survey',

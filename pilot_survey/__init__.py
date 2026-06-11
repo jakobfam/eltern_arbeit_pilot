@@ -991,13 +991,14 @@ def check_ai_keystroke(player: Player):
       2. Superhuman typing speed — sustained typing faster than the human
          typing world record (ai_max_wpm, default 305 WPM). No human can type
          that fast, so it indicates automated/AI input.
-      3. Injection — substantial text appeared in a field without ANY input
-         event (ai_injection_char_threshold, default 25 chars). Real human
-         input (typing, swipe, autocomplete, dictation, paste) all fire the
-         'input' event; a script setting .value directly does not. The
-         pre-filled length is subtracted so a validation reload is not
-         mis-flagged. (Only fields whose template records inputEvents/prefilled
-         are evaluated.)
+      3. Injection — substantial text appeared in a field with (almost) no
+         'input' events and no paste (>= ai_injection_char_threshold chars,
+         default 25, with <= ai_injection_max_input_events events, default 2).
+         Human input — typing, mobile swipe, autocomplete, dictation — fires
+         ~one 'input' event per keystroke/word, so 25+ chars never arrive in
+         <=2 events; an AI setting .value fires 1 (or 0). The pre-filled length
+         is subtracted so a validation reload is not mis-flagged. (Only fields
+         whose template records inputEvents/prefilled are evaluated.)
     Any signal sets ai_suspected, which routes to the Quality redirect."""
     import json
     ks_fields = [
@@ -1008,6 +1009,7 @@ def check_ai_keystroke(player: Player):
     ]
     MIN_KEYSTROKES = 25     # need enough typing for a stable speed estimate
     CHARS_PER_WORD = 5      # standard WPM definition: 1 word = 5 characters
+    max_input_events = player.session.config.get('ai_injection_max_input_events', 2)
 
     total_typed = 0
     total_pasted = 0
@@ -1038,10 +1040,15 @@ def check_ai_keystroke(player: Player):
                 wpm = 99999 if avg <= 0 else round((60000 / CHARS_PER_WORD) / avg)
                 if wpm > max_wpm:
                     max_wpm = wpm
-            # Injection: text present but no 'input' event fired for it. Only
-            # for fields that opted in (record both inputEvents and prefilled).
+            # Injection: substantial text appeared with (almost) no 'input'
+            # events and no paste -> the value was set programmatically (AI).
+            # A human typing fires ~1 input event per character; mobile swipe/
+            # predictive/dictation fire ~1 per word, so 25+ chars never arrive
+            # in <=2 events. (Only for fields that record inputEvents/prefilled.)
             if 'inputEvents' in entry and 'prefilled' in entry:
-                if (entry.get('inputEvents') or 0) == 0:
+                ie = entry.get('inputEvents') or 0
+                pasted = entry.get('pastedChars', 0) or 0
+                if ie <= max_input_events and pasted == 0:
                     injected = (entry.get('totalChars', 0) or 0) - (entry.get('prefilled', 0) or 0)
                     if injected > max_injected:
                         max_injected = injected
